@@ -45,23 +45,17 @@ class Boid:
         for boid in self.near_boids:
             x_vel_avg += boid.x_vel
             y_vel_avg += boid.y_vel
-        x_vel_avg /= len(self.near_boids)
-        y_vel_avg /= len(self.near_boids)
+        if self.near_boids:
+            x_vel_avg /= len(self.near_boids)
+            y_vel_avg /= len(self.near_boids)
         
-        # Calculate the average position of the boids
-        x_pos_avg = 0
-        y_pos_avg = 0
-        for boid in self.near_boids:
-            x_pos_avg += boid.x_pos
-            y_pos_avg += boid.y_pos
-        x_pos_avg /= len(self.near_boids)
-        y_pos_avg /= len(self.near_boids)
         
         # Calculate the average angle of the boids
         angle_avg = 0
         for boid in self.near_boids:
             angle_avg += boid.angle
-        angle_avg /= len(self.near_boids)
+        if self.near_boids:
+            angle_avg /= len(self.near_boids)
 
         
         # Calculate the new velocity
@@ -69,7 +63,7 @@ class Boid:
         self.y_vel += 0.5 *(y_vel_avg - self.y_vel)
 
         # Calculate the new angle
-        self.angle = self.weight_of_cohesion * angle_avg + (1-self.weight_of_cohesion) * self.angle
+        self.angle += self.weight_of_cohesion * (angle_avg - self.angle)
 
     
     def avoid_collision(self):
