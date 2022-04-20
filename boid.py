@@ -117,6 +117,14 @@ class Boid:
         """Return the distance between two boids"""
         return math.sqrt((self.x_pos - other_boid.x_pos)**2 + (self.y_pos - other_boid.y_pos)**2)
 
+    def get_coords(self):
+        """Return the coordinates of the boid"""
+        return (self.x_pos, self.y_pos)
+    
+    def get_velocity(self):
+        """Return the velocity of the boid"""
+        return (self.x_vel, self.y_vel)
+
 class SimulationSpace:
     """Simulation space class"""
     def __init__(self, width, height):
@@ -124,6 +132,7 @@ class SimulationSpace:
         self.width = width
         self.height = height
         self.boids = []
+        self.iteration = 0
     
     def populate(self, number_of_boids, bouncing=True):
         """Populate the simulation space with boids"""
@@ -138,6 +147,7 @@ class SimulationSpace:
     def next_step(self):
         """Update the simulation space"""
         for boid in self.boids:
+            self.iteration += 1
             boid.find_near_boids(self.boids)
             boid.update_velocity()
             boid.update_position()
