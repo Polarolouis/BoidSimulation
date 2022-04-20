@@ -8,6 +8,7 @@ class Boid:
     chaotic_probability = 0
     weight_of_cohesion = 1
     max_speed = 5
+    max_force = 1
     def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing):
         # Initialise the boid position and velocity
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
@@ -45,6 +46,8 @@ class Boid:
         if self.near_boids:
             heading_avg /= len(self.near_boids)
         heading_correction = heading_avg - self.velocity
+        if np.linalg.norm(heading_correction) > self.max_speed:
+            heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
         return heading_correction
 
     def cohesion(self):
@@ -57,6 +60,8 @@ class Boid:
         if self.near_boids:
             position_avg /= len(self.near_boids)
         correction_to_avg = position_avg - self.position
+        if np.linalg.norm(correction_to_avg) > self.max_speed:
+            correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_speed
         return correction_to_avg
 
     def separation(self):
@@ -70,6 +75,10 @@ class Boid:
             separation_correction += diff
         if self.near_boids:
             separation_correction /= len(self.near_boids)
+        if np.linalg.norm(separation_correction) > self.max_speed:
+            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
+        if np.linalg.norm(separation_correction) > self.max_force:
+            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_force
         return separation_correction
 
     def apply_force(self, force):
@@ -78,9 +87,9 @@ class Boid:
 
     def apply_rules(self):
         """Apply the rules of the flock to the boid"""
-        self.apply_force(self.separation())
         self.apply_force(self.alignment())
-        self.apply_force(self.cohesion())
+        #self.apply_force(self.cohesion())
+        self.apply_force(self.separation())
 
     def check_edges(self):
         """Check if the boid is out of bounds"""
@@ -110,6 +119,20 @@ class Boid:
                 position[1] = self.radius
             return position
 
+    def is_out_of_space(self):
+        """Check if the boid is out of space"""
+        if self.position[0] < 0 or self.position[0] > self.width or self.position[1] < 0 or self.position[1] > self.height:
+            return True
+        else:
+            return False
+    
+    def bring_back_to_space(self):
+        """Bring the boid back to space"""
+        if self.is_out_of_space():
+            self.position[0] =  self.width / 2
+            self.position[1] = self.height / 2
+            return True
+
 # Update the boid
     def update(self):
         """Update the velocity and the position of the boid"""
@@ -134,6 +157,8 @@ class Boid:
         # Update the position
         self.position += self.velocity
 
+        self.bring_back_to_space()
+
         # Reset the acceleration
         self.acceleration = np.array([[0], [0]], dtype=np.float64)
 
@@ -153,14 +178,22 @@ class Boid:
         x_pos, y_pos = self.position
         return (x_pos - self.radius, y_pos - self.radius, x_pos + self.radius, y_pos + self.radius)
 
+
+
 class SimulationSpace:
-    """Simulation space class"""
+    """Class for the simulation space"""
+    counter = 0
     def __init__(self, width, height):
         """Initialize the simulation space"""
         self.width = width
         self.height = height
         self.boids = []
         self.iteration = 0
+        self.paused = True
+        self.finished = False
+        self.counter = SimulationSpace.counter
+        SimulationSpace.counter += 1
+        
     
     def populate(self, number_of_boids, bouncing=True):
         """Populate the simulation space with boids"""
@@ -174,7 +207,34 @@ class SimulationSpace:
     
     def next_step(self):
         """Update the simulation space"""
+        print(f"Space {self.counter} | Iteration : {self.iteration}" )
         self.iteration += 1
         for boid in self.boids:
             boid.find_near_boids(self.boids)
             boid.update()
+
+# Method to control the state of the simulation   
+    def start_simulation(self, number_of_steps=10):
+        """Start the simulation"""
+        self.paused = False
+        self.number_of_steps = number_of_steps
+        self.finished = False
+
+    def toggle_pause(self):
+        """Toggle the pause state of the simulation"""
+        self.paused = not self.paused
+
+    def finish(self):
+        """Finish the simulation"""
+        self.finished = True
+
+# Method to clear the simulation space
+    
+    def clear(self):
+        """Reset the simulation"""
+        self.boids = []
+        self.iteration = 0
+        self.paused = True
+        self.finished = False
+        self.counter = SimulationSpace.counter
+        SimulationSpace.counter += 1
