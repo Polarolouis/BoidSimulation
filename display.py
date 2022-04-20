@@ -8,7 +8,7 @@ show_range = False
 
 size = 500
 space = bd.SimulationSpace(size, size)
-space.populate(200, bouncing=False)
+space.populate(20, bouncing=False)
 
 window.configure(width=size, height=size)
 space.canvas = tkinter.Canvas(window, width=size, height=size)

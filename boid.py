@@ -4,7 +4,7 @@ import random
 class Boid:
     """Boid class"""
     near_distance = 50 # Distance to be considered near
-    chaotic_probability = 1e-3
+    chaotic_probability = 0
     weight_of_cohesion = 1
     def __init__(self, x_pos, y_pos, speed, angle, width, height, bouncing):
         self.x_pos = x_pos
@@ -22,9 +22,14 @@ class Boid:
     
     def update_velocity(self):
         """Update the velocity of the boid"""
+        # Alignment behaviour
+        alignment_angle = self.alignment()
+        self.angle = alignment_angle
+        
         # Cohesion behaviour
-        self.cohesion()
-
+        # cohesion_angle = self.cohesion()
+        # self.angle += cohesion_angle
+        
         # Collision avoidance behaviour
         self.avoid_collision()
         
@@ -37,35 +42,29 @@ class Boid:
         self.x_vel = self.speed * math.cos(self.angle)
         self.y_vel = self.speed * math.sin(self.angle)
 
-    def cohesion(self):
-        """Cohesion behaviour to move towards the average position of the boids"""
-        # Calculate the average velocity of the boids
-        x_vel_avg = 0
-        y_vel_avg = 0
-        for boid in self.near_boids:
-            x_vel_avg += boid.x_vel
-            y_vel_avg += boid.y_vel
-        if self.near_boids:
-            x_vel_avg /= len(self.near_boids)
-            y_vel_avg /= len(self.near_boids)
-        
-        
+    def alignment(self):
+        """Alignment behaviour to steer towards the average heading of the boids in the near_boids list"""
         # Calculate the average angle of the boids
         angle_avg = 0
         for boid in self.near_boids:
             angle_avg += boid.angle
         if self.near_boids:
             angle_avg /= len(self.near_boids)
+        return angle_avg
 
-        
-        # Calculate the new velocity
-        self.x_vel += 0.5 *(x_vel_avg - self.x_vel)
-        self.y_vel += 0.5 *(y_vel_avg - self.y_vel)
+    def cohesion(self):
+        """Cohesion behaviour to steer towards the average position of the boids in the near_boids list"""
+        # Calculate the average position of the boids
+        x_avg = 0
+        y_avg = 0
+        for boid in self.near_boids:
+            x_avg += boid.x_pos
+            y_avg += boid.y_pos
+        if self.near_boids:
+            x_avg /= len(self.near_boids)
+            y_avg /= len(self.near_boids)
+        return math.atan2(y_avg - self.y_pos, x_avg - self.x_pos)
 
-        # Calculate the new angle
-        self.angle += self.weight_of_cohesion * (angle_avg - self.angle)
-
-    
     def avoid_collision(self):
         """Avoid collision behaviour"""
         pass
@@ -107,17 +106,16 @@ class Boid:
         """Returns the bounding box of the boid"""
         return (self.x_pos - self.radius, self.y_pos - self.radius, self.x_pos + self.radius, self.y_pos + self.radius)
     
-    def find_near_boids(self, boids, distance):
+    def find_near_boids(self, boids):
         """Sets a list of boids that are within a certain distance"""
-        near_boids = []
+        self.near_boids = []
         for boid in boids:
-            if self.distance(boid) < distance:
-                near_boids.append(boid)
-        self.near_boids = near_boids
+            if self.distance(boid) < self.near_distance:
+                self.near_boids.append(boid)
     
-    def distance(self, boid):
+    def distance(self, other_boid):
         """Return the distance between two boids"""
-        return math.sqrt((self.x_pos - boid.x_pos)**2 + (self.y_pos - boid.y_pos)**2)
+        return math.sqrt((self.x_pos - other_boid.x_pos)**2 + (self.y_pos - other_boid.y_pos)**2)
 
 class SimulationSpace:
     """Simulation space class"""
@@ -140,6 +138,6 @@ class SimulationSpace:
     def next_step(self):
         """Update the simulation space"""
         for boid in self.boids:
-            boid.find_near_boids(self.boids, boid.near_distance)
+            boid.find_near_boids(self.boids)
             boid.update_velocity()
             boid.update_position()
