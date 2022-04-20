@@ -7,6 +7,7 @@ class Boid:
     near_distance = 50 # Distance to be considered near
     chaotic_probability = 0
     weight_of_cohesion = 1
+    max_speed = 5
     def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing):
         # Initialise the boid position and velocity
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
@@ -127,6 +128,9 @@ class Boid:
             # If we don't bounce the output is the position
             self.position = self.check_edges()
 
+        # If velocity exceeds the max speed, set it to the max speed
+        if np.linalg.norm(self.velocity) > self.max_speed:
+            self.velocity = self.velocity / np.linalg.norm(self.velocity) * self.max_speed
         # Update the position
         self.position += self.velocity
 
@@ -163,8 +167,8 @@ class SimulationSpace:
         for _ in range(number_of_boids):
             x_pos = random.randint(0, self.width)
             y_pos = random.randint(0, self.height)
-            x_vel = 0.01 # random.randint(1, 5)
-            y_vel = 0.01 # random.randint(1, 5)
+            x_vel = random.randint(1, 5)
+            y_vel = random.randint(1, 5)
             boid = Boid(x_pos, y_pos, x_vel, y_vel, self.width, self.height, bouncing=bouncing)
             self.boids.append(boid)
     

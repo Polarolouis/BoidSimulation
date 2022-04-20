@@ -21,7 +21,7 @@ def initialise_simulation():
     global paused
     del space
     space = bd.SimulationSpace(SIZE, SIZE)
-    space.populate(20, bouncing=False)
+    space.populate(50, bouncing=False)
     paused = True
     canvas.delete('all')
     for boid in space.boids:
@@ -30,6 +30,7 @@ def initialise_simulation():
         if show_range:
             boid.near_canvas_id = canvas.create_oval(x_pos - boid.near_distance, y_pos - boid.near_distance, x_pos + boid.near_distance, y_pos + boid.near_distance, fill="", outline="gray")
         boid.canvas_id = canvas.create_line(x_pos, y_pos, x_pos+x_vel, y_pos+y_vel, fill="red", width=5, arrow=tkinter.LAST)
+
 window.configure(width=SIZE, height=SIZE)
 
 # Top frame
@@ -102,6 +103,6 @@ def start_simulation(space):
     toggle_paused()
     iterate_simulation(space)
 
-
 initialise_simulation()
+
 window.mainloop()
