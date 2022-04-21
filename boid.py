@@ -4,11 +4,13 @@ import numpy as np
 
 class Boid:
     """Boid class"""
-    near_distance = 50 # Distance to be considered near
+    near_distance = 25 # Distance to be considered near
     chaotic_probability = 0
     weight_of_cohesion = 1
     max_speed = 5
-    max_force = 1
+    max_separation_force = 1
+    max_cohesion_force = 0.75*max_separation_force
+    
     def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing):
         # Initialise the boid position and velocity
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
@@ -40,28 +42,32 @@ class Boid:
         """Alignment behaviour to steer towards the average heading of the boids in the near_boids list
         Returns : the correction to add to the velocity""" 
         # Calculate the average heading of the boids
-        heading_avg = np.array([[0], [0]], dtype=np.float64)
-        for boid in self.near_boids:
-            heading_avg += boid.velocity
+        heading_correction = np.array([[0], [0]], dtype=np.float64)
         if self.near_boids:
-            heading_avg /= len(self.near_boids)
-        heading_correction = heading_avg - self.velocity
-        if np.linalg.norm(heading_correction) > self.max_speed:
-            heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
+            heading_avg = np.array([[0], [0]], dtype=np.float64)
+            for boid in self.near_boids:
+                heading_avg += boid.velocity
+                heading_avg /= len(self.near_boids)
+            heading_correction = heading_avg - self.velocity
+            if np.linalg.norm(heading_correction) > self.max_speed:
+                heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
         return heading_correction
 
     def cohesion(self):
         """Cohesion behaviour to steer towards the average position of the boids in the near_boids list
         Returns : the correction to add to the velocity""" 
         # Calculate the average position of the boids
-        position_avg = np.array([[0], [0]], dtype=np.float64)
-        for boid in self.near_boids:
-            position_avg += boid.position
+        correction_to_avg = np.array([[0], [0]], dtype=np.float64)
         if self.near_boids:
+            position_avg = np.array([[0], [0]], dtype=np.float64)
+            for boid in self.near_boids:
+                position_avg += boid.position
             position_avg /= len(self.near_boids)
-        correction_to_avg = position_avg - self.position
-        if np.linalg.norm(correction_to_avg) > self.max_speed:
-            correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_speed
+            correction_to_avg = position_avg - self.position
+            if np.linalg.norm(correction_to_avg) > self.max_speed:
+                correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_speed
+            if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
+                correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_cohesion_force
         return correction_to_avg
 
     def separation(self):
@@ -77,8 +83,8 @@ class Boid:
             separation_correction /= len(self.near_boids)
         if np.linalg.norm(separation_correction) > self.max_speed:
             separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
-        if np.linalg.norm(separation_correction) > self.max_force:
-            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_force
+        if np.linalg.norm(separation_correction) > self.max_separation_force:
+            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_separation_force
         return separation_correction
 
     def apply_force(self, force):
@@ -88,7 +94,7 @@ class Boid:
     def apply_rules(self):
         """Apply the rules of the flock to the boid"""
         self.apply_force(self.alignment())
-        #self.apply_force(self.cohesion())
+        self.apply_force(self.cohesion())
         self.apply_force(self.separation())
 
     def check_edges(self):
@@ -96,13 +102,13 @@ class Boid:
         # If bouncing is on, bounce the boid back into the screen
         if self.bouncing:
             velocity = self.velocity
-            if self.position[0] < self.radius:
+            if self.position[0] + self.velocity[0] < self.radius:
                 velocity[0] = -self.velocity[0]
-            if self.position[0] > self.width - self.radius:
+            if self.position[0] + self.velocity[0] > self.width - self.radius:
                 velocity[0] = -self.velocity[0]
-            if self.position[1] < self.radius:
+            if self.position[1] + self.velocity[1] < self.radius:
                 velocity[1] = -self.velocity[1]
-            if self.position[1] > self.height - self.radius:
+            if self.position[1] + self.velocity[1] > self.height - self.radius:
                 velocity[1] = -self.velocity[1]
             return velocity
         else:
@@ -191,6 +197,7 @@ class SimulationSpace:
         self.iteration = 0
         self.paused = True
         self.finished = False
+        self.number_of_steps = 10
         self.counter = SimulationSpace.counter
         SimulationSpace.counter += 1
         
@@ -200,8 +207,8 @@ class SimulationSpace:
         for _ in range(number_of_boids):
             x_pos = random.randint(0, self.width)
             y_pos = random.randint(0, self.height)
-            x_vel = random.randint(1, 5)
-            y_vel = random.randint(1, 5)
+            x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
+            y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
             boid = Boid(x_pos, y_pos, x_vel, y_vel, self.width, self.height, bouncing=bouncing)
             self.boids.append(boid)
     
@@ -224,7 +231,7 @@ class SimulationSpace:
         """Toggle the pause state of the simulation"""
         self.paused = not self.paused
 
-    def finish(self):
+    def finish_simulation(self):
         """Finish the simulation"""
         self.finished = True
 
@@ -236,5 +243,3 @@ class SimulationSpace:
         self.iteration = 0
         self.paused = True
         self.finished = False
-        self.counter = SimulationSpace.counter
-        SimulationSpace.counter += 1
