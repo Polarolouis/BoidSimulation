@@ -4,12 +4,12 @@ import numpy as np
 
 class Boid:
     """Boid class"""
-    near_distance = 25 # Distance to be considered near
+    near_distance = 10 # Distance to be considered near
     chaotic_probability = 0
     weight_of_cohesion = 1
     max_speed = 5
     max_separation_force = 1
-    max_cohesion_force = 0.75*max_separation_force
+    max_cohesion_force = 1
     
     def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing):
         # Initialise the boid position and velocity

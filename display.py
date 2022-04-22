@@ -7,9 +7,9 @@ import boid
 #------------------------------------------------------------------------------
 
 WIDTH, HEIGHT = (800, 600)
-NUMBER_OF_BOIDS = 20
+NUMBER_OF_BOIDS = 50
 NUMBER_OF_STEPS = 10_000
-BOUNCING = True
+BOUNCING = False
 
 sim_space = None
 
