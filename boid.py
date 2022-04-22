@@ -186,6 +186,14 @@ class Boid:
 
 
 
+    def get_coords(self):
+        """Return the coordinates of the boid"""
+        return (self.x_pos, self.y_pos)
+    
+    def get_velocity(self):
+        """Return the velocity of the boid"""
+        return (self.x_vel, self.y_vel)
+
 class SimulationSpace:
     """Class for the simulation space"""
     counter = 0
@@ -217,6 +225,7 @@ class SimulationSpace:
         print(f"Space {self.counter} | Iteration : {self.iteration}" )
         self.iteration += 1
         for boid in self.boids:
+            self.iteration += 1
             boid.find_near_boids(self.boids)
             boid.update()
 
