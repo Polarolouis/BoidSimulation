@@ -1,107 +1,146 @@
+import time
 import tkinter
-import boid as bd
+import boid
 
-window = tkinter.Tk()
-window.title("Boid Simulation")
+#------------------------------------------------------------------------------
+# Constants
+#------------------------------------------------------------------------------
 
-show_range = False
+WIDTH, HEIGHT = (800, 600)
+NUMBER_OF_BOIDS = 50
+NUMBER_OF_STEPS = 10_000
+BOUNCING = False
 
-SIZE = 500
+sim_space = None
 
-space = bd.SimulationSpace(SIZE, SIZE)
+#------------------------------------------------------------------------------
+# Main window
+#------------------------------------------------------------------------------
+root = tkinter.Tk()
+root.configure(background='white')
+root.title("Boids")
 
-canvas = tkinter.Canvas(window, width=SIZE, height=SIZE)
+# Top Frame
+top_frame = tkinter.Frame(root)
+top_frame.pack(side=tkinter.TOP, fill=tkinter.X)
+## Label number of boids
+label_number_of_boids = tkinter.Label(top_frame, text=f"Boids : {NUMBER_OF_BOIDS}", font=("Helvetica", 16))
+label_number_of_boids.pack(side=tkinter.LEFT)
+##
+label_messages = tkinter.Label(top_frame, text="", font=("Helvetica", 16))
+label_messages.pack()
+## Label number of iterations
+label_iterations = tkinter.Label(top_frame, text=f"Iterations : {0}", font=("Helvetica", 16))
+label_iterations.pack(side=tkinter.RIGHT)
+
+# Bottom Frame
+bottom_frame = tkinter.Frame(root)
+bottom_frame.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+## Button to start the simulation
+button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 16), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal")))
+button_start.pack(side=tkinter.LEFT)
+## Button to pause the simulation
+button_pause = tkinter.Button(bottom_frame, text="Pause/Resume", font=("Helvetica", 16), command=lambda: (sim_space.toggle_pause(), label_messages.config(text="Simulation paused" if sim_space.paused else "", fg="red")))
+button_pause.config(state="disable")
+button_pause.pack(side=tkinter.LEFT)
+## Button to reset the simulation
+button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 16), command=lambda: (reset_simulation(sim_space, canvas), button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text="")))
+button_reset.config(state="disable")
+button_reset.pack(side=tkinter.RIGHT)
+
+#------------------------------------------------------------------------------
+# Canvas
+#------------------------------------------------------------------------------
+canvas = tkinter.Canvas(root, width=WIDTH, height=HEIGHT, background='ivory')
 canvas.pack()
-paused = True
 
+#------------------------------------------------------------------------------
+# Functions
+#------------------------------------------------------------------------------
 
-def initialise_simulation():
-    """Initialise the simulation"""
-    global space
-    global paused
-    del space
-    space = bd.SimulationSpace(SIZE, SIZE)
-    space.populate(20, bouncing=False)
-    paused = True
-    canvas.delete('all')
-    for boid in space.boids:
-        x_pos, y_pos = boid.get_coords()
-        x_vel, y_vel = boid.get_velocity()
-        if show_range:
-            boid.near_canvas_id = canvas.create_oval(x_pos - boid.near_distance, y_pos - boid.near_distance, x_pos + boid.near_distance, y_pos + boid.near_distance, fill="", outline="gray")
-        boid.canvas_id = canvas.create_line(x_pos, y_pos, x_pos+x_vel, y_pos+y_vel, fill="red", width=5, arrow=tkinter.LAST)
-window.configure(width=SIZE, height=SIZE)
+def stock_simulation(simulation_space):
+    """Stock the simulation"""
+    global sim_space
+    sim_space = simulation_space
 
-# Top frame
-top_frame = tkinter.Frame(window)
-top_frame.pack(side=tkinter.TOP)
-
-## Iteration counter label
-iteration_label = tkinter.Label(top_frame, text="Iteration: 0")
-iteration_label.pack(side=tkinter.LEFT)
-
-def update_iteration_label(space):
-    """Update the iteration label"""
-    iteration_label.configure(text=f"Iteration: {space.iteration}")
-
-def toggle_paused():
-    """Toggle the paused state"""
-    global paused
-    paused = not paused
-
-# Control Frame Bottom
-command_frame = tkinter.LabelFrame(window, text="Commands")
-command_frame.pack(side=tkinter.BOTTOM, expand=True, fill=tkinter.BOTH)
-
-## Control Frame Left
-control_frame = tkinter.LabelFrame(command_frame, text="Controls of the simulation")
-control_frame.pack(side=tkinter.LEFT)
-
-### Start Button
-start_button = tkinter.Button(control_frame, text="Start", command=lambda: start_simulation(space))
-start_button.pack()
-
-### Pause/Resume Button
-resume_pause_button = tkinter.Button(control_frame, text="Resume/Pause", \
-    command=lambda: (toggle_paused() ,move_boid_canvas(space)))
-resume_pause_button.pack()
-
-### Next Step Button
-next_step_button = tkinter.Button(control_frame, text="Next Step", \
-    command=lambda: (space.next_step(), move_boid_canvas(space)))
-next_step_button.pack()
-
-## Window Frame Right
-settings_frame = tkinter.LabelFrame(command_frame, text="Settings")
-settings_frame.pack(side=tkinter.RIGHT)
-
-### Reinitialise Button
-reinitialise_button = tkinter.Button(settings_frame, text="Reinitialise", \
-    command=lambda: (initialise_simulation(), move_boid_canvas(space)))
-reinitialise_button.pack()
-
-def move_boid_canvas(space):
-    """Move the boid canvas"""
-    update_iteration_label(space)
-    for boid in space.boids:
-        x_pos, y_pos = boid.get_coords()
-        x_vel, y_vel = boid.get_velocity()
-        if show_range:
-            canvas.coords(boid.near_canvas_id, x_pos - boid.near_distance, y_pos - boid.near_distance, x_pos + boid.near_distance, y_pos + boid.near_distance)
-        canvas.coords(boid.canvas_id, x_pos, y_pos, x_pos+x_vel, y_pos+y_vel)
-
-def iterate_simulation(space):
-    """Move the boid canvas and update the position"""
-    if not paused:
-        move_boid_canvas(space)
-        space.next_step()
-    window.after(10, lambda: iterate_simulation(space))
-
-def start_simulation(space):
+def start_simulation(root, number_of_boids, width, height):
     """Start the simulation"""
-    toggle_paused()
-    iterate_simulation(space)
+    # Create the simulation space
+    simulation_space = boid.SimulationSpace(width, height)
+    # Populate the simulation space
+    simulation_space.populate(number_of_boids, bouncing=BOUNCING)
+    # Start the simulation
+    simulation_space.start_simulation(number_of_steps=NUMBER_OF_STEPS)
+    create_boids_canvas(canvas, simulation_space)
+    # Start the simulation loop
+    simulation_loop(root, canvas, simulation_space)
+    return simulation_space
+
+def create_boids_canvas(canvas, simulation_space):
+    """Create the boids on the canvas"""
+    for boid in simulation_space.boids:
+        # Extract the boid's position
+        x, y = boid.get_coords()
+        # Create the boid on the canvas
+        boid.canvas_item = canvas.create_oval(x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius, fill="black")
+
+def update_canvas(canvas, simulation_space):
+    """Update the canvas"""
+    for index, boid in enumerate(simulation_space.boids):
+        # Extract the boid's position
+        x, y = boid.get_coords()
+        # Update the boid on the canvas
+        canvas.coords(boid.canvas_item, x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius)
+
+def clear_canvas(simulation_space, canvas):
+    """Clear the canvas"""
+    if simulation_space.finished:
+        canvas.delete("all")
+    else:
+        print("The simulation is not finished")
+        label_messages.config(text="The simulation is not finished", fg="red")
+        label_messages.after(2000, lambda: label_messages.config(text=""))
+
+def simulation_loop(root, canvas, simulation_space):
+    """Simulation loop"""
+    if simulation_space.finished:
+        return
+    
+    if max_iterations_reached(simulation_space):
+        stop_simulation(simulation_space)
+    
+    if not simulation_space.paused:
+        # Update the simulation
+        simulation_space.next_step()
+        # Update the canvas
+        update_canvas(canvas, simulation_space)
+        # Update the number of iterations
+        label_iterations.config(text=f"Iterations : {simulation_space.iteration}")
+        # Check if the simulation is finished
+    # Continue the simulation loop
+    root.after(10, lambda: simulation_loop(root, canvas, simulation_space))
+
+def max_iterations_reached(simulation_space):
+    """Check if the maximum number of iterations is reached"""
+    return simulation_space.iteration >= NUMBER_OF_STEPS-1
+
+def stop_simulation(simulation_space):
+    """Stop the simulation"""
+    simulation_space.finish_simulation()
+    print("Simulation finished")
+
+def reset_simulation(simulation_space, canvas):
+    """Reset the simulation"""
+    print("Reset the simulation")
+    stop_simulation(simulation_space)
+    clear_canvas(simulation_space, canvas)
+    # We clear the simulation space
+    simulation_space.clear()
+    label_iterations.config(text=f"Iterations : {simulation_space.iteration}")
+    
 
 
-initialise_simulation()
-window.mainloop()
+#------------------------------------------------------------------------------
+# Main loop
+#------------------------------------------------------------------------------
+root.mainloop()
