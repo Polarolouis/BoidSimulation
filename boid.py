@@ -9,11 +9,12 @@ class Boid:
     chaotic_probability = 0
     weight_of_cohesion = 1
     max_speed = 5
-    max_separation_force = 4
+    max_separation_force = 1
     max_cohesion_force = 1
     
     
-    def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing):
+    def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing, alignment_bool = True, 
+                cohesion_bool = True, separation_bool = True, wind_bool = True, wind_speed = 0, wind_direction = 0, the_chosen_one = False):
         # Initialise the boid position and velocity
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
         self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
@@ -25,6 +26,14 @@ class Boid:
         self.bouncing = bouncing
 
         self.near_boids = []   
+
+        self.alignment_bool = alignment_bool
+        self.cohesion_bool = cohesion_bool
+        self.separation_bool = separation_bool
+        self.wind_bool = wind_bool
+        self.wind_speed = wind_speed
+        self.wind_direction = wind_direction * 2 * math.pi / 360
+        self.the_chosen_one = the_chosen_one
 
 # Flock calculation
     def find_near_boids(self, boids):
@@ -62,7 +71,7 @@ class Boid:
         if self.near_boids:
             position_avg = np.array([[0], [0]], dtype=np.float64)
             for boid in self.near_boids:
-                position_avg += boid.position * self.distance(boid)**2
+                position_avg += boid.position #* self.distance(boid)**2
             position_avg /= len(self.near_boids)
             correction_to_avg = position_avg - self.position
             if np.linalg.norm(correction_to_avg) > self.max_speed:
@@ -78,30 +87,58 @@ class Boid:
         for boid in self.near_boids:
             distance_to_boid = self.distance(boid)
             diff = np.asarray(self.position - boid.position, dtype=np.float64)
-            np.divide(diff, np.asarray(distance_to_boid**2, dtype=np.float64), out=diff)
+            diff /= distance_to_boid
             separation_correction += diff
         if self.near_boids:
             separation_correction /= len(self.near_boids)
-        if np.linalg.norm(separation_correction) > self.max_speed:
-            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
-        if np.linalg.norm(separation_correction) > self.max_separation_force:
-            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_separation_force
+        # if np.linalg.norm(separation_correction) > self.max_speed:
+        #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
+        # if np.linalg.norm(separation_correction) > self.max_separation_force:
+        #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_separation_force
         return separation_correction
 
     def wind(self):
         """Apply wind to the boid"""
-        return np.array([[5],[0]], dtype=np.float64)
-
-    def apply_force(self, force):
-        """Apply a force to the boid by incrementing the acceleration"""
-        self.acceleration += force
+        x_wind_speed = self.wind_speed * math.cos(self.wind_direction)
+        y_wind_speed = self.wind_speed * math.sin(self.wind_direction)
+        
+        # Prevent wind speed from exceeding max speed
+        if np.linalg.norm(np.array([[x_wind_speed], [y_wind_speed]])) > self.max_speed:
+            x_wind_speed = x_wind_speed / np.linalg.norm(np.array([[x_wind_speed], [y_wind_speed]])) * self.max_speed
+            y_wind_speed = y_wind_speed / np.linalg.norm(np.array([[x_wind_speed], [y_wind_speed]])) * self.max_speed
+        return np.array([[x_wind_speed],[y_wind_speed]], dtype=np.float64)
 
     def apply_rules(self):
         """Apply the rules of the flock to the boid"""
-        self.apply_force(self.alignment())
-        self.apply_force(self.cohesion())
-        self.apply_force(self.separation())
-        self.apply_force(self.wind())
+        if self.the_chosen_one:
+            print("The chosen one : " + str(self.position))
+        if self.alignment_bool:
+            alignment = self.alignment()
+            if self.the_chosen_one:
+                print("Alignment: " + str(np.linalg.norm(alignment)))
+            self.acceleration += alignment
+
+        
+        if self.cohesion_bool:
+            cohesion = self.cohesion()
+            if self.the_chosen_one:
+                print("Cohesion: " + str(np.linalg.norm(cohesion)))
+            self.acceleration += cohesion
+        
+        if self.separation_bool:
+            separation = self.separation()
+            if self.the_chosen_one:
+                print("Separation: " + str(np.linalg.norm(separation)))
+            self.acceleration += separation
+        
+        if self.wind_bool:
+            wind = self.wind()
+            if self.the_chosen_one:
+                print("Wind: " + str(np.linalg.norm(wind)))
+            self.acceleration += wind
+        
+        if self.the_chosen_one:
+            print("Acceleration: " + str(np.linalg.norm(self.acceleration)))
 
     def check_edges(self):
         """Check if the boid is out of bounds"""
@@ -169,6 +206,7 @@ class Boid:
         # Update the position
         self.position += self.velocity
 
+        # If the boid is out of space, bring it back to space
         self.bring_back_to_space()
 
         # Reset the acceleration
@@ -206,23 +244,40 @@ class SimulationSpace:
         SimulationSpace.counter += 1
         
     
-    def populate(self, number_of_boids, bouncing=True):
+    def populate(self, number_of_boids, alignment_bool, cohesion_bool, separation_bool, wind_bool, wind_speed, wind_direction, bouncing=True):
         """Populate the simulation space with boids"""
         for _ in range(number_of_boids):
             x_pos = random.randint(0, self.width)
             y_pos = random.randint(0, self.height)
             x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
             y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
-            boid = Boid(x_pos, y_pos, x_vel, y_vel, self.width, self.height, bouncing=bouncing)
+            boid = Boid(x_pos, y_pos, x_vel, y_vel, self.width, self.height, bouncing=bouncing, 
+                alignment_bool=alignment_bool, cohesion_bool=cohesion_bool, separation_bool=separation_bool, 
+                wind_bool=wind_bool, wind_speed=wind_speed, wind_direction=wind_direction, the_chosen_one=True if _ == 0 else False)
             self.boids.append(boid)
     
     def next_step(self):
         """Update the simulation space"""
-        print(f"Space {self.counter} | Iteration : {self.iteration}" )
+        print(f"-------------------------\nSpace {self.counter} | Iteration : {self.iteration}\n-------------------------------" )
         self.iteration += 1
         for boid in self.boids:
             boid.find_near_boids(self.boids)
             boid.update()
+    
+    def distances_matrix(self):
+        """Returns the distances matrix"""
+        distances = np.zeros((len(self.boids), len(self.boids)))
+        N = len(self.boids)
+        iteration = 0
+        for i, boid_i in enumerate(self.boids):
+            for j, boid_j in enumerate(self.boids):
+                iteration += 1
+                print(f"Space {self.counter} | Iteration : {iteration}")
+                distances[i, j] = np.linalg.norm(boid_i.position - boid_j.position)
+                distances[j, i] = distances[i, j]
+                if (distances + np.eye(N=N, M=N)).all() != 0:
+                    break
+        return distances
 
 # Method to control the state of the simulation   
     def start_simulation(self, number_of_steps=10):
