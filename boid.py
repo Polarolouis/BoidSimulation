@@ -4,12 +4,14 @@ import numpy as np
 
 class Boid:
     """Boid class"""
-    near_distance = 10 # Distance to be considered near
+    radius = 5
+    near_distance = 10*radius # Distance to be considered near
     chaotic_probability = 0
     weight_of_cohesion = 1
     max_speed = 5
-    max_separation_force = 1
+    max_separation_force = 4
     max_cohesion_force = 1
+    
     
     def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing):
         # Initialise the boid position and velocity
@@ -20,7 +22,6 @@ class Boid:
         self.width = width
         self.height = height
 
-        self.radius = 5
         self.bouncing = bouncing
 
         self.near_boids = []   
@@ -61,7 +62,7 @@ class Boid:
         if self.near_boids:
             position_avg = np.array([[0], [0]], dtype=np.float64)
             for boid in self.near_boids:
-                position_avg += boid.position
+                position_avg += boid.position * self.distance(boid)**2
             position_avg /= len(self.near_boids)
             correction_to_avg = position_avg - self.position
             if np.linalg.norm(correction_to_avg) > self.max_speed:
@@ -77,7 +78,7 @@ class Boid:
         for boid in self.near_boids:
             distance_to_boid = self.distance(boid)
             diff = np.asarray(self.position - boid.position, dtype=np.float64)
-            np.divide(diff, np.asarray(distance_to_boid, dtype=np.float64), out=diff)
+            np.divide(diff, np.asarray(distance_to_boid**2, dtype=np.float64), out=diff)
             separation_correction += diff
         if self.near_boids:
             separation_correction /= len(self.near_boids)
@@ -86,6 +87,10 @@ class Boid:
         if np.linalg.norm(separation_correction) > self.max_separation_force:
             separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_separation_force
         return separation_correction
+
+    def wind(self):
+        """Apply wind to the boid"""
+        return np.array([[5],[0]], dtype=np.float64)
 
     def apply_force(self, force):
         """Apply a force to the boid by incrementing the acceleration"""
@@ -96,6 +101,7 @@ class Boid:
         self.apply_force(self.alignment())
         self.apply_force(self.cohesion())
         self.apply_force(self.separation())
+        self.apply_force(self.wind())
 
     def check_edges(self):
         """Check if the boid is out of bounds"""
@@ -184,16 +190,6 @@ class Boid:
         x_pos, y_pos = self.position
         return (x_pos - self.radius, y_pos - self.radius, x_pos + self.radius, y_pos + self.radius)
 
-
-
-    def get_coords(self):
-        """Return the coordinates of the boid"""
-        return (self.x_pos, self.y_pos)
-    
-    def get_velocity(self):
-        """Return the velocity of the boid"""
-        return (self.x_vel, self.y_vel)
-
 class SimulationSpace:
     """Class for the simulation space"""
     counter = 0
@@ -225,7 +221,6 @@ class SimulationSpace:
         print(f"Space {self.counter} | Iteration : {self.iteration}" )
         self.iteration += 1
         for boid in self.boids:
-            self.iteration += 1
             boid.find_near_boids(self.boids)
             boid.update()
 
