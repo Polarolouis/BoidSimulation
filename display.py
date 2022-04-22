@@ -1,3 +1,4 @@
+from email.policy import default
 import time
 import tkinter
 import boid
@@ -37,17 +38,52 @@ label_iterations.pack(side=tkinter.RIGHT)
 bottom_frame = tkinter.Frame(root)
 bottom_frame.pack(side=tkinter.BOTTOM, fill=tkinter.X)
 ## Button to start the simulation
-button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 16), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal")))
+button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 16), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), \
+    button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), bouncing_checkbox.config(state="disable")))
 button_start.pack(side=tkinter.LEFT)
 ## Button to pause the simulation
 button_pause = tkinter.Button(bottom_frame, text="Pause/Resume", font=("Helvetica", 16), command=lambda: (sim_space.toggle_pause(), label_messages.config(text="Simulation paused" if sim_space.paused else "", fg="red")))
 button_pause.config(state="disable")
 button_pause.pack(side=tkinter.LEFT)
 ## Button to reset the simulation
-button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 16), command=lambda: (reset_simulation(sim_space, canvas), button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text="")))
+button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 16), command=lambda: (reset_simulation(sim_space, canvas), \
+    button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), bouncing_checkbox.config(state="normal")))
 button_reset.config(state="disable")
 button_reset.pack(side=tkinter.RIGHT)
 
+# Parameters frame (right)
+parameters_frame = tkinter.Frame(root)
+parameters_frame.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+
+## Bouncing checkbox 
+bouncing_boolean = tkinter.BooleanVar()
+bouncing_checkbox = tkinter.Checkbutton(parameters_frame, text="Bouncing", font=("Helvetica", 16), variable=bouncing_boolean, onvalue=True, offvalue=False)
+bouncing_checkbox.pack()
+
+## Number of boids slider
+number_of_boids_slider = tkinter.Scale(parameters_frame, from_=10, to=1000, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 16))
+number_of_boids_slider.set(NUMBER_OF_BOIDS)
+number_of_boids_slider.pack()
+
+## Number of steps slider
+label_number_of_steps = tkinter.Label(parameters_frame, text="Number of steps", font=("Helvetica", 16))
+label_number_of_steps.pack()
+number_of_steps_spinbox = tkinter.Spinbox(parameters_frame, from_=10, to=1_000_000, )
+number_of_steps_spinbox.pack()
+
+## Validation button
+def validate_parameters():
+    """Set the parameters"""
+    global NUMBER_OF_BOIDS
+    global NUMBER_OF_STEPS
+    global BOUNCING
+    BOUNCING = True if bouncing_boolean.get() else False
+    NUMBER_OF_BOIDS = int(number_of_boids_slider.get())
+    label_number_of_boids.config(text=f"Boids : {NUMBER_OF_BOIDS}")
+    NUMBER_OF_STEPS = int(number_of_steps_spinbox.get())
+
+button_validate = tkinter.Button(parameters_frame, text="Validate", font=("Helvetica", 16), command=validate_parameters)
+button_validate.pack()
 #------------------------------------------------------------------------------
 # Canvas
 #------------------------------------------------------------------------------
