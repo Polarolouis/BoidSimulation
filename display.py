@@ -1,4 +1,3 @@
-import time
 import tkinter
 import boid
 
@@ -68,7 +67,7 @@ if BOUNCING:
 bouncing_checkbox.pack()
 
 ## Number of boids slider
-number_of_boids_slider = tkinter.Scale(parameters_frame, from_=10, to=1000, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 16))
+number_of_boids_slider = tkinter.Scale(parameters_frame, from_=1, to=1000, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 16))
 number_of_boids_slider.set(NUMBER_OF_BOIDS)
 number_of_boids_slider.pack()
 
@@ -77,7 +76,7 @@ label_number_of_steps = tkinter.Label(parameters_frame, text="Number of steps", 
 label_number_of_steps.pack()
 var_number_of_steps_spinbox = tkinter.StringVar()
 var_number_of_steps_spinbox.set(NUMBER_OF_STEPS)
-number_of_steps_spinbox = tkinter.Spinbox(parameters_frame, from_=10, to=1_000_000, textvariable=var_number_of_steps_spinbox, font=("Helvetica", 16))
+number_of_steps_spinbox = tkinter.Spinbox(parameters_frame, from_=0, to=1_000_000, textvariable=var_number_of_steps_spinbox, font=("Helvetica", 16))
 number_of_steps_spinbox.pack()
 
 ## Forces frame
@@ -127,7 +126,7 @@ wind_parameters_frame.pack()
 
 ##### Wind speed slider
 wind_speed_slider = tkinter.Scale(wind_parameters_frame, from_=0, to=10, orient=tkinter.HORIZONTAL, 
-    length=200, label="Wind speed", font=("Helvetica", 16))
+    length=200, tickinterval=2, label="Wind speed", font=("Helvetica", 16))
 wind_speed_slider.set(0)
 wind_speed_slider.pack()
 
@@ -151,7 +150,7 @@ def validate_parameters():
     SEPARATION = True if separation_boolean.get() else False
     WIND = True if wind_boolean.get() else False
     if WIND:
-        WIND_SPEED = int(wind_speed_slider.get())
+        WIND_SPEED = float(wind_speed_slider.get()/10)
         WIND_DIRECTION = int(wind_direction_slider.get())
     set_recap_labels()
 
@@ -266,6 +265,7 @@ def create_boids_canvas(canvas, simulation_space):
         x, y = boid.get_coords()
         # Create the boid on the canvas
         boid.canvas_item = canvas.create_oval(x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius, fill="green" if boid.the_chosen_one else "black")
+        boid.velocity_item = canvas.create_line(x, y, x + boid.velocity[0][0], y + boid.velocity[1][0], fill="red", width=2, arrow="last")
 
 def update_canvas(canvas, simulation_space):
     """Update the canvas"""
@@ -274,6 +274,7 @@ def update_canvas(canvas, simulation_space):
         x, y = boid.get_coords()
         # Update the boid on the canvas
         canvas.coords(boid.canvas_item, x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius)
+        canvas.coords(boid.velocity_item, x, y, x + boid.velocity[0][0], y + boid.velocity[1][0])
 
 def clear_canvas(simulation_space, canvas):
     """Clear the canvas"""
@@ -305,6 +306,8 @@ def simulation_loop(root, canvas, simulation_space):
 
 def max_iterations_reached(simulation_space):
     """Check if the maximum number of iterations is reached"""
+    if NUMBER_OF_STEPS == 0:
+        return False
     return simulation_space.iteration >= NUMBER_OF_STEPS-1
 
 def stop_simulation(simulation_space):
