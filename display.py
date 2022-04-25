@@ -16,8 +16,8 @@ WIND = False
 WIND_SPEED = 0
 WIND_DIRECTION = 0
 GOAL = False
-GOAL_X = 0
-GOAL_Y = 0
+GOAL_X = WIDTH/2
+GOAL_Y = HEIGHT/2
 
 sim_space = None
 
@@ -31,12 +31,15 @@ root.title("Boids")
 # Top Frame
 top_frame = tkinter.Frame(root)
 top_frame.pack(side=tkinter.TOP, fill=tkinter.X)
+
 ## Label number of boids
 label_number_of_boids = tkinter.Label(top_frame, text=f"Boids : {NUMBER_OF_BOIDS}", font=("Helvetica", 16))
 label_number_of_boids.pack(side=tkinter.LEFT)
+
 ##
 label_messages = tkinter.Label(top_frame, text="", font=("Helvetica", 16))
 label_messages.pack()
+
 ## Label number of iterations
 label_iterations = tkinter.Label(top_frame, text=f"Iterations : {0}", font=("Helvetica", 16))
 label_iterations.pack(side=tkinter.RIGHT)
@@ -44,14 +47,17 @@ label_iterations.pack(side=tkinter.RIGHT)
 # Bottom Frame
 bottom_frame = tkinter.Frame(root)
 bottom_frame.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+
 ## Button to start the simulation
 button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 16), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), \
     button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start()))
 button_start.pack(side=tkinter.LEFT)
+
 ## Button to pause the simulation
 button_pause = tkinter.Button(bottom_frame, text="Pause/Resume", font=("Helvetica", 16), command=lambda: (sim_space.toggle_pause(), label_messages.config(text="Simulation paused" if sim_space.paused else "", fg="red")))
 button_pause.config(state="disable")
 button_pause.pack(side=tkinter.LEFT)
+
 ## Button to reset the simulation
 button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 16), command=lambda: (reset_simulation(sim_space, canvas), \
     button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), enable_parameters_on_reset()))
@@ -185,13 +191,13 @@ goal_checkbox.pack()
 ##### Goal x slider
 goal_x_slider = tkinter.Scale(goal_parameters_frame, from_=0, to=WIDTH, orient=tkinter.HORIZONTAL,
     length=200, tickinterval=10, label="Goal x", font=("Helvetica", 16), command= lambda e: (validate_parameters()))
-goal_x_slider.set(0)
+goal_x_slider.set(GOAL_X)
 goal_x_slider.pack()
 
 ##### Goal y slider
 goal_y_slider = tkinter.Scale(goal_parameters_frame, from_=0, to=HEIGHT, orient=tkinter.HORIZONTAL,
     length=200, tickinterval=10, label="Goal y", font=("Helvetica", 16), command= lambda e: (validate_parameters()))
-goal_y_slider.set(0)
+goal_y_slider.set(GOAL_Y)
 goal_y_slider.pack()
 
 button_validate = tkinter.Button(parameters_frame, text="Validate", font=("Helvetica", 16), command=lambda: validate_parameters())
@@ -327,19 +333,19 @@ def create_boids_canvas(canvas, simulation_space):
         # Extract the boid's position
         x, y = boid.get_coords()
         # Create the boid on the canvas
-        boid.canvas_item = canvas.create_oval(x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius, fill="green" if boid.the_chosen_one else "black")
-        boid.velocity_item = canvas.create_line(x, y, x + boid.velocity[0][0], y + boid.velocity[1][0], fill="red", width=2, arrow="last")
+        boid.canvas_item = canvas.create_oval(x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius, fill=boid.color)
+        #boid.velocity_item = canvas.create_line(x, y, x + boid.velocity[0][0], y + boid.velocity[1][0], fill="red", width=2, arrow="last")
         if GOAL:
             canvas.goal_item = canvas.create_rectangle(GOAL_X, GOAL_Y, GOAL_X+10, GOAL_Y+10, fill="blue")
 
 def update_canvas(canvas, simulation_space):
     """Update the canvas"""
-    for index, boid in enumerate(simulation_space.boids):
+    for boid in simulation_space.boids:
         # Extract the boid's position
         x, y = boid.get_coords()
         # Update the boid on the canvas
         canvas.coords(boid.canvas_item, x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius)
-        canvas.coords(boid.velocity_item, x, y, x + boid.velocity[0][0], y + boid.velocity[1][0])
+        #canvas.coords(boid.velocity_item, x, y, x + boid.velocity[0][0], y + boid.velocity[1][0])
         if GOAL:
             canvas.coords(canvas.goal_item, GOAL_X, GOAL_Y, GOAL_X+10, GOAL_Y+10)
 

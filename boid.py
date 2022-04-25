@@ -10,7 +10,7 @@ class Boid:
     max_speed = 5
     max_alignment_force = 1
     max_cohesion_force = 1
-    max_separation_force = 2
+    max_separation_force = 1
     max_goal_force = 1
     
     
@@ -30,7 +30,7 @@ class Boid:
 
         self.bouncing = bouncing
 
-        self.near_boids = []   
+        self.near_boids = []
 
         self.alignment_bool = alignment_bool
         self.cohesion_bool = cohesion_bool
@@ -40,7 +40,7 @@ class Boid:
         self.wind_direction = wind_direction * 2 * math.pi / 360
         self.goal_bool = goal_bool
         self.the_chosen_one = the_chosen_one
-
+        self.color = "green" if self.the_chosen_one else "grey"
 # Flock calculation
     def find_near_boids(self, boids):
         """Sets a list of boids that are within a certain distance"""
@@ -72,10 +72,11 @@ class Boid:
             #     heading_avg += boid.velocity
             #     heading_avg /= len(self.near_boids)
             # heading_correction = heading_avg - self.velocity
-            # if np.linalg.norm(heading_correction) > self.max_speed:
-            #     heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
-            if np.linalg.norm(heading_correction) > self.max_alignment_force:
-                heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_alignment_force
+        if np.linalg.norm(heading_correction):
+            heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
+        
+        if np.linalg.norm(heading_correction) > self.max_alignment_force:
+            heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_alignment_force
         return heading_correction
 
     def cohesion(self):
@@ -89,10 +90,10 @@ class Boid:
                 position_avg += boid.position #* self.distance(boid)**2
             position_avg /= len(self.near_boids)
             correction_to_avg = position_avg - self.position
-            if np.linalg.norm(correction_to_avg) > self.max_speed:
+            if np.linalg.norm(correction_to_avg):
                 correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_speed
-            if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
-                correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_cohesion_force
+        if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
+            correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_cohesion_force
         return correction_to_avg
 
     def separation(self):
@@ -102,14 +103,19 @@ class Boid:
         for boid in self.near_boids:
             distance_to_boid = self.distance(boid)
             diff = self.position - boid.position
-            #diff /= distance_to_boid
+            diff /= distance_to_boid
             separation_correction += diff
         if self.near_boids:
             separation_correction /= len(self.near_boids)
+        if np.linalg.norm(separation_correction) > 0:
+            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
+        if np.linalg.norm(separation_correction):
+            separation_correction = (separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
         # if np.linalg.norm(separation_correction) > self.max_speed:
         #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
-        if np.linalg.norm(separation_correction) > self.max_separation_force:
-            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_separation_force
+        # if np.linalg.norm(separation_correction) > self.max_separation_force:
+        #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_separation_force
+        
         return separation_correction
 
     def wind(self):
@@ -128,6 +134,10 @@ class Boid:
         goal_force = np.array([[0], [0]], dtype=np.float64)
         if self.goal is not None:
             goal_force = self.goal - self.position
+            
+            # Distance based coefficient
+            goal_force *= np.linalg.norm(goal_force)
+            
             if np.linalg.norm(goal_force) > self.max_speed:
                 goal_force = goal_force / np.linalg.norm(goal_force) * self.max_speed
             if np.linalg.norm(goal_force) > self.max_goal_force:
