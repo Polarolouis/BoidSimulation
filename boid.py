@@ -7,10 +7,10 @@ class Boid:
     radius = 5
     near_distance = 10*radius # Distance to be considered near
     chaotic_probability = 0
-    weight_of_cohesion = 1
     max_speed = 5
-    max_separation_force = 1
+    max_alignment_force = 0.1
     max_cohesion_force = 1
+    max_separation_force = 1
     
     
     def __init__(self, x_pos, y_pos, x_vel, y_vel, width, height, bouncing, alignment_bool = True, 
@@ -19,6 +19,7 @@ class Boid:
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
         self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
         self.acceleration = np.array([[0], [0]], dtype=np.float64)
+        self.new_acceleration = np.array([[0], [0]], dtype=np.float64)
 
         self.width = width
         self.height = height
@@ -63,6 +64,8 @@ class Boid:
             heading_correction = heading_avg - self.velocity
             if np.linalg.norm(heading_correction) > self.max_speed:
                 heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
+            if np.linalg.norm(heading_correction) > self.max_alignment_force:
+                heading_correction = (heading_correction / np.linalg.norm(heading_correction)) * self.max_alignment_force
         return heading_correction
 
     def cohesion(self):
@@ -114,13 +117,7 @@ class Boid:
         """Apply the rules of the flock to the boid"""
         if self.the_chosen_one:
             print("The chosen one : " + str(self.position))
-        if self.alignment_bool:
-            alignment = self.alignment()
-            if self.the_chosen_one:
-                print("Alignment: " + str(np.linalg.norm(alignment)))
-            self.acceleration += alignment
 
-        
         if self.cohesion_bool:
             cohesion = self.cohesion()
             if self.the_chosen_one:
@@ -138,7 +135,13 @@ class Boid:
             if self.the_chosen_one:
                 print("Wind: " + str(np.linalg.norm(wind)))
             self.acceleration += wind
-        
+
+        if self.alignment_bool:
+            alignment = self.alignment()
+            if self.the_chosen_one:
+                print("Alignment: " + str(np.linalg.norm(alignment)))
+            self.acceleration += alignment
+
         if self.the_chosen_one:
             print("Acceleration: " + str(np.linalg.norm(self.acceleration)))
 
@@ -187,8 +190,8 @@ class Boid:
 # Update the boid
     def update(self):
         """Update the velocity and the position of the boid"""
-        # We need to have found the near_boids list before we can apply the rules
-        self.apply_rules()
+        # # We need to have found the near_boids list before we can apply the rules
+        # self.apply_rules()
         # The acceleration is the sum of the forces
 
         # Update the velocity
@@ -264,6 +267,9 @@ class SimulationSpace:
         self.iteration += 1
         for boid in self.boids:
             boid.find_near_boids(self.boids)
+            boid.apply_rules()
+        
+        for boid in self.boids:
             boid.update()
     
     def distances_matrix(self):
