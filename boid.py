@@ -40,8 +40,9 @@ class Boid:
         """Sets a list of boids that are within a certain distance"""
         self.near_boids = []
         for boid in boids:
-            if (not np.array_equal(self.position, boid.position)) and self.distance(boid) < self.near_distance:
+            if (not np.array_equal(self.position, boid.position)) and (boid not in self.near_boids) and self.distance(boid) < self.near_distance:
                 self.near_boids.append(boid)
+                boid.near_boids.append(self)
 
     def distance(self, other_boid):
         """Return the distance between two boids"""
