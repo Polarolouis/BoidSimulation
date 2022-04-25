@@ -39,7 +39,8 @@ class Boid:
     def find_near_boids(self, boids):
         """Sets a list of boids that are within a certain distance"""
         self.near_boids = []
-        for boid in boids:
+        filered_boids = [boid for boid in boids if boid != self and ((self.position[0] - self.near_distance < boid.position[0] and self.position[1] - self.near_distance < boid.position[1]) and (self.position[0] + self.near_distance > boid.position[0] and self.position[1] + self.near_distance > boid.position[1]))]
+        for boid in filered_boids:
             if (not np.array_equal(self.position, boid.position)) and (boid not in self.near_boids) and self.distance(boid) < self.near_distance:
                 self.near_boids.append(boid)
                 boid.near_boids.append(self)
