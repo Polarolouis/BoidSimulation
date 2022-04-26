@@ -5,7 +5,9 @@ import numpy as np
 class Boid:
     """Boid class"""
     radius = 5
-    near_distance = 10*radius # Distance to be considered near
+    near_distance_alignment = 10*radius # Distance to be considered near
+    near_distance_cohesion = 0.5*near_distance_alignment
+    near_distance_separation = 4*radius
     chaotic_probability = 0.1
     
     alignment_force = 1
@@ -22,7 +24,7 @@ class Boid:
     
     
     def __init__(self, x_pos, y_pos, x_vel, y_vel, bouncing, wind_speed = 0, 
-                wind_direction = 0, goal_x=0, goal_y=0, the_chosen_one = False):
+                wind_direction = 0, the_chosen_one = False):
         # Initialise the boid position and velocity
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
         self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
@@ -31,29 +33,41 @@ class Boid:
 
         self.bouncing = bouncing
 
-        self.near_boids = []
+        self.near_boids_alignment = []
+        self.near_boids_cohesion = []
+        self.near_boids_separation = []
 
         self.wind_speed = wind_speed
         self.wind_direction = wind_direction * 2 * math.pi / 360
         self.the_chosen_one = the_chosen_one
         self.color = "green" if self.the_chosen_one else "grey"
+        self.boids_rate = 0
 # Flock calculation
     def find_near_boids(self, boids):
         """Sets a list of boids that are within a certain distance"""
-        self.near_boids = []
-        filtered_boids = (boid for boid in boids if (not np.array_equal(self.position, boid.position)) and ((self.position[0] - self.near_distance < boid.position[0] and self.position[1] - self.near_distance < boid.position[1]) and (self.position[0] + self.near_distance > boid.position[0] and self.position[1] + self.near_distance > boid.position[1])))
+        self.near_boids_alignment = []
+        self.near_boids_cohesion = []
+        self.near_boids_separation = []
+
+        filtered_boids = (boid for boid in boids if (not np.array_equal(self.position, boid.position)) and ((self.position[0] - self.near_distance_alignment < boid.position[0] and self.position[1] - self.near_distance_alignment < boid.position[1]) and (self.position[0] + self.near_distance_alignment > boid.position[0] and self.position[1] + self.near_distance_alignment > boid.position[1])))
         for boid in filtered_boids:
-            if (boid not in self.near_boids) and self.distance(boid) < self.near_distance:
-                self.near_boids.append(boid)
-                boid.near_boids.append(self)
+            dist = np.linalg.norm(self.position - boid.position)
+            if (boid not in self.near_boids_alignment) and dist < self.near_distance_alignment and dist > self.near_distance_cohesion:
+                self.near_boids_alignment.append((boid, dist))
+                boid.near_boids_alignment.append((self, dist))
+            
+            if (boid not in self.near_boids_cohesion) and dist < self.near_distance_cohesion and dist > self.near_distance_separation:
+                self.near_boids_cohesion.append((boid, dist))
+                boid.near_boids_cohesion.append((self, dist))
+            
+            if (boid not in self.near_boids_separation) and dist < self.near_distance_separation:
+                self.near_boids_separation.append((boid, dist))
+                boid.near_boids_separation.append((self, dist))
 
     def distance(self, other_boid):
         """Return the distance between two boids"""
         return np.linalg.norm(self.position - other_boid.position)
 
-    def distancesquared(self, other_boid):
-        """Return the distance between two boids"""
-        return np.linalg.norm(self.position - other_boid.position)**2
 
 # Flock behaviour
     def alignment(self):
@@ -61,9 +75,9 @@ class Boid:
         Returns : the correction to add to the velocity""" 
         # Calculate the average heading of the boids
         heading_correction = np.array([[0], [0]], dtype=np.float64)
-        if self.near_boids:            
+        if self.near_boids_alignment:            
             # Taking the the fastest boid as a leader
-            heading_correction = max(self.near_boids, key=lambda boid: np.linalg.norm(boid.velocity)).velocity
+            heading_correction = max(self.near_boids_alignment, key=lambda boid_and_distance: np.linalg.norm(boid_and_distance[0].velocity))[0].velocity
             # for boid in self.near_boids:
             #     heading_avg += boid.velocity
             #     heading_avg /= len(self.near_boids)
@@ -80,11 +94,11 @@ class Boid:
         Returns : the correction to add to the velocity""" 
         # Calculate the average position of the boids
         correction_to_avg = np.array([[0], [0]], dtype=np.float64)
-        if self.near_boids:
+        if self.near_boids_cohesion:
             position_avg = np.array([[0], [0]], dtype=np.float64)
-            for boid in self.near_boids:
+            for boid, distance in self.near_boids_cohesion:
                 position_avg += boid.position #* self.distance(boid)**2
-            position_avg /= len(self.near_boids)
+            position_avg /= len(self.near_boids_cohesion)
             correction_to_avg = position_avg - self.position
             if np.linalg.norm(correction_to_avg):
                 correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_speed
@@ -96,13 +110,12 @@ class Boid:
         """Separation behaviour to avoid collisions with other boids
         Returns : the correction to add to the velocity"""
         separation_correction = np.array([[0], [0]], dtype=np.float64)
-        for boid in self.near_boids:
-            distance_to_boid = self.distance(boid)
+        for boid, distance in self.near_boids_separation:
             diff = self.position - boid.position
-            diff /= distance_to_boid
+            diff /= distance
             separation_correction += diff
-        if self.near_boids:
-            separation_correction /= len(self.near_boids)
+        if self.near_boids_separation:
+            separation_correction /= len(self.near_boids_separation)
         if np.linalg.norm(separation_correction) > 0:
             separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
         if np.linalg.norm(separation_correction):
@@ -220,6 +233,24 @@ class Boid:
             self.position[1] = self.height / 2
             return True
 
+    def calculate_near_boids_number(self):
+        """Calculate the number of boids near the boid"""
+        return len(self.near_boids_cohesion) + len(self.near_boids_separation)
+    
+    def update_color_boids_rate(self):
+        """Update the color of the boid based on the density of the boids near it"""
+        boids_rate = self.boids_rate
+        def rgb_hack(rgb):
+            return "#%02x%02x%02x" % rgb
+        red = 255
+        green = 255 - int(boids_rate * 255)
+        blue = 255 - int(boids_rate * 255)
+        self.color = rgb_hack((red, green, blue))
+
+    def set_boids_rate(self, boids_rate):
+        """Set the density of the boids near the boid"""
+        self.boids_rate = boids_rate
+
 # Update the boid
     def update(self):
         """Update the velocity and the position of the boid"""
@@ -335,6 +366,8 @@ class SimulationSpace:
         for boid in self.boids:
             boid.find_near_boids(self.boids)
             boid.apply_rules()
+            boid.set_boids_rate(boid.calculate_near_boids_number()/len(self.boids))
+            boid.update_color_boids_rate()
         
         for boid in self.boids:
             boid.update()
