@@ -116,14 +116,10 @@ class Boid:
             separation_correction += diff
         if self.near_boids_separation:
             separation_correction /= len(self.near_boids_separation)
-        if np.linalg.norm(separation_correction) > 0:
-            separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
+        # if np.linalg.norm(separation_correction) > 0:
+        #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
         if np.linalg.norm(separation_correction):
             separation_correction = (separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
-        # if np.linalg.norm(separation_correction) > self.max_speed:
-        #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
-        # if np.linalg.norm(separation_correction) > self.max_separation_force:
-        #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_separation_force
         
         return separation_correction * Boid.separation_force
 
@@ -131,11 +127,7 @@ class Boid:
         """Apply wind to the boid"""
         x_wind_speed = self.wind_speed * math.cos(self.wind_direction)
         y_wind_speed = self.wind_speed * math.sin(self.wind_direction)
-        
-        # Prevent wind speed from exceeding max speed
-        if np.linalg.norm(np.array([[x_wind_speed], [y_wind_speed]])) > self.max_speed:
-            x_wind_speed = x_wind_speed / np.linalg.norm(np.array([[x_wind_speed], [y_wind_speed]])) * self.max_speed
-            y_wind_speed = y_wind_speed / np.linalg.norm(np.array([[x_wind_speed], [y_wind_speed]])) * self.max_speed
+
         return np.array([[x_wind_speed],[y_wind_speed]], dtype=np.float64)
 
     def goal(self):
@@ -146,9 +138,7 @@ class Boid:
             
             # Distance based coefficient
             goal_force *= np.linalg.norm(goal_force)
-            
-            if np.linalg.norm(goal_force) > self.max_speed:
-                goal_force = goal_force / np.linalg.norm(goal_force) * self.max_speed
+
             if np.linalg.norm(goal_force) > self.max_goal_force:
                 goal_force = goal_force / np.linalg.norm(goal_force) * self.max_goal_force
         return goal_force * Boid.goal_force
