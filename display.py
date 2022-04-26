@@ -2,10 +2,17 @@ import tkinter
 import boid
 
 #------------------------------------------------------------------------------
+# Main window
+#------------------------------------------------------------------------------
+root = tkinter.Tk()
+root.configure(background='white')
+root.title("Boids")
+
+#------------------------------------------------------------------------------
 # Constants
 #------------------------------------------------------------------------------
 
-WIDTH, HEIGHT = (1000, 600)
+WIDTH, HEIGHT = (root.winfo_screenwidth() - 472, root.winfo_screenheight() - 158) # (1200, 800)
 NUMBER_OF_BOIDS = 50
 NUMBER_OF_STEPS = 1_000
 BOUNCING = True
@@ -22,11 +29,8 @@ GOAL_Y = HEIGHT/2
 sim_space = None
 
 #------------------------------------------------------------------------------
-# Main window
+# Divisions of the main window
 #------------------------------------------------------------------------------
-root = tkinter.Tk()
-root.configure(background='white')
-root.title("Boids")
 
 # Top Frame
 top_frame = tkinter.Frame(root)
@@ -67,6 +71,7 @@ button_reset.pack(side=tkinter.RIGHT)
 # Parameters frame (right)
 parameters_frame = tkinter.Frame(root)
 parameters_frame.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+
 
 ## Validation button
 def validate_parameters():
@@ -190,13 +195,13 @@ goal_checkbox.pack()
 
 ##### Goal x slider
 goal_x_slider = tkinter.Scale(goal_parameters_frame, from_=0, to=WIDTH, orient=tkinter.HORIZONTAL,
-    length=200, tickinterval=10, label="Goal x", font=("Helvetica", 16), command= lambda e: (validate_parameters()))
+    length=200, tickinterval=0.4*WIDTH, label="Goal x", font=("Helvetica", 16), command= lambda e: (validate_parameters()))
 goal_x_slider.set(GOAL_X)
 goal_x_slider.pack()
 
 ##### Goal y slider
 goal_y_slider = tkinter.Scale(goal_parameters_frame, from_=0, to=HEIGHT, orient=tkinter.HORIZONTAL,
-    length=200, tickinterval=10, label="Goal y", font=("Helvetica", 16), command= lambda e: (validate_parameters()))
+    length=200, tickinterval=0.4*HEIGHT, label="Goal y", font=("Helvetica", 16), command= lambda e: (validate_parameters()))
 goal_y_slider.set(GOAL_Y)
 goal_y_slider.pack()
 
