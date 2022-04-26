@@ -34,43 +34,38 @@ sim_space = None
 
 # Top Frame
 top_frame = tkinter.Frame(root)
-top_frame.pack(side=tkinter.TOP, fill=tkinter.X)
+top_frame.grid(row=0, column=0, sticky="n")
 
-## Label number of boids
-label_number_of_boids = tkinter.Label(top_frame, text=f"Boids : {NUMBER_OF_BOIDS}", font=("Helvetica", 12))
-label_number_of_boids.pack(side=tkinter.LEFT)
 
 ##
 label_messages = tkinter.Label(top_frame, text="", font=("Helvetica", 12))
-label_messages.pack()
+label_messages.grid(row=0, column=0, sticky="w")
 
-## Label number of iterations
-label_iterations = tkinter.Label(top_frame, text=f"Iterations : {0}", font=("Helvetica", 12))
-label_iterations.pack(side=tkinter.RIGHT)
+
 
 # Bottom Frame
 bottom_frame = tkinter.Frame(root)
-bottom_frame.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+bottom_frame.grid(row=0, column=0, sticky="s")
 
 ## Button to start the simulation
 button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 12), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), \
     button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start()))
-button_start.pack(side=tkinter.LEFT)
+button_start.grid(row=0, column=0, sticky="w")
 
 ## Button to pause the simulation
 button_pause = tkinter.Button(bottom_frame, text="Pause/Resume", font=("Helvetica", 12), command=lambda: (sim_space.toggle_pause(), label_messages.config(text="Simulation paused" if sim_space.paused else "", fg="red")))
 button_pause.config(state="disable")
-button_pause.pack(side=tkinter.LEFT)
+button_pause.grid(row=0, column=1, sticky="w")
 
 ## Button to reset the simulation
 button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 12), command=lambda: (reset_simulation(sim_space, canvas), \
     button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), enable_parameters_on_reset()))
 button_reset.config(state="disable")
-button_reset.pack(side=tkinter.RIGHT)
+button_reset.grid(row=0, column=2, sticky="e")
 
 # Parameters frame (right)
-parameters_window = tkinter.Toplevel(root)
-
+parameters_frame = tkinter.LabelFrame(root, text="Parameters", font=("Helvetica", 12))
+parameters_frame.grid(row=0, column=3, sticky="e")
 
 ## Validation button
 def validate_parameters():
@@ -100,127 +95,135 @@ def validate_parameters():
 
 ## Bouncing checkbox 
 bouncing_boolean = tkinter.BooleanVar()
-bouncing_checkbox = tkinter.Checkbutton(parameters_window, text="Bouncing", font=("Helvetica", 12), variable=bouncing_boolean, onvalue=True, offvalue=False, command= lambda: (validate_parameters()))
+bouncing_checkbox = tkinter.Checkbutton(parameters_frame, text="Bouncing", font=("Helvetica", 12), variable=bouncing_boolean, onvalue=True, offvalue=False, command= lambda: (validate_parameters()))
 if BOUNCING:
     bouncing_checkbox.select()
-bouncing_checkbox.pack()
+bouncing_checkbox.grid(row=0, column=0, sticky="w")
 
 ## Number of boids slider
-number_of_boids_slider = tkinter.Scale(parameters_window, from_=1, to=1000, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
+number_of_boids_slider = tkinter.Scale(parameters_frame, from_=1, to=1000, orient=tkinter.HORIZONTAL, length=100, label="Number of boids", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 number_of_boids_slider.set(NUMBER_OF_BOIDS)
-number_of_boids_slider.pack()
+number_of_boids_slider.grid(row=1, column=0, sticky="w")
 
 ## Number of steps slider
-label_number_of_steps = tkinter.Label(parameters_window, text="Number of steps", font=("Helvetica", 12))
-label_number_of_steps.pack()
-tkinter.Label(parameters_window, text="0 for infinite loop", font=("Helvetica", 10)).pack()
+label_number_of_steps = tkinter.Label(parameters_frame, text="Number of steps", font=("Helvetica", 12))
+label_number_of_steps.grid()
+tkinter.Label(parameters_frame, text="0 for infinite loop", font=("Helvetica", 10)).grid()
 var_number_of_steps_spinbox = tkinter.StringVar()
 var_number_of_steps_spinbox.set(NUMBER_OF_STEPS)
-number_of_steps_spinbox = tkinter.Spinbox(parameters_window, from_=0, to=1_000_000, textvariable=var_number_of_steps_spinbox, font=("Helvetica", 12), command= lambda: (validate_parameters()))
-number_of_steps_spinbox.pack()
+number_of_steps_spinbox = tkinter.Spinbox(parameters_frame, from_=0, to=1_000_000, textvariable=var_number_of_steps_spinbox, font=("Helvetica", 12), command= lambda: (validate_parameters()))
+number_of_steps_spinbox.grid(row=2, column=0, sticky="w")
 
 ## Forces frame
-forces_frame = tkinter.LabelFrame(parameters_window, text="Forces", font=("Helvetica", 12))
-forces_frame.pack()
+forces_frame = tkinter.LabelFrame(parameters_frame, text="Forces", font=("Helvetica", 12))
+forces_frame.grid(row=3, column=0, sticky="w")
 
 ### Alignment force
 alignment_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=100, label="Alignment force", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 alignment_force_slider.set(ALIGNMENT_FORCE_MULTIPLICATOR)
-alignment_force_slider.pack()
+alignment_force_slider.grid(row=0, column=0, sticky="w")
 
 
 ### Cohesion force
 cohesion_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=100, label="Cohesion force", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 cohesion_force_slider.set(COHESION_FORCE_MULTIPLICATOR)
-cohesion_force_slider.pack()
+cohesion_force_slider.grid(row=1, column=0, sticky="w")
 
 
 ### Separation force
 separation_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=100, label="Separation force multiplicator", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 separation_force_slider.set(SEPARATION_FORCE_MULTIPLICATOR)
-separation_force_slider.pack()
+separation_force_slider.grid(row=2, column=0, sticky="w")
 
 #### Wind parameters
 wind_parameters_frame = tkinter.LabelFrame(forces_frame, text="Wind Settings", font=("Helvetica", 12))
-wind_parameters_frame.pack()
+wind_parameters_frame.grid(row=3, column=0, sticky="w")
 
 ##### Wind speed slider
 wind_speed_slider = tkinter.Scale(wind_parameters_frame, from_=0, to=1, orient=tkinter.HORIZONTAL, 
-    length=200, resolution=0.01, label="Wind speed", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
+    length=100, resolution=0.01, label="Wind speed", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
 wind_speed_slider.set(0)
-wind_speed_slider.pack()
+wind_speed_slider.grid(row=0, column=0, sticky="w")
 
 ##### Wind direction slider
 wind_direction_slider = tkinter.Scale(wind_parameters_frame, from_=0, to=360, orient=tkinter.HORIZONTAL, 
-    length=200, label="Wind direction", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
+    length=100, label="Wind direction", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
 wind_direction_slider.set(0)
-wind_direction_slider.pack()
+wind_direction_slider.grid(row=1, column=0, sticky="w")
 
 ### Goal force
 goal_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, command=lambda e: (validate_parameters()), length=100, label="Goal force multiplicatior", font=("Helvetica", 12))
 goal_force_slider.set(GOAL_FORCE_MULTIPLICATOR)
-goal_force_slider.pack()
+goal_force_slider.grid(row=4, column=0, sticky="w")
 
 #### Goal parameters frame
 goal_parameters_frame = tkinter.LabelFrame(forces_frame, text="Goal Settings", font=("Helvetica", 12))
-goal_parameters_frame.pack()
+goal_parameters_frame.grid(row=5, column=0, sticky="w")
 
 ##### Goal x slider
 goal_x_slider = tkinter.Scale(goal_parameters_frame, from_=0, to=WIDTH, orient=tkinter.HORIZONTAL,
-    length=200, tickinterval=0.4*WIDTH, label="Goal x", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
+    length=100, tickinterval=0.4*WIDTH, label="Goal x", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
 goal_x_slider.set(GOAL_X)
-goal_x_slider.pack()
+goal_x_slider.grid(row=0, column=0, sticky="w")
 
 ##### Goal y slider
 goal_y_slider = tkinter.Scale(goal_parameters_frame, from_=0, to=HEIGHT, orient=tkinter.HORIZONTAL,
-    length=200, tickinterval=0.4*HEIGHT, label="Goal y", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
+    length=100, tickinterval=0.4*HEIGHT, label="Goal y", font=("Helvetica", 12), command= lambda e: (validate_parameters()))
 goal_y_slider.set(GOAL_Y)
-goal_y_slider.pack()
+goal_y_slider.grid(row=1, column=0, sticky="w")
 
-button_validate = tkinter.Button(parameters_window, text="Validate", font=("Helvetica", 12), command=lambda: validate_parameters())
-button_validate.pack()
+button_validate = tkinter.Button(parameters_frame, text="Validate", font=("Helvetica", 12), command=lambda: validate_parameters())
+button_validate.grid(row=6, column=0, sticky="w")
 
 ## Left recap frame
 left_recap_frame = tkinter.Frame(root)
-left_recap_frame.pack(side=tkinter.LEFT, fill=tkinter.Y)
+left_recap_frame.grid(row=0, column=0, sticky="w")
+
+## Label number of boids
+label_number_of_boids = tkinter.Label(left_recap_frame, text=f"Boids : {NUMBER_OF_BOIDS}", font=("Helvetica", 12))
+label_number_of_boids.grid(row=0, column=0, sticky="w")
+
+## Label number of iterations
+label_iterations = tkinter.Label(left_recap_frame, text=f"Iterations : {0}", font=("Helvetica", 12))
+label_iterations.grid(row=1, column=0, sticky="e")
 
 ### Recap LabelFrame
 recap_label_frame = tkinter.LabelFrame(left_recap_frame, text="Recap", font=("Helvetica", 12))
-recap_label_frame.pack()
+recap_label_frame.grid(row=2, column=0, sticky="w")
 
 ### Display the parameters of the simulation
 label_max_iterations = tkinter.Label(recap_label_frame, text=f"Max iterations: {NUMBER_OF_STEPS}", font=("Helvetica", 12))
-label_max_iterations.pack()
+label_max_iterations.grid(row=0, column=0, sticky="w")
 
 label_bouncing = tkinter.Label(recap_label_frame, text=f"Bouncing : {BOUNCING}\n", font=("Helvetica", 12), fg="green" if BOUNCING else "red")
-label_bouncing.pack()
+label_bouncing.grid(row=1, column=0, sticky="w")
 
 label_forces = tkinter.LabelFrame(recap_label_frame, text="Forces :\n", font=("Helvetica", 12))
-label_forces.pack()
+label_forces.grid(row=2, column=0, sticky="w")
 
 label_alignment_forces = tkinter.Label(label_forces, text=f"Alignment multiplicator : {ALIGNMENT_FORCE_MULTIPLICATOR}\n", font=("Helvetica", 12), fg="green" if ALIGNMENT_FORCE_MULTIPLICATOR else "red")
-label_alignment_forces.pack()
+label_alignment_forces.grid(row=0, column=0, sticky="w")
 
 label_cohesion_forces = tkinter.Label(label_forces, text=f"Cohesion multiplicator : {COHESION_FORCE_MULTIPLICATOR}\n", font=("Helvetica", 12), fg="green" if COHESION_FORCE_MULTIPLICATOR else "red")
-label_cohesion_forces.pack()
+label_cohesion_forces.grid(row=1, column=0, sticky="w")
 
 label_separation_forces = tkinter.Label(label_forces, text=f"Separation multiplicator : {SEPARATION_FORCE_MULTIPLICATOR}\n", font=("Helvetica", 12), fg="green" if SEPARATION_FORCE_MULTIPLICATOR else "red")
-label_separation_forces.pack()
+label_separation_forces.grid(row=2, column=0, sticky="w")
 
 labelframe_wind_forces = tkinter.LabelFrame(label_forces, text=f"Wind :\n", font=("Helvetica", 12), fg="green" if WIND_SPEED else "red")
-labelframe_wind_forces.pack()
+labelframe_wind_forces.grid(row=3, column=0, sticky="w")
 
 label_wind_speed = tkinter.Label(labelframe_wind_forces, text=f"Wind speed : {WIND_SPEED}", font=("Helvetica", 12))
-label_wind_speed.pack()
+label_wind_speed.grid(row=0, column=0, sticky="w")
 
 label_wind_direction = tkinter.Label(labelframe_wind_forces, text=f"Wind direction : {WIND_DIRECTION}", font=("Helvetica", 12))
-label_wind_direction.pack()
+label_wind_direction.grid(row=1, column=0, sticky="w")
 
 labelframe_goal_forces = tkinter.LabelFrame(label_forces, text=f"Goal multiplicator : {GOAL_FORCE_MULTIPLICATOR}\n", font=("Helvetica", 12), fg="green" if GOAL_FORCE_MULTIPLICATOR else "red")
-labelframe_goal_forces.pack()
+labelframe_goal_forces.grid(row=4, column=0, sticky="w")
 
 label_goal_position = tkinter.Label(labelframe_goal_forces, text=f"Goal : ({GOAL_X},{GOAL_Y})", font=("Helvetica", 12))
-label_goal_position.pack()
+label_goal_position.grid(row=0, column=0, sticky="w")
 
 
 def set_recap_labels():
@@ -263,7 +266,7 @@ def enable_parameters_on_reset():
 # Canvas
 #------------------------------------------------------------------------------
 canvas = tkinter.Canvas(root, width=WIDTH, height=HEIGHT, background='ivory')
-canvas.pack()
+canvas.grid(row=0, column=1, columnspan=2, sticky="nsew")
 
 #------------------------------------------------------------------------------
 # Functions
