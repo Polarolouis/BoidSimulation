@@ -123,19 +123,19 @@ number_of_steps_spinbox.pack()
 forces_frame = tkinter.LabelFrame(parameters_window, text="Forces", font=("Helvetica", 12))
 forces_frame.pack()
 
-### Alignment force slider
-alignment_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=200, label="Alignment force slider", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
+### Alignment force
+alignment_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=100, label="Alignment force", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 alignment_force_slider.set(ALIGNMENT_FORCE_MULTIPLICATOR)
 alignment_force_slider.pack()
 
 
-### Cohesion force slider
-cohesion_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=200, label="Cohesion force slider", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
+### Cohesion force
+cohesion_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=100, label="Cohesion force", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 cohesion_force_slider.set(COHESION_FORCE_MULTIPLICATOR)
 cohesion_force_slider.pack()
 
 
-### Separation force slider
+### Separation force
 separation_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, length=100, label="Separation force multiplicator", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 separation_force_slider.set(SEPARATION_FORCE_MULTIPLICATOR)
 separation_force_slider.pack()
@@ -156,7 +156,7 @@ wind_direction_slider = tkinter.Scale(wind_parameters_frame, from_=0, to=360, or
 wind_direction_slider.set(0)
 wind_direction_slider.pack()
 
-### Goal force slider
+### Goal force
 goal_force_slider = tkinter.Scale(forces_frame, from_=0, to=2, resolution=0.1, orient=tkinter.HORIZONTAL, command=lambda e: (validate_parameters()), length=100, label="Goal force multiplicatior", font=("Helvetica", 12))
 goal_force_slider.set(GOAL_FORCE_MULTIPLICATOR)
 goal_force_slider.pack()
@@ -305,6 +305,8 @@ def update_canvas(canvas, simulation_space):
         x, y = boid.get_coords()
         # Update the boid on the canvas
         canvas.coords(boid.canvas_item, x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius)
+        canvas.itemconfig(boid.canvas_item, fill=boid.color)
+        
         #canvas.coords(boid.velocity_item, x, y, x + boid.velocity[0][0], y + boid.velocity[1][0])
     if GOAL_FORCE_MULTIPLICATOR:
         canvas.coords(canvas.goal_item, GOAL_X-5, GOAL_Y-5, GOAL_X+5, GOAL_Y+5)
