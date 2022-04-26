@@ -69,8 +69,7 @@ button_reset.config(state="disable")
 button_reset.pack(side=tkinter.RIGHT)
 
 # Parameters frame (right)
-parameters_frame = tkinter.Frame(root)
-parameters_frame.pack(side=tkinter.RIGHT, fill=tkinter.Y)
+parameters_window = tkinter.Toplevel(root)
 
 
 ## Validation button
@@ -101,27 +100,27 @@ def validate_parameters():
 
 ## Bouncing checkbox 
 bouncing_boolean = tkinter.BooleanVar()
-bouncing_checkbox = tkinter.Checkbutton(parameters_frame, text="Bouncing", font=("Helvetica", 12), variable=bouncing_boolean, onvalue=True, offvalue=False, command= lambda: (validate_parameters()))
+bouncing_checkbox = tkinter.Checkbutton(parameters_window, text="Bouncing", font=("Helvetica", 12), variable=bouncing_boolean, onvalue=True, offvalue=False, command= lambda: (validate_parameters()))
 if BOUNCING:
     bouncing_checkbox.select()
 bouncing_checkbox.pack()
 
 ## Number of boids slider
-number_of_boids_slider = tkinter.Scale(parameters_frame, from_=1, to=1000, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
+number_of_boids_slider = tkinter.Scale(parameters_window, from_=1, to=1000, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 number_of_boids_slider.set(NUMBER_OF_BOIDS)
 number_of_boids_slider.pack()
 
 ## Number of steps slider
-label_number_of_steps = tkinter.Label(parameters_frame, text="Number of steps", font=("Helvetica", 12))
+label_number_of_steps = tkinter.Label(parameters_window, text="Number of steps", font=("Helvetica", 12))
 label_number_of_steps.pack()
-tkinter.Label(parameters_frame, text="0 for infinite loop", font=("Helvetica", 10)).pack()
+tkinter.Label(parameters_window, text="0 for infinite loop", font=("Helvetica", 10)).pack()
 var_number_of_steps_spinbox = tkinter.StringVar()
 var_number_of_steps_spinbox.set(NUMBER_OF_STEPS)
-number_of_steps_spinbox = tkinter.Spinbox(parameters_frame, from_=0, to=1_000_000, textvariable=var_number_of_steps_spinbox, font=("Helvetica", 12), command= lambda: (validate_parameters()))
+number_of_steps_spinbox = tkinter.Spinbox(parameters_window, from_=0, to=1_000_000, textvariable=var_number_of_steps_spinbox, font=("Helvetica", 12), command= lambda: (validate_parameters()))
 number_of_steps_spinbox.pack()
 
 ## Forces frame
-forces_frame = tkinter.LabelFrame(parameters_frame, text="Forces", font=("Helvetica", 12))
+forces_frame = tkinter.LabelFrame(parameters_window, text="Forces", font=("Helvetica", 12))
 forces_frame.pack()
 
 ### Alignment force slider
@@ -178,7 +177,7 @@ goal_y_slider = tkinter.Scale(goal_parameters_frame, from_=0, to=HEIGHT, orient=
 goal_y_slider.set(GOAL_Y)
 goal_y_slider.pack()
 
-button_validate = tkinter.Button(parameters_frame, text="Validate", font=("Helvetica", 12), command=lambda: validate_parameters())
+button_validate = tkinter.Button(parameters_window, text="Validate", font=("Helvetica", 12), command=lambda: validate_parameters())
 button_validate.pack()
 
 ## Left recap frame
