@@ -287,9 +287,18 @@ def integrate_click(x,y):
         OBSTACLE.append((obstacle_x, obstacle_y))
     if len(OBSTACLE) == 2:
         print(OBSTACLE)
-        sim_space.create_obstacle(OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
-        create_obstacle_canvas(canvas, OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
+        if (OBSTACLE[0][0] < OBSTACLE[1][0] and OBSTACLE[0][1] < OBSTACLE[1][1]):
+            sim_space.create_obstacle(OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
+            create_obstacle_canvas(canvas, OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
         OBSTACLE = []
+
+def integrate_right_click(x,y):
+    """Use the right click position delete an obstacle"""
+    global sim_space
+    for obstacle in sim_space.obstacles:
+        if [x,y] in obstacle:
+            sim_space.delete_obstacle(obstacle)
+            delete_obstacle_canvas(canvas, obstacle)
 
 def stock_simulation(simulation_space):
     """Stock the simulation"""
@@ -323,6 +332,10 @@ def create_boids_canvas(canvas, simulation_space):
 def create_obstacle_canvas(canvas, x0, y0, x1, y1):
     """Create the obstacle on the canvas"""
     canvas.create_rectangle(x0, y0, x1, y1, fill="red")
+
+def delete_obstacle_canvas(canvas, obstacle):
+    """Delete the obstacle on the canvas"""
+    canvas.delete(obstacle)
 
 def update_canvas(canvas, simulation_space):
     """Update the canvas"""

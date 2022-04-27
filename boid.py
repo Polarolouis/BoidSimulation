@@ -438,6 +438,30 @@ class Obstacle:
             return True
         return False
     
+    def x_between_bounds(self, x):
+        """Check if the x coordinate is between the x bounds of the obstacle
+        Returns:
+            True if the x coordinate is between the x bounds of the obstacle
+            False if the x coordinate is not between the x bounds of the obstacle
+        Arguments:
+            x {float} -- The x coordinate to check"""
+        x_coord = self.get_coords()
+        if x_coord[0] <= x <= x_coord[1]:
+            return True
+        return False
+
+    def y_between_bounds(self, y):
+        """Check if the y coordinate is between the y bounds of the obstacle
+        Returns:
+            True if the y coordinate is between the y bounds of the obstacle
+            False if the y coordinate is not between the y bounds of the obstacle
+        Arguments:
+            y {float} -- The y coordinate to check"""
+        y_coord = self.get_coords()
+        if y_coord[0] <= y <= y_coord[1]:
+            return True
+        return False
+    
     def get_coords(self):
         """Returns the coordinates of the obstacle
         Returns:
