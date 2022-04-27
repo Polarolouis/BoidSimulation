@@ -1,7 +1,8 @@
+# %%
 import math
 import random
 import numpy as np
-
+#%% 
 class Boid:
     """Boid class"""
     radius = 5
@@ -42,6 +43,31 @@ class Boid:
         self.the_chosen_one = the_chosen_one
         self.color = "green" if self.the_chosen_one else "grey"
         self.boids_rate = 0
+
+    @classmethod
+    def set_width(cls, width):
+        """Set the width of the space"""
+        cls.width = width
+
+    @classmethod
+    def set_height(cls, height):
+        """Set the height of the space"""
+        cls.height = height
+    
+    @classmethod
+    def set_force_parameters(cls, alignment_force, cohesion_force, separation_force, goal_force):
+        """Set the force parameters"""
+        cls.alignment_force = alignment_force
+        cls.cohesion_force = cohesion_force
+        cls.separation_force = separation_force
+        cls.goal_force = goal_force
+        print(f"Alignment force: {cls.alignment_force}, Cohesion force: {cls.cohesion_force}, Separation force: {cls.separation_force}, Goal force: {cls.goal_force}")
+    
+    @classmethod
+    def set_goal_position(cls, goal_x, goal_y):
+        """Set the goal position"""
+        cls.goal_position = np.array([[goal_x], [goal_y]], dtype=np.float64)
+
 # Flock calculation
     def find_near_boids(self, boids):
         """Sets a list of boids that are within a certain distance"""
@@ -264,8 +290,9 @@ class Boid:
         else:
             # If we don't bounce the output is the position
             self.position = self.check_edges()
-
-
+        
+        # Check if the boid will collide with an obstacle
+        
 
         # If velocity exceeds the max speed, set it to the max speed
         if np.linalg.norm(self.velocity) > self.max_speed:
@@ -278,47 +305,59 @@ class Boid:
 
         # Reset the acceleration
         self.acceleration = np.array([[0], [0]], dtype=np.float64)
-    
-    @classmethod
-    def set_width(cls, width):
-        """Set the width of the space"""
-        cls.width = width
 
-    @classmethod
-    def set_height(cls, height):
-        """Set the height of the space"""
-        cls.height = height
-    
-    @classmethod
-    def set_force_parameters(cls, alignment_force, cohesion_force, separation_force, goal_force):
-        """Set the force parameters"""
-        cls.alignment_force = alignment_force
-        cls.cohesion_force = cohesion_force
-        cls.separation_force = separation_force
-        cls.goal_force = goal_force
-        print(f"Alignment force: {cls.alignment_force}, Cohesion force: {cls.cohesion_force}, Separation force: {cls.separation_force}, Goal force: {cls.goal_force}")
-    
-    @classmethod
-    def set_goal_position(cls, goal_x, goal_y):
-        """Set the goal position"""
-        cls.goal_position = np.array([[goal_x], [goal_y]], dtype=np.float64)
-
-# Methods for the display
     def get_coords(self):
         """Returns the coordinates of the boid"""
         x_pos, y_pos = self.position
         return (*x_pos, *y_pos) # unpacking the tuple
 
+    def set_coords(self, x, y):
+        """Set the coordinates of the boid"""
+        self.position = np.array([[x], [y]], dtype=np.float64)
+
     def get_velocity(self):
         """Returns the velocity of the boid"""
         x_vel, y_vel = self.velocity
         return (*x_vel, *y_vel)
+    
+    def set_velocity(self, x_vel, y_vel):
+        """Set the velocity of the boid"""
+        self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
 
     def bbox(self):
         """Returns the bounding box of the boid"""
         x_pos, y_pos = self.position
         return (x_pos - self.radius, y_pos - self.radius, x_pos + self.radius, y_pos + self.radius)
 
+# %%
+class Obstacle:
+    """Class for the obstacles"""
+    def __init__(self, x0, y0, x1, y1) -> None:
+        self.coordinates = np.array([[x0, y0], [x1, y1]], dtype=np.float64)
+
+    def __contains__(self, boid):
+        """Check if the boid is inside the obstacle
+        Returns:
+            True if the boid is inside the obstacle
+            False if the boid is outside the obstacle
+        Arguments:
+            boid {Boid} -- The boid to check"""
+        x_pos, y_pos = boid.get_coords()
+        x_coord, y_coord = self.get_coords()
+        if x_coord[0] <= x_pos <= x_coord[1] and y_coord[0] <= y_pos <= y_coord[1]:
+            return True
+        return False
+    
+    def get_coords(self):
+        """Returns the coordinates of the obstacle
+        Returns:
+            (X,Y) with X the x coordinates and Y the y coordinates"""
+        top_left_corner, bottom_right_corner = self.coordinates
+        X = (top_left_corner[0], bottom_right_corner[0])
+        Y = (top_left_corner[1], bottom_right_corner[1])
+        return (X, Y)
+
+#%% 
 class SimulationSpace:
     """Class for the simulation space"""
     counter = 0
@@ -327,6 +366,8 @@ class SimulationSpace:
         self.width = width
         self.height = height
         self.boids = []
+        self.obstacles = []
+
         self.iteration = 0
         self.paused = True
         self.finished = False
@@ -349,6 +390,11 @@ class SimulationSpace:
              wind_speed=wind_speed, wind_direction=wind_direction, the_chosen_one=False) # True if _ == 0 else False
             self.boids.append(boid)
     
+    def create_obstacle(self, x0, y0, x1, y1):
+        """Create an obstacle"""
+        self.obstacles.append(Obstacle(x0, y0, x1, y1))
+
+    
     def next_step(self):
         """Update the simulation space"""
 
@@ -361,21 +407,6 @@ class SimulationSpace:
         
         for boid in self.boids:
             boid.update()
-    
-    def distances_matrix(self):
-        """Returns the distances matrix"""
-        distances = np.zeros((len(self.boids), len(self.boids)))
-        N = len(self.boids)
-        iteration = 0
-        for i, boid_i in enumerate(self.boids):
-            for j, boid_j in enumerate(self.boids):
-                iteration += 1
-                print(f"Space {self.counter} | Iteration : {iteration}")
-                distances[i, j] = np.linalg.norm(boid_i.position - boid_j.position)
-                distances[j, i] = distances[i, j]
-                if (distances + np.eye(N=N, M=N)).all() != 0:
-                    break
-        return distances
 
 # Method to control the state of the simulation   
     def start_simulation(self, number_of_steps=10):
