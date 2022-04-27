@@ -61,7 +61,6 @@ class Boid:
         cls.cohesion_force = cohesion_force
         cls.separation_force = separation_force
         cls.goal_force = goal_force
-        print(f"Alignment force: {cls.alignment_force}, Cohesion force: {cls.cohesion_force}, Separation force: {cls.separation_force}, Goal force: {cls.goal_force}")
     
     @classmethod
     def set_goal_position(cls, goal_x, goal_y):
@@ -249,6 +248,7 @@ class Boid:
             self.position[1] = self.height / 2
             return True
 
+# Functions to color the boid according to the surrounding density
     def calculate_near_boids_number(self):
         """Calculate the number of boids near the boid"""
         return len(self.near_boids_cohesion) + len(self.near_boids_separation)
@@ -267,11 +267,99 @@ class Boid:
         """Set the density of the boids near the boid"""
         self.boids_rate = boids_rate
 
+# Functions for the collision with obstacles
+
+    def reverse_velocity(self):
+        """Reverse the velocity of the boid"""
+        self.velocity *= -1
+
+    # def can_reach_obstacle(self, obstacle):
+    #     """Check if the boid can reach the obstacle
+    #     Returns:
+    #         True if it can reach the obstacle, False otherwise"""
+    #     x_boid, y_boid = self.get_coords()
+    #     x_boid_velocity, y_boid_velocity = self.get_velocity()
+    #     (x0_obstacle, x1_obstacle),  (y0_obstacle, y1_obstacle) = obstacle.get_coords()
+    #     x_collision, y_collision = True, True
+    #     # If x_boid_velocity is positive, the boid is moving to the right
+    #     if x_boid_velocity > 0:
+    #         # Can reach the obstacle if we can pass the x0_obstacle
+    #         x_collision = x0_obstacle < x_boid + x_boid_velocity
+    #     # If x_boid_velocity is negative, the boid is moving to the left
+    #     else:
+    #         # Can reach the obstacle if we can pass the x1_obstacle
+    #         x_collision = x1_obstacle > x_boid + x_boid_velocity
+        
+    #     # If y_boid_velocity is positive, the boid is moving down
+    #     if y_boid_velocity > 0:
+    #         # Can reach the obstacle if we can pass the y0_obstacle
+    #         y_collision = y0_obstacle < y_boid + y_boid_velocity
+    #     # If y_boid_velocity is negative, the boid is moving up
+    #     else:
+    #         # Can reach the obstacle if we can pass the y1_obstacle
+    #         y_collision = y1_obstacle > y_boid + y_boid_velocity
+    #     return x_collision and y_collision
+            
+            
+        
+    # def bounce_if_collision(self, obstacle):
+    #     """Check if the boid collides with the obstacle
+    #     Returns:
+    #         True if the boid collides with the obstacle, False otherwise"""
+    #     (x0, x1), (y0, y1) = obstacle.get_coords()
+
+    #     # If the x_velocity is positive, the boid is moving to the right
+    #     if self.velocity[0] > 0:
+    #         # If we would pass the left side, reverse the x velocity
+    #         if self.position[0] + self.velocity[0] > x0:
+    #             self.velocity[0] *= -1
+    #     else: # The boid is moving left
+    #         # If we would pass the right side, reverse the x velocity
+    #         if self.position[0] + self.velocity[0] < x1:
+    #             self.velocity[0] *= -1
+    #     # If the y_velocity is positive, the boid is moving down
+    #     if self.velocity[1] > 0:
+    #         # If we would pass the top side, reverse the y velocity
+    #         if self.position[1] + self.velocity[1] > y0:
+    #             self.velocity[1] *= -1
+    #     else: # The boid is moving up
+    #         # If we would pass the bottom side, reverse the y velocity
+    #         if self.position[1] + self.velocity[1] < y1:
+    #             self.velocity[1] *= -1
+    
+    def bounce_if_collision_with_obstacles(self, obstacle):
+        """Check if the boid collides with the obstacle
+        and if it does, bounce it"""
+        x_vel = self.velocity[0]
+        y_vel = self.velocity[1]
+        # If the boid is moving to the right
+        if self.velocity[0] > 0:
+            x_vel = self.velocity[0] + self.radius
+        else:
+            x_vel = self.velocity[0] - self.radius
+        # If the boid is moving down
+        if self.velocity[1] > 0:
+            y_vel = self.velocity[1] + self.radius
+        else:
+            y_vel = self.velocity[1] - self.radius
+
+        jump_coords = list(self.position)
+        jump_coords[0] = jump_coords[0][0] + x_vel
+        jump_coords[1] = jump_coords[1][0] + y_vel
+        if jump_coords in obstacle:
+            self.reverse_velocity()
+
+        
+    def get_the_obstacles_collisions(self, obstacles_list):
+        """Check if the boid collides with an obstacle
+        And reverse the velocity if it does"""
+        for obstacle in obstacles_list:
+            # We build a list of obstacles that the boid can reach
+            self.bounce_if_collision_with_obstacles(obstacle)
+
 # Update the boid
-    def update(self):
+    def update(self, obstacles_list):
         """Update the velocity and the position of the boid"""
-        # # We need to have found the near_boids list before we can apply the rules
-        # self.apply_rules()
         # The acceleration is the sum of the forces
 
         # Update the velocity
@@ -292,7 +380,7 @@ class Boid:
             self.position = self.check_edges()
         
         # Check if the boid will collide with an obstacle
-        
+        self.get_the_obstacles_collisions(obstacles_list)
 
         # If velocity exceeds the max speed, set it to the max speed
         if np.linalg.norm(self.velocity) > self.max_speed:
@@ -307,7 +395,9 @@ class Boid:
         self.acceleration = np.array([[0], [0]], dtype=np.float64)
 
     def get_coords(self):
-        """Returns the coordinates of the boid"""
+        """Returns the coordinates of the boid
+        Returns:
+            (x, y) the coordinates of the boid"""
         x_pos, y_pos = self.position
         return (*x_pos, *y_pos) # unpacking the tuple
 
@@ -335,16 +425,16 @@ class Obstacle:
     def __init__(self, x0, y0, x1, y1) -> None:
         self.coordinates = np.array([[x0, y0], [x1, y1]], dtype=np.float64)
 
-    def __contains__(self, boid):
-        """Check if the boid is inside the obstacle
+    def __contains__(self, point):
+        """Check if the point is inside the obstacle
         Returns:
-            True if the boid is inside the obstacle
-            False if the boid is outside the obstacle
+            True if the point is inside the obstacle
+            False if the point is outside the obstacle
         Arguments:
-            boid {Boid} -- The boid to check"""
-        x_pos, y_pos = boid.get_coords()
+            point {[x,y]} -- The point to check"""
+        x, y = point
         x_coord, y_coord = self.get_coords()
-        if x_coord[0] <= x_pos <= x_coord[1] and y_coord[0] <= y_pos <= y_coord[1]:
+        if x_coord[0] <= x <= x_coord[1] and y_coord[0] <= y <= y_coord[1]:
             return True
         return False
     
@@ -356,6 +446,13 @@ class Obstacle:
         X = (top_left_corner[0], bottom_right_corner[0])
         Y = (top_left_corner[1], bottom_right_corner[1])
         return (X, Y)
+    
+    def get_center(self):
+        """Returns the center of the obstacle
+        Returns:
+            The vector with the center of the obstacle"""
+        X, Y = self.get_coords()
+        return np.array([[(X[0] + X[1]) / 2], [(Y[0] + Y[1]) / 2]], dtype=np.float64)
 
 #%% 
 class SimulationSpace:
@@ -406,7 +503,7 @@ class SimulationSpace:
             boid.update_color_boids_rate()
         
         for boid in self.boids:
-            boid.update()
+            boid.update(self.obstacles)
 
 # Method to control the state of the simulation   
     def start_simulation(self, number_of_steps=10):

@@ -1,3 +1,4 @@
+from email.errors import ObsoleteHeaderDefect
 import tkinter
 import boid
 
@@ -12,7 +13,7 @@ root.title("Boids")
 # Constants
 #------------------------------------------------------------------------------
 
-WIDTH, HEIGHT = (root.winfo_screenwidth() - 472, root.winfo_screenheight() - 158) # (1200, 800)
+WIDTH, HEIGHT = (root.winfo_screenwidth() - 472, root.winfo_screenheight()-300) # (1200, 800)
 NUMBER_OF_BOIDS = 50
 NUMBER_OF_STEPS = 1_000
 BOUNCING = True
@@ -20,6 +21,8 @@ WIND_SPEED = 0
 WIND_DIRECTION = 0
 GOAL_X = WIDTH/2
 GOAL_Y = HEIGHT/2
+
+OBSTACLE = []
 
 ALIGNMENT_FORCE_MULTIPLICATOR = 1
 COHESION_FORCE_MULTIPLICATOR = 1
@@ -47,7 +50,7 @@ bottom_frame.grid(row=0, column=0, sticky="s")
 
 ## Button to start the simulation
 button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 12), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), \
-    button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start()))
+    button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start(), canvas.bind("<Button-1>", lambda e: integrate_click(*callback(e)))))
 button_start.grid(row=0, column=0, sticky="w")
 
 ## Button to pause the simulation
@@ -58,7 +61,7 @@ button_pause.grid(row=0, column=1, sticky="w")
 ## Button to reset the simulation
 button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 12), command=lambda: (reset_simulation(sim_space, canvas), \
     button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), \
-        enable_parameters_on_reset(), label_messages.config(text="Simulation reset", fg="red")))
+        enable_parameters_on_reset(), label_messages.config(text="Simulation reset", fg="red"), canvas.unbind("<Button-1>")))
 button_reset.config(state="disable")
 button_reset.grid(row=0, column=2, sticky="e")
 
@@ -265,11 +268,28 @@ def enable_parameters_on_reset():
 # Canvas
 #------------------------------------------------------------------------------
 canvas = tkinter.Canvas(root, width=WIDTH, height=HEIGHT, background='ivory')
-canvas.grid(row=0, column=1, columnspan=2, sticky="nsew")
+canvas.grid(row=0, column=1, columnspan=2, sticky="")
 
 #------------------------------------------------------------------------------
 # Functions
 #------------------------------------------------------------------------------
+def callback(event):
+    """Click to place an obstacle"""
+    obstacle_x = event.x
+    obstacle_y = event.y
+    return obstacle_x, obstacle_y
+
+def integrate_click(x,y):
+    """Integrate the click to place an obstacle"""
+    global OBSTACLE, sim_space
+    obstacle_x, obstacle_y = x ,y
+    if len(OBSTACLE) < 2:
+        OBSTACLE.append((obstacle_x, obstacle_y))
+    if len(OBSTACLE) == 2:
+        print(OBSTACLE)
+        sim_space.create_obstacle(OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
+        create_obstacle_canvas(canvas, OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
+        OBSTACLE = []
 
 def stock_simulation(simulation_space):
     """Stock the simulation"""
@@ -300,6 +320,10 @@ def create_boids_canvas(canvas, simulation_space):
     if GOAL_FORCE_MULTIPLICATOR:
         canvas.goal_item = canvas.create_rectangle(GOAL_X-5, GOAL_Y-5, GOAL_X+5, GOAL_Y+5, fill="blue")
 
+def create_obstacle_canvas(canvas, x0, y0, x1, y1):
+    """Create the obstacle on the canvas"""
+    canvas.create_rectangle(x0, y0, x1, y1, fill="red")
+
 def update_canvas(canvas, simulation_space):
     """Update the canvas"""
     for boid in simulation_space.boids:
@@ -308,7 +332,6 @@ def update_canvas(canvas, simulation_space):
         # Update the boid on the canvas
         canvas.coords(boid.canvas_item, x - boid.radius, y - boid.radius, x + boid.radius, y + boid.radius)
         canvas.itemconfig(boid.canvas_item, fill=boid.color)
-        
         #canvas.coords(boid.velocity_item, x, y, x + boid.velocity[0][0], y + boid.velocity[1][0])
     if GOAL_FORCE_MULTIPLICATOR:
         canvas.coords(canvas.goal_item, GOAL_X-5, GOAL_Y-5, GOAL_X+5, GOAL_Y+5)
