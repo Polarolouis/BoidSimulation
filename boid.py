@@ -3,9 +3,15 @@ import math
 import random
 import numpy as np
 
+# Logging setup
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', filename='boid.log', filemode='w')
+logging.info('Started to log')
+
+
 class Boid:
     """Boid class"""
 
+    id = 0
     radius = 5
     near_distance_alignment = 10*radius # Distance to be considered near
     near_distance_cohesion = 0.5*near_distance_alignment
@@ -36,6 +42,10 @@ class Boid:
             y_vel {float} -- y velocity of the boid
             the_chosen_one {bool} -- True if the boid is the chosen one"""
 
+        # Identification of the boid
+        self.id = Boid.id
+        Boid.id += 1
+
         # Initialise the boid position and velocity
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
         self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
@@ -58,6 +68,7 @@ class Boid:
         Arguments:
             width {int} -- width of the space"""
 
+        logging.debug('Setting the width of the space to %s', width)
         cls.width = width
 
     @classmethod
@@ -66,6 +77,7 @@ class Boid:
         Arguments:
             height {int} -- height of the space"""
 
+        logging.debug('Setting the height of the space to %s', height)
         cls.height = height
     
     @classmethod
@@ -87,6 +99,7 @@ class Boid:
         cls.wind_speed = wind_speed
         cls.wind_direction = wind_direction * 2 * math.pi / 360
         cls.bouncing = bouncing
+        logging.debug('Setting the force parameters to %s', [alignment_force, cohesion_force, separation_force, goal_force, wind_speed, wind_direction, bouncing])
     
     @classmethod
     def set_goal_position(cls, goal_x, goal_y):
@@ -96,6 +109,7 @@ class Boid:
             goal_y {float} -- y position of the goal"""
 
         cls.goal_position = np.array([[goal_x], [goal_y]], dtype=np.float64)
+        logging.debug('Setting the goal position to %s', cls.goal_position)
 
 # Flock calculation
     def find_near_boids(self, boids):
@@ -108,6 +122,8 @@ class Boid:
         self.near_boids_separation = []
 
         filtered_boids = (boid for boid in boids if (not np.array_equal(self.position, boid.position)) and ((self.position[0] - self.near_distance_alignment < boid.position[0] and self.position[1] - self.near_distance_alignment < boid.position[1]) and (self.position[0] + self.near_distance_alignment > boid.position[0] and self.position[1] + self.near_distance_alignment > boid.position[1])))
+        logging.debug('Filtered boids: %s', filtered_boids)
+
         for boid in filtered_boids:
             dist = np.linalg.norm(self.position - boid.position)
             if (boid not in self.near_boids_alignment) and dist < self.near_distance_alignment and dist > self.near_distance_cohesion:
@@ -121,6 +137,9 @@ class Boid:
             if (boid not in self.near_boids_separation) and dist < self.near_distance_separation:
                 self.near_boids_separation.append((boid, dist))
                 boid.near_boids_separation.append((self, dist))
+        logging.debug('Near boids ids for alignment: %s', [boid.id for boid, _ in self.near_boids_alignment])
+        logging.debug('Near boids ids for cohesion: %s', [boid.id for boid, _ in self.near_boids_cohesion])
+        logging.debug('Near boids ids for separation: %s', [boid.id for boid, _ in self.near_boids_separation])
 
 
 # Flock behaviour
@@ -137,6 +156,11 @@ class Boid:
         
         if np.linalg.norm(heading_correction) > self.max_alignment_force:
             heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_alignment_force
+        
+        logging.debug('Alignment heading correction: %s', heading_correction)
+        logging.debug('The alignment force is: %s', Boid.alignment_force)
+        logging.debug('The correction for alignment is: %s', heading_correction * Boid.alignment_force)
+        
         return heading_correction * Boid.alignment_force
 
     def cohesion(self):
@@ -154,6 +178,11 @@ class Boid:
             correction_to_avg = position_avg - self.position
         if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
             correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_cohesion_force
+        
+        logging.debug('Cohesion correction to avg: %s', correction_to_avg)
+        logging.debug('The cohesion force is: %s', Boid.cohesion_force)
+        logging.debug('The correction for cohesion is: %s', correction_to_avg * Boid.cohesion_force)
+        
         return correction_to_avg * Boid.cohesion_force
 
     def separation(self):
@@ -171,6 +200,10 @@ class Boid:
         if np.linalg.norm(separation_correction):
             separation_correction = (separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
         
+        logging.debug('Separation correction: %s', separation_correction)
+        logging.debug('The separation force is: %s', Boid.separation_force)
+        logging.debug('The correction for separation is: %s', separation_correction * Boid.separation_force)
+        
         return separation_correction * Boid.separation_force
 
     def wind(self):
@@ -180,6 +213,9 @@ class Boid:
 
         x_wind_speed = self.wind_speed * math.cos(self.wind_direction)
         y_wind_speed = self.wind_speed * math.sin(self.wind_direction)
+
+        logging.debug('x wind speed: %s', x_wind_speed)
+        logging.debug('y wind speed: %s', y_wind_speed)
 
         return np.array([[x_wind_speed],[y_wind_speed]], dtype=np.float64)
 
@@ -197,47 +233,42 @@ class Boid:
 
             if np.linalg.norm(goal_force) > self.max_goal_force:
                 goal_force = goal_force / np.linalg.norm(goal_force) * self.max_goal_force
+        
+        logging.debug('Goal force: %s', goal_force)
+        logging.debug('The goal force is: %s', Boid.goal_force)
+        logging.debug('The correction for goal is: %s', goal_force * Boid.goal_force)
+
         return goal_force * Boid.goal_force
 
     def apply_rules(self):
         """Apply the rules of the flock to the boid
         By adding the forces of the different behaviours to the acceleration"""
 
-        if self.the_chosen_one:
-            print("The chosen one : " + str(self.position))
+        logging.debug('Applying rules to boid %s', self.id)
+        logging.debug('----------------------------------')
 
         if self.goal_force > 0:
             goal = self.goal()
-            if self.the_chosen_one:
-                print("Goal: " + str(np.linalg.norm(goal)))
             self.acceleration += goal
         
         if self.wind_speed > 0:
             wind = self.wind()
-            if self.the_chosen_one:
-                print("Wind: " + str(np.linalg.norm(wind)))
             self.acceleration += wind
 
         if self.alignment_force > 0:
             alignment = self.alignment()
-            if self.the_chosen_one:
-                print("Alignment: " + str(np.linalg.norm(alignment)))
             self.acceleration += alignment
 
         if self.cohesion_force > 0:
             cohesion = self.cohesion()
-            if self.the_chosen_one:
-                print("Cohesion: " + str(np.linalg.norm(cohesion)))
             self.acceleration += cohesion
         
         if self.separation_force > 0:
             separation = self.separation()
-            if self.the_chosen_one:
-                print("Separation: " + str(np.linalg.norm(separation)))
             self.acceleration += separation
 
-        if self.the_chosen_one:
-            print("Acceleration: " + str(np.linalg.norm(self.acceleration)))
+        logging.debug('Boid %s acceleration: %s', self.id, self.acceleration)
+        logging.debug('----------------------------------')
 
     def check_edges(self):
         """Check if the boid is out of bounds
@@ -247,6 +278,9 @@ class Boid:
 
         # If bouncing is on, bounce the boid back into the screen
         if self.bouncing:
+
+            logging.debug('Boid %s is bouncing', self.id)
+
             velocity = self.velocity
             if self.position[0] + self.velocity[0] < self.radius:
                 velocity[0] = -self.velocity[0]
@@ -256,10 +290,16 @@ class Boid:
                 velocity[1] = -self.velocity[1]
             if self.position[1] + self.velocity[1] > self.height - self.radius:
                 velocity[1] = -self.velocity[1]
+            
+            logging.debug('Boid %s velocity: %s', self.id, velocity)
+
             return velocity
         else:
             # If bouncing is off, check if the boid is out of bounds
             # And if it is, set the boid to the opposite side
+
+            logging.debug('Boid %s is not bouncing', self.id)
+
             position = self.position
             if self.position[0] < self.radius:
                 position[0] = self.width - self.radius
@@ -269,6 +309,9 @@ class Boid:
                 position[1] = self.height - self.radius
             if self.position[1] > self.height - self.radius:
                 position[1] = self.radius
+
+            logging.debug('Boid %s position: %s', self.id, position)
+
             return position
 
     def is_out_of_space(self):
@@ -287,7 +330,7 @@ class Boid:
         if self.is_out_of_space():
             self.position[0] =  self.width / 2
             self.position[1] = self.height / 2
-            logging.warning("Boid is out of space, brought back to space")
+            logging.warning("Boid %s is out of space, brought back to space", self.id)
 
 # Functions to color the boid according to the surrounding density
     def calculate_near_boids_number(self):
@@ -330,20 +373,28 @@ class Boid:
         y_vel = self.velocity[1]
         # If the boid is moving to the right
         if self.velocity[0] > 0:
+            logging.debug('Boid %s is moving to the right', self.id)
             x_vel = self.velocity[0] + self.radius
         else:
+            logging.debug('Boid %s is moving to the left', self.id)
             x_vel = self.velocity[0] - self.radius
         # If the boid is moving down
         if self.velocity[1] > 0:
+            logging.debug('Boid %s is moving down', self.id)
             y_vel = self.velocity[1] + self.radius
         else:
+            logging.debug('Boid %s is moving up', self.id)
             y_vel = self.velocity[1] - self.radius
 
         jump_coords = list(self.position)
         jump_coords[0] = jump_coords[0][0] + x_vel
         jump_coords[1] = jump_coords[1][0] + y_vel
+        logging.debug('Boid %s jump coords: (x=%s, y=%s)', self.id, jump_coords[0], jump_coords[1])
         if jump_coords in obstacle:
+            logging.debug('Boid %s collided with obstacle, reversing velocity', self.id)
+            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
             self.reverse_velocity()
+            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
 
         
     def get_the_obstacles_collisions(self, obstacles_list):
@@ -354,6 +405,7 @@ class Boid:
 
         for obstacle in obstacles_list:
             # We build a list of obstacles that the boid can reach
+            logging.debug('Boid %s is checking if it can reach the obstacle %s', self.id, obstacle.id)
             self.bounce_if_collision_with_obstacles(obstacle)
 
 # Update the boid
@@ -362,13 +414,17 @@ class Boid:
         Arguments:
             obstacles_list {list} -- List of obstacles to check against"""
 
-        # The acceleration is the sum of the forces
+        logging.debug('Boid %s is updating', self.id)
+        logging.debug('Boid %s position: %s', self.id, self.position)
 
         # Update the velocity
+        logging.debug('Boid %s is updating the velocity from %s', self.id, self.velocity)
         self.velocity += self.acceleration
+        logging.debug('to %s', self.velocity)
         
         # Chaotic behaviour
         if self.chaotic_probability < random.random():
+            logging.debug('Boid %s ', self.id)
             angle = random.uniform(0, 2 * math.pi)
             self.velocity[0] += math.cos(angle)
             self.velocity[1] += math.sin(angle)
@@ -386,9 +442,12 @@ class Boid:
 
         # If velocity exceeds the max speed, set it to the max speed
         if np.linalg.norm(self.velocity) > self.max_speed:
+            logging.debug('Boid %s velocity exceeds the max speed, setting it to the max speed', self.id)
             self.velocity = self.velocity / np.linalg.norm(self.velocity) * self.max_speed
+            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
         # Update the position
         self.position += self.velocity
+        logging.debug('Boid %s new position: %s', self.id, self.position)
 
         # If the boid is out of space, bring it back to space
         self.bring_back_to_space()
@@ -452,7 +511,9 @@ class Obstacle:
         x, y = point
         x_coord, y_coord = self.get_coords()
         if x_coord[0] <= x <= x_coord[1] and y_coord[0] <= y <= y_coord[1]:
+            logging.debug('Point (%s, %s) is inside the obstacle', x, y)
             return True
+        logging.debug('Point (%s, %s) is outside the obstacle', x, y)
         return False
     
     def x_between_bounds(self, x):
@@ -536,6 +597,7 @@ class SimulationSpace:
             y_pos = random.randint(0, self.height)
             x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
             y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
+            logging.debug('Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)	
             boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
             self.boids.append(boid)
     
@@ -548,12 +610,15 @@ class SimulationSpace:
             y1 {float} -- The y coordinate of the bottom right corner of the obstacle"""
 
         self.obstacles.append(Obstacle(x0, y0, x1, y1))
+        logging.debug('Created obstacle at (%s, %s) to (%s, %s)', x0, y0, x1, y1)
 
     
     def next_step(self):
         """Calculate the next iteration of the simulation"""
 
         self.iteration += 1
+        logging.info('Iteration %s', self.iteration)
+        logging.info('-----------------')
         for boid in self.boids:
             boid.find_near_boids(self.boids)
             boid.apply_rules()
@@ -562,6 +627,7 @@ class SimulationSpace:
         
         for boid in self.boids:
             boid.update(self.obstacles)
+        logging.info('-----------------')
 
 # Method to control the state of the simulation   
     def start_simulation(self, number_of_steps=10):
@@ -572,16 +638,22 @@ class SimulationSpace:
         self.paused = False
         self.number_of_steps = number_of_steps
         self.finished = False
+        logging.info('Simulation %s started', self.counter)
 
     def toggle_pause(self):
         """Toggle the pause state of the simulation"""
 
         self.paused = not self.paused
+        if self.paused:
+            logging.info('Simulation %s paused', self.counter)
+        else:
+            logging.info('Simulation %s resumed', self.counter)
 
     def finish_simulation(self):
         """Finish the simulation"""
 
         self.finished = True
+        logging.info('Simulation %s finished', self.counter)
 
 # Method to clear the simulation space
     
@@ -592,4 +664,6 @@ class SimulationSpace:
         self.iteration = 0
         self.paused = True
         self.finished = False
+
+        logging.debug('Simulation %s cleared', self.counter)
 
