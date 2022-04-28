@@ -1,4 +1,3 @@
-from email.errors import ObsoleteHeaderDefect
 import tkinter
 import boid
 
@@ -71,7 +70,9 @@ parameters_frame.grid(row=0, column=3, sticky="e")
 
 ## Validation button
 def validate_parameters():
-    """Set the parameters"""
+    """Set the parameters
+    Global variables are set to the values of the parameters"""
+
     global NUMBER_OF_BOIDS, NUMBER_OF_STEPS, BOUNCING, WIND_SPEED, \
         WIND_DIRECTION, GOAL_X, GOAL_Y, ALIGNMENT_FORCE_MULTIPLICATOR, \
         COHESION_FORCE_MULTIPLICATOR, SEPARATION_FORCE_MULTIPLICATOR, GOAL_FORCE_MULTIPLICATOR
@@ -92,7 +93,7 @@ def validate_parameters():
     GOAL_FORCE_MULTIPLICATOR = float(goal_force_slider.get())
     
     boid.Boid.set_goal_position(GOAL_X, GOAL_Y)
-    boid.Boid.set_force_parameters(ALIGNMENT_FORCE_MULTIPLICATOR, COHESION_FORCE_MULTIPLICATOR, SEPARATION_FORCE_MULTIPLICATOR, GOAL_FORCE_MULTIPLICATOR)
+    boid.Boid.set_force_parameters(ALIGNMENT_FORCE_MULTIPLICATOR, COHESION_FORCE_MULTIPLICATOR, SEPARATION_FORCE_MULTIPLICATOR, GOAL_FORCE_MULTIPLICATOR, WIND_SPEED, WIND_DIRECTION, BOUNCING)
     set_recap_labels()
 
 ## Bouncing checkbox 
@@ -230,6 +231,7 @@ label_goal_position.grid(row=0, column=0, sticky="w")
 
 def set_recap_labels():
     """Set the recap labels"""
+
     global NUMBER_OF_STEPS, label_max_iterations, label_bouncing, BOUNCING, label_alignment_forces, label_cohesion_forces,  \
     label_separation_forces, labelframe_wind_forces, label_wind_speed, WIND_SPEED, label_wind_direction, WIND_DIRECTION, \
     labelframe_goal_forces, label_goal_position, GOAL_X, GOAL_Y, ALIGNMENT_FORCE_MULTIPLICATOR, COHESION_FORCE_MULTIPLICATOR, \
@@ -252,6 +254,7 @@ def set_recap_labels():
 
 def disable_parameters_on_start():
     """Disable the parameters on start"""
+
     bouncing_checkbox.config(state="disable")
     number_of_boids_slider.config(state="disable")
     number_of_steps_spinbox.config(state="disable")
@@ -259,6 +262,7 @@ def disable_parameters_on_start():
 
 def enable_parameters_on_reset():
     """Enable the parameters on reset"""
+
     bouncing_checkbox.config(state="normal")
     number_of_boids_slider.config(state="normal")
     number_of_steps_spinbox.config(state="normal")
@@ -274,26 +278,39 @@ canvas.grid(row=0, column=1, columnspan=2, sticky="")
 # Functions
 #------------------------------------------------------------------------------
 def callback(event):
-    """Click to place an obstacle"""
+    """Click to place an obstacle
+    Arguments:
+        event {tkinter.Event} -- The event
+    Returns:
+        obstacle_x {int} -- The x position of the click
+        obstacle_y {int} -- The y position of the click"""
+
     obstacle_x = event.x
     obstacle_y = event.y
     return obstacle_x, obstacle_y
 
 def integrate_click(x,y):
-    """Integrate the click to place an obstacle"""
+    """Integrate the click to place an obstacle
+    Arguments:
+        x {int} -- The x position of the click
+        y {int} -- The y position of the click"""
+
     global OBSTACLE, sim_space
     obstacle_x, obstacle_y = x ,y
     if len(OBSTACLE) < 2:
         OBSTACLE.append((obstacle_x, obstacle_y))
     if len(OBSTACLE) == 2:
-        print(OBSTACLE)
         if (OBSTACLE[0][0] < OBSTACLE[1][0] and OBSTACLE[0][1] < OBSTACLE[1][1]):
             sim_space.create_obstacle(OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
             create_obstacle_canvas(canvas, OBSTACLE[0][0], OBSTACLE[0][1], OBSTACLE[1][0], OBSTACLE[1][1])
         OBSTACLE = []
 
 def integrate_right_click(x,y):
-    """Use the right click position delete an obstacle"""
+    """Use the right click position delete an obstacle
+    Arguments:
+        x {int} -- The x position of the click
+        y {int} -- The y position of the click"""
+
     global sim_space
     for obstacle in sim_space.obstacles:
         if [x,y] in obstacle:
@@ -301,16 +318,27 @@ def integrate_right_click(x,y):
             delete_obstacle_canvas(canvas, obstacle)
 
 def stock_simulation(simulation_space):
-    """Stock the simulation"""
+    """Stock the simulation
+    Arguments:
+        simulation_space {SimulationSpace} -- The simulation space"""
+
     global sim_space
     sim_space = simulation_space
 
 def start_simulation(root, number_of_boids, width, height):
-    """Start the simulation"""
+    """Start the simulation
+    Arguments:
+        root {tkinter.Tk} -- The root
+        number_of_boids {int} -- The number of boids
+        width {int} -- The width
+        height {int} -- The height
+    Returns:
+        simulation_space {SimulationSpace} -- The simulation space"""
+
     # Create the simulation space
     simulation_space = boid.SimulationSpace(width, height)
     # Populate the simulation space
-    simulation_space.populate(number_of_boids, bouncing=BOUNCING, wind_speed=WIND_SPEED, wind_direction=WIND_DIRECTION, goal_x=GOAL_X, goal_y=GOAL_Y)
+    simulation_space.populate(number_of_boids, goal_x=GOAL_X, goal_y=GOAL_Y)
     # Start the simulation
     simulation_space.start_simulation(number_of_steps=NUMBER_OF_STEPS)
     create_boids_canvas(canvas, simulation_space)
@@ -319,7 +347,11 @@ def start_simulation(root, number_of_boids, width, height):
     return simulation_space
 
 def create_boids_canvas(canvas, simulation_space):
-    """Create the boids on the canvas"""
+    """Create the boids on the canvas
+    Arguments:
+        canvas {tkinter.Canvas} -- The canvas
+        simulation_space {SimulationSpace} -- The simulation space"""
+
     for boid in simulation_space.boids:
         # Extract the boid's position
         x, y = boid.get_coords()
@@ -330,15 +362,30 @@ def create_boids_canvas(canvas, simulation_space):
         canvas.goal_item = canvas.create_rectangle(GOAL_X-5, GOAL_Y-5, GOAL_X+5, GOAL_Y+5, fill="blue")
 
 def create_obstacle_canvas(canvas, x0, y0, x1, y1):
-    """Create the obstacle on the canvas"""
+    """Create the obstacle on the canvas
+    Arguments:
+        canvas {tkinter.Canvas} -- The canvas
+        x0 {int} -- The x of the top left corner
+        y0 {int} -- The y of the top left corner
+        x1 {int} -- The x of the bottom right corner
+        y1 {int} -- The y of the bottom right corner"""
+
     canvas.create_rectangle(x0, y0, x1, y1, fill="red")
 
 def delete_obstacle_canvas(canvas, obstacle):
-    """Delete the obstacle on the canvas"""
+    """Delete the obstacle on the canvas
+    Arguments:
+        canvas {tkinter.Canvas} -- The canvas
+        obstacle {list} -- The obstacle"""
+
     canvas.delete(obstacle)
 
 def update_canvas(canvas, simulation_space):
-    """Update the canvas"""
+    """Update the canvas
+    Arguments:
+        canvas {tkinter.Canvas} -- The canvas
+        simulation_space {SimulationSpace} -- The simulation space"""
+
     for boid in simulation_space.boids:
         # Extract the boid's position
         x, y = boid.get_coords()
@@ -350,7 +397,11 @@ def update_canvas(canvas, simulation_space):
         canvas.coords(canvas.goal_item, GOAL_X-5, GOAL_Y-5, GOAL_X+5, GOAL_Y+5)
 
 def clear_canvas(simulation_space, canvas):
-    """Clear the canvas"""
+    """Clear the canvas
+    Arguments:
+        simulation_space {SimulationSpace} -- The simulation space
+        canvas {tkinter.Canvas} -- The canvas"""
+
     if simulation_space.finished:
         canvas.delete("all")
     else:
@@ -359,7 +410,12 @@ def clear_canvas(simulation_space, canvas):
         label_messages.after(2000, lambda: label_messages.config(text=""))
 
 def simulation_loop(root, canvas, simulation_space):
-    """Simulation loop"""
+    """Simulation loop
+    Arguments:
+        root {tkinter.Tk} -- The root
+        canvas {tkinter.Canvas} -- The canvas
+        simulation_space {SimulationSpace} -- The simulation space"""
+
     if simulation_space.finished:
         return
     
@@ -378,17 +434,29 @@ def simulation_loop(root, canvas, simulation_space):
     root.after(10, lambda: simulation_loop(root, canvas, simulation_space))
 
 def max_iterations_reached(simulation_space):
-    """Check if the maximum number of iterations is reached"""
+    """Check if the maximum number of iterations is reached
+    Arguments:
+        simulation_space {SimulationSpace} -- The simulation space
+    Returns:
+        bool -- True if the maximum number of iterations is reached, False otherwise"""
+    
     if NUMBER_OF_STEPS == 0:
         return False
     return simulation_space.iteration >= NUMBER_OF_STEPS-1
 
 def stop_simulation(simulation_space):
-    """Stop the simulation"""
+    """Stop the simulation
+    Arguments:
+        simulation_space {SimulationSpace} -- The simulation space"""
+
     simulation_space.finish_simulation()
 
 def reset_simulation(simulation_space, canvas):
-    """Reset the simulation"""
+    """Reset the simulation
+    Arguments:
+        simulation_space {SimulationSpace} -- The simulation space
+        canvas {tkinter.Canvas} -- The canvas"""
+
     stop_simulation(simulation_space)
     clear_canvas(simulation_space, canvas)
     # We clear the simulation space

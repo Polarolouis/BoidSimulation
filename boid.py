@@ -1,8 +1,8 @@
-# %%
+import logging
 import math
 import random
 import numpy as np
-#%% 
+
 class Boid:
     """Boid class"""
     radius = 5
@@ -15,6 +15,8 @@ class Boid:
     cohesion_force = 1
     separation_force = 1
     goal_force = 1
+    wind_speed = 0
+    wind_direction = 0
 
     max_speed = 5
     max_alignment_force = 1
@@ -24,52 +26,82 @@ class Boid:
     
     
     
-    def __init__(self, x_pos, y_pos, x_vel, y_vel, bouncing, wind_speed = 0, 
-                wind_direction = 0, the_chosen_one = False):
+    def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
+        """Initialize the boid
+        Arguments:
+            x_pos {float} -- x position of the boid
+            y_pos {float} -- y position of the boid
+            x_vel {float} -- x velocity of the boid
+            y_vel {float} -- y velocity of the boid
+            the_chosen_one {bool} -- True if the boid is the chosen one"""
+
         # Initialise the boid position and velocity
         self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
         self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
         self.acceleration = np.array([[0], [0]], dtype=np.float64)
         self.new_acceleration = np.array([[0], [0]], dtype=np.float64)
 
-        self.bouncing = bouncing
-
+        # Initialise the boid neighbours lists
         self.near_boids_alignment = []
         self.near_boids_cohesion = []
         self.near_boids_separation = []
 
-        self.wind_speed = wind_speed
-        self.wind_direction = wind_direction * 2 * math.pi / 360
+        # Initialise the boid color related variables
         self.the_chosen_one = the_chosen_one
-        self.color = "green" if self.the_chosen_one else "grey"
+        self.color = "green" if self.the_chosen_one else "white"
         self.boids_rate = 0
 
     @classmethod
     def set_width(cls, width):
-        """Set the width of the space"""
+        """Class Method : Set the width of the space
+        Arguments:
+            width {int} -- width of the space"""
+
         cls.width = width
 
     @classmethod
     def set_height(cls, height):
-        """Set the height of the space"""
+        """Class Method : Set the height of the space
+        Arguments:
+            height {int} -- height of the space"""
+
         cls.height = height
     
     @classmethod
-    def set_force_parameters(cls, alignment_force, cohesion_force, separation_force, goal_force):
-        """Set the force parameters"""
+    def set_force_parameters(cls, alignment_force, cohesion_force, separation_force, goal_force, wind_speed, wind_direction, bouncing):
+        """Class Method : Set the force parameters
+        Arguments:
+            alignment_force {float} -- alignment force
+            cohesion_force {float} -- cohesion force
+            separation_force {float} -- separation force
+            goal_force {float} -- goal force
+            wind_speed {float} -- wind speed
+            wind_direction {float} -- wind direction
+            bouncing {bool} -- True if the boids bounce off the walls"""
+
         cls.alignment_force = alignment_force
         cls.cohesion_force = cohesion_force
         cls.separation_force = separation_force
         cls.goal_force = goal_force
+        cls.wind_speed = wind_speed
+        cls.wind_direction = wind_direction * 2 * math.pi / 360
+        cls.bouncing = bouncing
     
     @classmethod
     def set_goal_position(cls, goal_x, goal_y):
-        """Set the goal position"""
+        """Class Method : Set the goal position
+        Arguments:
+            goal_x {float} -- x position of the goal
+            goal_y {float} -- y position of the goal"""
+
         cls.goal_position = np.array([[goal_x], [goal_y]], dtype=np.float64)
 
 # Flock calculation
     def find_near_boids(self, boids):
-        """Sets a list of boids that are within a certain distance"""
+        """Sets a list of boids that are within a certain distance
+        Arguments:
+            boids {list} -- list of boids"""
+
         self.near_boids_alignment = []
         self.near_boids_cohesion = []
         self.near_boids_separation = []
@@ -89,26 +121,17 @@ class Boid:
                 self.near_boids_separation.append((boid, dist))
                 boid.near_boids_separation.append((self, dist))
 
-    def distance(self, other_boid):
-        """Return the distance between two boids"""
-        return np.linalg.norm(self.position - other_boid.position)
-
 
 # Flock behaviour
     def alignment(self):
         """Alignment behaviour to steer towards the average heading of the boids in the near_boids list
-        Returns : the correction to add to the velocity""" 
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]""" 
         # Calculate the average heading of the boids
         heading_correction = np.array([[0], [0]], dtype=np.float64)
-        if self.near_boids_alignment:            
+        if self.near_boids_alignment:          
             # Taking the the fastest boid as a leader
             heading_correction = max(self.near_boids_alignment, key=lambda boid_and_distance: np.linalg.norm(boid_and_distance[0].velocity))[0].velocity
-            # for boid in self.near_boids:
-            #     heading_avg += boid.velocity
-            #     heading_avg /= len(self.near_boids)
-            # heading_correction = heading_avg - self.velocity
-        if np.linalg.norm(heading_correction):
-            heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
         
         if np.linalg.norm(heading_correction) > self.max_alignment_force:
             heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_alignment_force
@@ -116,24 +139,24 @@ class Boid:
 
     def cohesion(self):
         """Cohesion behaviour to steer towards the average position of the boids in the near_boids list
-        Returns : the correction to add to the velocity""" 
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]""" 
         # Calculate the average position of the boids
         correction_to_avg = np.array([[0], [0]], dtype=np.float64)
         if self.near_boids_cohesion:
             position_avg = np.array([[0], [0]], dtype=np.float64)
-            for boid, distance in self.near_boids_cohesion:
-                position_avg += boid.position #* self.distance(boid)**2
+            for boid, _ in self.near_boids_cohesion:
+                position_avg += boid.position
             position_avg /= len(self.near_boids_cohesion)
             correction_to_avg = position_avg - self.position
-            if np.linalg.norm(correction_to_avg):
-                correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_speed
         if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
             correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_cohesion_force
         return correction_to_avg * Boid.cohesion_force
 
     def separation(self):
         """Separation behaviour to avoid collisions with other boids
-        Returns : the correction to add to the velocity"""
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
         separation_correction = np.array([[0], [0]], dtype=np.float64)
         for boid, distance in self.near_boids_separation:
             diff = self.position - boid.position
@@ -141,49 +164,46 @@ class Boid:
             separation_correction += diff
         if self.near_boids_separation:
             separation_correction /= len(self.near_boids_separation)
-        # if np.linalg.norm(separation_correction) > 0:
-        #     separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
         if np.linalg.norm(separation_correction):
             separation_correction = (separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
         
         return separation_correction * Boid.separation_force
 
     def wind(self):
-        """Apply wind to the boid"""
+        """Apply wind to the boid
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
         x_wind_speed = self.wind_speed * math.cos(self.wind_direction)
         y_wind_speed = self.wind_speed * math.sin(self.wind_direction)
 
         return np.array([[x_wind_speed],[y_wind_speed]], dtype=np.float64)
 
     def goal(self):
-        """Apply goal force to the boid"""
+        """Apply goal force to the boid
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
         goal_force = np.array([[0], [0]], dtype=np.float64)
         if self.goal_position is not None:
             goal_force = self.goal_position - self.position
             
             # Distance based coefficient
-            goal_force *= np.linalg.norm(goal_force)
+            # goal_force *= np.linalg.norm(goal_force)
 
             if np.linalg.norm(goal_force) > self.max_goal_force:
                 goal_force = goal_force / np.linalg.norm(goal_force) * self.max_goal_force
         return goal_force * Boid.goal_force
 
     def apply_rules(self):
-        """Apply the rules of the flock to the boid"""
+        """Apply the rules of the flock to the boid
+        By adding the forces of the different behaviours to the acceleration"""
         if self.the_chosen_one:
             print("The chosen one : " + str(self.position))
 
-        if self.cohesion_force > 0:
-            cohesion = self.cohesion()
+        if self.goal_force > 0:
+            goal = self.goal()
             if self.the_chosen_one:
-                print("Cohesion: " + str(np.linalg.norm(cohesion)))
-            self.acceleration += cohesion
-        
-        if self.separation_force > 0:
-            separation = self.separation()
-            if self.the_chosen_one:
-                print("Separation: " + str(np.linalg.norm(separation)))
-            self.acceleration += separation
+                print("Goal: " + str(np.linalg.norm(goal)))
+            self.acceleration += goal
         
         if self.wind_speed > 0:
             wind = self.wind()
@@ -197,17 +217,26 @@ class Boid:
                 print("Alignment: " + str(np.linalg.norm(alignment)))
             self.acceleration += alignment
 
-        if self.goal_force > 0:
-            goal = self.goal()
+        if self.cohesion_force > 0:
+            cohesion = self.cohesion()
             if self.the_chosen_one:
-                print("Goal: " + str(np.linalg.norm(goal)))
-            self.acceleration += goal
+                print("Cohesion: " + str(np.linalg.norm(cohesion)))
+            self.acceleration += cohesion
+        
+        if self.separation_force > 0:
+            separation = self.separation()
+            if self.the_chosen_one:
+                print("Separation: " + str(np.linalg.norm(separation)))
+            self.acceleration += separation
 
         if self.the_chosen_one:
             print("Acceleration: " + str(np.linalg.norm(self.acceleration)))
 
     def check_edges(self):
-        """Check if the boid is out of bounds"""
+        """Check if the boid is out of bounds
+        Returns: 
+            If the boids are bouncing: velocity np.array([float, float])
+            If the boids are not bouncing: position np.array([float, float])"""
         # If bouncing is on, bounce the boid back into the screen
         if self.bouncing:
             velocity = self.velocity
@@ -235,7 +264,9 @@ class Boid:
             return position
 
     def is_out_of_space(self):
-        """Check if the boid is out of space"""
+        """Check if the boid is out of space
+        Returns:
+            bool -- True if the boid is out of space, False otherwise"""
         if self.position[0] < 0 or self.position[0] > self.width or self.position[1] < 0 or self.position[1] > self.height:
             return True
         else:
@@ -246,15 +277,18 @@ class Boid:
         if self.is_out_of_space():
             self.position[0] =  self.width / 2
             self.position[1] = self.height / 2
-            return True
+            logging.warning("Boid is out of space, brought back to space")
 
 # Functions to color the boid according to the surrounding density
     def calculate_near_boids_number(self):
-        """Calculate the number of boids near the boid"""
+        """Calculate the number of boids near the boid
+        Returns:
+            int -- number of boids near the boid in the cohesion and separation circles"""
         return len(self.near_boids_cohesion) + len(self.near_boids_separation)
     
     def update_color_boids_rate(self):
-        """Update the color of the boid based on the density of the boids near it"""
+        """Update the color of the boid based on the density of the boids near it
+        Sets the color of the boid according to the color of the density of the boids near it"""
         boids_rate = self.boids_rate
         def rgb_hack(rgb):
             return "#%02x%02x%02x" % rgb
@@ -264,7 +298,7 @@ class Boid:
         self.color = rgb_hack((red, green, blue))
 
     def set_boids_rate(self, boids_rate):
-        """Set the density of the boids near the boid"""
+        """Sets the density of the boids near the boid"""
         self.boids_rate = boids_rate
 
 # Functions for the collision with obstacles
@@ -272,64 +306,12 @@ class Boid:
     def reverse_velocity(self):
         """Reverse the velocity of the boid"""
         self.velocity *= -1
-
-    # def can_reach_obstacle(self, obstacle):
-    #     """Check if the boid can reach the obstacle
-    #     Returns:
-    #         True if it can reach the obstacle, False otherwise"""
-    #     x_boid, y_boid = self.get_coords()
-    #     x_boid_velocity, y_boid_velocity = self.get_velocity()
-    #     (x0_obstacle, x1_obstacle),  (y0_obstacle, y1_obstacle) = obstacle.get_coords()
-    #     x_collision, y_collision = True, True
-    #     # If x_boid_velocity is positive, the boid is moving to the right
-    #     if x_boid_velocity > 0:
-    #         # Can reach the obstacle if we can pass the x0_obstacle
-    #         x_collision = x0_obstacle < x_boid + x_boid_velocity
-    #     # If x_boid_velocity is negative, the boid is moving to the left
-    #     else:
-    #         # Can reach the obstacle if we can pass the x1_obstacle
-    #         x_collision = x1_obstacle > x_boid + x_boid_velocity
-        
-    #     # If y_boid_velocity is positive, the boid is moving down
-    #     if y_boid_velocity > 0:
-    #         # Can reach the obstacle if we can pass the y0_obstacle
-    #         y_collision = y0_obstacle < y_boid + y_boid_velocity
-    #     # If y_boid_velocity is negative, the boid is moving up
-    #     else:
-    #         # Can reach the obstacle if we can pass the y1_obstacle
-    #         y_collision = y1_obstacle > y_boid + y_boid_velocity
-    #     return x_collision and y_collision
-            
-            
-        
-    # def bounce_if_collision(self, obstacle):
-    #     """Check if the boid collides with the obstacle
-    #     Returns:
-    #         True if the boid collides with the obstacle, False otherwise"""
-    #     (x0, x1), (y0, y1) = obstacle.get_coords()
-
-    #     # If the x_velocity is positive, the boid is moving to the right
-    #     if self.velocity[0] > 0:
-    #         # If we would pass the left side, reverse the x velocity
-    #         if self.position[0] + self.velocity[0] > x0:
-    #             self.velocity[0] *= -1
-    #     else: # The boid is moving left
-    #         # If we would pass the right side, reverse the x velocity
-    #         if self.position[0] + self.velocity[0] < x1:
-    #             self.velocity[0] *= -1
-    #     # If the y_velocity is positive, the boid is moving down
-    #     if self.velocity[1] > 0:
-    #         # If we would pass the top side, reverse the y velocity
-    #         if self.position[1] + self.velocity[1] > y0:
-    #             self.velocity[1] *= -1
-    #     else: # The boid is moving up
-    #         # If we would pass the bottom side, reverse the y velocity
-    #         if self.position[1] + self.velocity[1] < y1:
-    #             self.velocity[1] *= -1
     
     def bounce_if_collision_with_obstacles(self, obstacle):
         """Check if the boid collides with the obstacle
-        and if it does, bounce it"""
+        and if it does, bounce it
+        Arguments:
+            obstacle {Obstacle} -- The obstacle to check against"""
         x_vel = self.velocity[0]
         y_vel = self.velocity[1]
         # If the boid is moving to the right
@@ -352,14 +334,18 @@ class Boid:
         
     def get_the_obstacles_collisions(self, obstacles_list):
         """Check if the boid collides with an obstacle
-        And reverse the velocity if it does"""
+        And reverse the velocity if it does
+        Arguments:
+            obstacles_list {list} -- List of obstacles to check against"""
         for obstacle in obstacles_list:
             # We build a list of obstacles that the boid can reach
             self.bounce_if_collision_with_obstacles(obstacle)
 
 # Update the boid
     def update(self, obstacles_list):
-        """Update the velocity and the position of the boid"""
+        """Update the velocity and the position of the boid
+        Arguments:
+            obstacles_list {list} -- List of obstacles to check against"""
         # The acceleration is the sum of the forces
 
         # Update the velocity
@@ -402,24 +388,33 @@ class Boid:
         return (*x_pos, *y_pos) # unpacking the tuple
 
     def set_coords(self, x, y):
-        """Set the coordinates of the boid"""
+        """Set the coordinates of the boid
+        Arguments:
+            x: the x coordinate
+            y: the y coordinate"""
         self.position = np.array([[x], [y]], dtype=np.float64)
 
     def get_velocity(self):
-        """Returns the velocity of the boid"""
+        """Returns the velocity of the boid
+        Returns:
+            (x_vel, y_vel) the velocity of the boid"""
         x_vel, y_vel = self.velocity
         return (*x_vel, *y_vel)
     
     def set_velocity(self, x_vel, y_vel):
-        """Set the velocity of the boid"""
+        """Set the velocity of the boid
+        Arguments:
+            x_vel: the x velocity
+            y_vel: the y velocity"""
         self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
 
     def bbox(self):
-        """Returns the bounding box of the boid"""
+        """Returns the bounding box of the boid
+        Returns:
+            (x0, y0, x1, y1) the bounding box of the boid"""
         x_pos, y_pos = self.position
         return (x_pos - self.radius, y_pos - self.radius, x_pos + self.radius, y_pos + self.radius)
 
-# %%
 class Obstacle:
     """Class for the obstacles"""
     def __init__(self, x0, y0, x1, y1) -> None:
@@ -474,16 +469,18 @@ class Obstacle:
     def get_center(self):
         """Returns the center of the obstacle
         Returns:
-            The vector with the center of the obstacle"""
+            np.array([[x], [y]]) with x the x center and y the y center"""
         X, Y = self.get_coords()
         return np.array([[(X[0] + X[1]) / 2], [(Y[0] + Y[1]) / 2]], dtype=np.float64)
 
-#%% 
 class SimulationSpace:
     """Class for the simulation space"""
     counter = 0
     def __init__(self, width, height):
-        """Initialize the simulation space"""
+        """Initialize the simulation space
+        Arguments:
+            width {int} -- The width of the space
+            height {int} -- The height of the space"""
         self.width = width
         self.height = height
         self.boids = []
@@ -497,8 +494,12 @@ class SimulationSpace:
         SimulationSpace.counter += 1
         
     
-    def populate(self, number_of_boids, wind_speed, wind_direction, goal_x, goal_y, bouncing=True):
-        """Populate the simulation space with boids"""
+    def populate(self, number_of_boids, goal_x, goal_y):
+        """Populate the simulation space with boids
+        Arguments:
+            number_of_boids {int} -- The number of boids to populate
+            goal_x {float} -- The x coordinate of the goal
+            goal_y {float} -- The y coordinate of the goal"""
         Boid.set_width(self.width)
         Boid.set_height(self.height)
         Boid.set_goal_position(goal_x, goal_y)
@@ -507,17 +508,21 @@ class SimulationSpace:
             y_pos = random.randint(0, self.height)
             x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
             y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
-            boid = Boid(x_pos, y_pos, x_vel, y_vel, bouncing=bouncing,
-             wind_speed=wind_speed, wind_direction=wind_direction, the_chosen_one=False) # True if _ == 0 else False
+            boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
             self.boids.append(boid)
     
     def create_obstacle(self, x0, y0, x1, y1):
-        """Create an obstacle"""
+        """Create an obstacle
+        Arguments:
+            x0 {float} -- The x coordinate of the top left corner of the obstacle
+            y0 {float} -- The y coordinate of the top left corner of the obstacle
+            x1 {float} -- The x coordinate of the bottom right corner of the obstacle
+            y1 {float} -- The y coordinate of the bottom right corner of the obstacle"""
         self.obstacles.append(Obstacle(x0, y0, x1, y1))
 
     
     def next_step(self):
-        """Update the simulation space"""
+        """Calculate the next iteration of the simulation"""
 
         self.iteration += 1
         for boid in self.boids:
@@ -531,7 +536,9 @@ class SimulationSpace:
 
 # Method to control the state of the simulation   
     def start_simulation(self, number_of_steps=10):
-        """Start the simulation"""
+        """Start the simulation
+        Keyword Arguments:
+            number_of_steps {int} -- The number of steps to run the simulation (default: {10})"""
         self.paused = False
         self.number_of_steps = number_of_steps
         self.finished = False
@@ -552,3 +559,4 @@ class SimulationSpace:
         self.iteration = 0
         self.paused = True
         self.finished = False
+
