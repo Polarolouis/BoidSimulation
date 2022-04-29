@@ -1,6 +1,7 @@
 import logging
 import math
 import random
+from turtle import position
 import numpy as np
 
 # Logging setup
@@ -582,7 +583,7 @@ class SimulationSpace:
         SimulationSpace.counter += 1
         
     
-    def populate(self, number_of_boids, goal_x, goal_y):
+    def populate(self, number_of_boids, goal_x, goal_y, space_fill = "random"):
         """Populate the simulation space with boids
         Arguments:
             number_of_boids {int} -- The number of boids to populate
@@ -592,14 +593,39 @@ class SimulationSpace:
         Boid.set_width(self.width)
         Boid.set_height(self.height)
         Boid.set_goal_position(goal_x, goal_y)
-        for _ in range(number_of_boids):
-            x_pos = random.randint(0, self.width)
-            y_pos = random.randint(0, self.height)
-            x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
-            y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
-            logging.debug('Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)	
-            boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
-            self.boids.append(boid)
+        if space_fill == "random":
+            logging.info('Populating the simulation space with %s boids in random pattern', number_of_boids)
+            for _ in range(number_of_boids):
+                x_pos = random.randint(0, self.width)
+                y_pos = random.randint(0, self.height)
+                x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
+                y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
+                logging.debug('Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)	
+                boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
+                self.boids.append(boid)
+        elif space_fill == "even":
+            logging.info('Populating the simulation space with %s boids in even pattern', number_of_boids)
+            X = np.arange(0+Boid.radius, self.width-Boid.radius, 2*math.sqrt((self.width*self.height)/(number_of_boids*math.pi)))
+            print(X)
+            Y = np.arange(0+Boid.radius, self.height-Boid.radius, 2*math.sqrt((self.width*self.height)/(number_of_boids*math.pi)))
+            print(Y)
+            positions = []
+            for x_pos in X:
+                for y_pos in Y:
+                    positions.append((x_pos, y_pos))
+            print(len(positions))
+            for x_pos, y_pos in positions:
+                if len(self.boids) < number_of_boids:
+                    x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
+                    y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
+                    logging.debug('Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)
+                    print("Creating boid at (%s, %s) with velocity (%s, %s)" % (x_pos, y_pos, x_vel, y_vel))
+                    boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
+                    self.boids.append(boid)
+                else:
+                    print(len(self.boids))
+                    break
+
     
     def create_obstacle(self, x0, y0, x1, y1):
         """Create an obstacle
@@ -666,4 +692,3 @@ class SimulationSpace:
         self.finished = False
 
         logging.debug('Simulation %s cleared', self.counter)
-
