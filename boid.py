@@ -1,7 +1,6 @@
 import logging
 import math
 import random
-from turtle import position
 import numpy as np
 
 # Logging setup
