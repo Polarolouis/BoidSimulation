@@ -338,7 +338,7 @@ def start_simulation(root, number_of_boids, width, height):
     # Create the simulation space
     simulation_space = boid.SimulationSpace(width, height)
     # Populate the simulation space
-    simulation_space.populate(number_of_boids, goal_x=GOAL_X, goal_y=GOAL_Y)
+    simulation_space.populate(number_of_boids, goal_x=GOAL_X, goal_y=GOAL_Y, space_fill="even")
     # Start the simulation
     simulation_space.start_simulation(number_of_steps=NUMBER_OF_STEPS)
     create_boids_canvas(canvas, simulation_space)
