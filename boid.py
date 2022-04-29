@@ -17,7 +17,8 @@ class Boid:
     near_distance_alignment = 10*radius # Distance to be considered near
     near_distance_cohesion = 0.5*near_distance_alignment
     near_distance_separation = 4*radius
-    chaotic_probability = 0.1
+    chaotic_probability = 0.0
+    bouncing = False
     
     alignment_force = 1
     cohesion_force = 1
@@ -592,7 +593,6 @@ class SimulationSpace:
 
         Boid.set_width(self.width)
         Boid.set_height(self.height)
-        Boid.set_goal_position(goal_x, goal_y)
         if space_fill == "random":
             logging.info('Populating the simulation space with %s boids in random pattern', number_of_boids)
             for _ in range(number_of_boids):
@@ -606,24 +606,19 @@ class SimulationSpace:
         elif space_fill == "even":
             logging.info('Populating the simulation space with %s boids in even pattern', number_of_boids)
             X = np.arange(0+Boid.radius, self.width-Boid.radius, 2*math.sqrt((self.width*self.height)/(number_of_boids*math.pi)))
-            print(X)
             Y = np.arange(0+Boid.radius, self.height-Boid.radius, 2*math.sqrt((self.width*self.height)/(number_of_boids*math.pi)))
-            print(Y)
             positions = []
             for x_pos in X:
                 for y_pos in Y:
                     positions.append((x_pos, y_pos))
-            print(len(positions))
             for x_pos, y_pos in positions:
                 if len(self.boids) < number_of_boids:
                     x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
                     y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
                     logging.debug('Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)
-                    print("Creating boid at (%s, %s) with velocity (%s, %s)" % (x_pos, y_pos, x_vel, y_vel))
                     boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
                     self.boids.append(boid)
                 else:
-                    print(len(self.boids))
                     break
 
     
@@ -654,6 +649,13 @@ class SimulationSpace:
         for boid in self.boids:
             boid.update(self.obstacles)
         logging.info('-----------------')
+
+    def get_positions(self):
+        """Returns the positions of the boids for the current iteration
+        Returns:
+            """
+
+        return {boid.id: boid.get_coords() for boid in self.boids}
 
 # Method to control the state of the simulation   
     def start_simulation(self, number_of_steps=10):
