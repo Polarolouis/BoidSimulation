@@ -1,5 +1,6 @@
 from math import sqrt
 from operator import eq
+from shapely.geometry import LineString, Point
 
     
 def djikstra():
@@ -90,29 +91,6 @@ class Node () :
                 block_nodes.append(self.all_nodes [i])
         return block_nodes
         
-    def equation (self, node_2) :
-        """Calculate the equation of the line between the node and a second node
-        Args : the second node
-        Returns : [slope, intersect] or ['vertical', x] in case of vertical lines
-        """
-        flag = False
-        try :
-            coeff = (node_2.y_pos - self.y_pos)/(abs(node_2.x_pos - self.x_pos))
-        except ZeroDivisionError :
-            coeff = 'vertical'
-            flag = True
-    
-        try : 
-            if flag :
-                ord = node_2.x_pos
-            else :
-                ord = self.y_pos - ((node_2.y_pos - self.y_pos)/(node_2.x_pos - self.x_pos))*self.x_pos
-        except ZeroDivisionError :
-            ord = 0
-        
-        equa = [coeff, ord, self, node_2]
-        return (equa)
-        
     def djikstra_format (self) :
         #     return {
 
@@ -124,46 +102,27 @@ class Node () :
 #         'F': {'A':sqrt(i[0]**2+i[1]**2),'B':sqrt((i[0]-20)**2+(i[1]-30)**2)'C':sqrt((i[0]-30)**2+(i[1]-40)**2), 'D':sqrt((i[0]-30)**2+(i[1]-40)**2), 'E':53.852}
 #             }
         print("haha")
-        
-    
-    def inv_equation (self, node_2) :
-        """Calculate the inverse equation of the droite between the two nodes
-        Corresponds to a pi/2 anti trigonometric translation of the axis"""
-        
-        norm_equation = self.equation(node_2)
-        try :  
-            if norm_equation[0] == 0 :
-                return 
-            inv_equation = [1/norm_equation[0], norm_equation[1]]
-        except TypeError :
-            return (norm_equation)
-        return (inv_equation)
 
-    def all_equations_block (self) :
-        """Calculates the equations of the block nodes"""
-        equations = {}
-        for i in range (len (self.all_nodes)) :
-            for j in range (len(self.all_nodes)) :
-                if i == j :
-                    pass
-                else :
-                    #verify that the calculated equations are for block node type only and if the nodes are neighbours 
-                    if self.all_nodes[i].node_type == 'block' and self.all_nodes[j].node_type == 'block' \
-                        and self.all_nodes[i].id in self.all_nodes[j].neigh and self.all_nodes[j].id in self.all_nodes[i].neigh :
-                        node_1 = self.all_nodes[i]
-                        node_2 = self.all_nodes[j]
-                        equations [f'{node_1.id}{node_2.id}'] =  node_1.equation(node_2) 
-                        equations [f'{node_2.id}{node_1.id}'] =  node_1.inv_equation(node_2)
-        return equations
-    
+    def verify_block (self, start_node, goal_node) :
+        """verify that a block is obtruing the path"""
+        intersections = []
+        block_nodes = self.get_all_block ()
+        
+        A = (start_node.x_pos, start_node.y_pos)
+        B = (goal_node.x_pos, goal_node.y_pos)
+        line1 = LineString([A, B])
+        
+        for i in range (len (block_nodes)-1) :
+            C = (block_nodes[i].x_pos, block_nodes[i].y_pos)
+            D = (block_nodes[i+1].x_pos, block_nodes[i+1].y_pos)
+            line2 = LineString([C, D])
 
-    # def verif_block (self, node_goal) :
-        
-    #     equations = self.all_equations()
-        
-    #     for i in range (len(equations)) :
-    #         if equations[i][0].is_goal_node() and equations[i][1].is_start_node() :
-    #             print("lol")
+            try :
+                int_pt = line1.intersection(line2)
+                intersections.append ([int_pt.x, int_pt.y])
+            except AttributeError :
+                pass
+        return(intersections)
             
             
 
@@ -177,9 +136,7 @@ E = Node ('E', 50, 20, 'DB', 'block')
 F = Node ('F', 80, 60, 'ABCDE', 'start') #must be linked to all other nodes
 
 # print(A.dist(B))
-# print(A.equation(B))
-# print(A.all_equations_block())
 
 print(A.get_all_block())
 
-    
+print(A.verify_block(A,F))
