@@ -196,19 +196,22 @@ if loop_menu(parameters, max_parameters):
             bouncing = parameters["BOUNCING"])
     boid.Boid.set_goal_position(parameters["GOAL_X"], parameters["GOAL_Y"])
     # Create the boids
+    print(parameters["NUMBER_OF_BOIDS"])
     simulation.populate(parameters["NUMBER_OF_BOIDS"], parameters["GOAL_X"], parameters["GOAL_Y"], space_fill = "even")
 
     # Create the dictionnary of the boids
-    boids = {boid.id : {0 : boid.get_coords()} for boid in simulation.boids}
+    boids = {0 : { boid.id : boid.get_coords() for boid in simulation.boids}}
     # Iterate the simulation
     print("\n--------Starting simulation--------")
     for i in range(1, parameters["NUMBER_OF_STEPS"]+1):
         percentage = (i/parameters["NUMBER_OF_STEPS"])*100
-        print(f"\r{percentage} %")
+        if percentage%10 == 0:
+            print(f"\r{percentage} %")
         simulation.next_step()
         current_position = simulation.get_positions()
-        for boid_id in boids.keys():
-            boids[boid_id][i] = current_position[boid_id]
+        boids[i] = dict()
+        for boid_id in range(parameters["NUMBER_OF_BOIDS"]):
+            boids[i][boid_id] = current_position[boid_id]
     print("\n--------Simulation ended--------")
 
     # Saving the data to a file
