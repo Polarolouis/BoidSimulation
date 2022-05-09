@@ -604,12 +604,14 @@ class SimulationSpace:
                 self.boids.append(boid)
         elif space_fill == "even":
             logging.info('Populating the simulation space with %s boids in even pattern', number_of_boids)
-            X = np.arange(0+Boid.radius, self.width-Boid.radius, 2*math.sqrt((self.width*self.height)/(number_of_boids*math.pi)))
-            Y = np.arange(0+Boid.radius, self.height-Boid.radius, 2*math.sqrt((self.width*self.height)/(number_of_boids*math.pi)))
+            X = np.arange(0+Boid.radius, self.width-Boid.radius, math.sqrt((self.width*self.height)/number_of_boids))
+            Y = np.arange(0+Boid.radius, self.height-Boid.radius, math.sqrt((self.width*self.height)/number_of_boids))
             positions = []
+            
             for x_pos in X:
                 for y_pos in Y:
                     positions.append((x_pos, y_pos))
+            print(f"Size of possible positions {len(positions)}")
             for x_pos, y_pos in positions:
                 if len(self.boids) < number_of_boids:
                     x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
@@ -692,4 +694,5 @@ class SimulationSpace:
         self.paused = True
         self.finished = False
 
-        logging.debug('Simulation %s cleared', self.counter)
+
+
