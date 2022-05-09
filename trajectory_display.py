@@ -47,7 +47,7 @@ with open(filename, "r", encoding="utf8") as f:
         data[int(key)] = raw_data[key]
 
 
-number_of_boids, _, _, geometry, _, _, max_iteration, _ = filename.strip().split("_")
+number_of_boids, _, _, geometry, _, _, max_iteration, *_ = filename.strip().split("_")
 
 number_of_boids = int(number_of_boids)
 max_iteration = int(max_iteration)
@@ -63,6 +63,13 @@ width, height = geometry.split("x")
 width = int(width)
 height = int(height)
 
+# Left frame
+left_frame = tkinter.Frame(root)
+left_frame.pack(side=tkinter.LEFT)
+
+iteration_label = tkinter.Label(left_frame, text="Iteration:")
+iteration_label.pack()
+
 canvas = tkinter.Canvas(root, width=width, height=height, bg="white")
 canvas.pack()
 
@@ -73,15 +80,20 @@ for i in range(number_of_boids):
     x, y = data[0][str(i)]
     list_of_boid_canvas.append(canvas.create_oval(x-5, y-5, x+5, y+5, fill="grey"))
 
+iteration_label.configure(text=f"Iteration: {0}/{max_iteration}")
+
 current_turn = 1
 
 def update_canvas(current_turn):
     """Update the canvas"""
+    iteration_label.configure(text=f"Iteration: {current_turn}/{max_iteration}")
     for i in range(number_of_boids):
         x, y = data[current_turn][str(i)]
         canvas.coords(list_of_boid_canvas[i], x-5, y-5, x+5, y+5)
-    root.after(100, lambda : (update_canvas(current_turn+1) if current_turn < max_iteration else None))
+    root.after(50, lambda : (update_canvas(current_turn+1) if current_turn < max_iteration else None))
 
 update_canvas(current_turn)
 
+# Maximize the window
+root.state("zoomed")
 root.mainloop()

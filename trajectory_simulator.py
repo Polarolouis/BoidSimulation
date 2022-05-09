@@ -206,7 +206,7 @@ if loop_menu(parameters, max_parameters):
     for i in range(1, parameters["NUMBER_OF_STEPS"]+1):
         percentage = (i/parameters["NUMBER_OF_STEPS"])*100
         if percentage%10 == 0:
-            print(f"\r{percentage} %")
+            print(f"\b{percentage} %")
         simulation.next_step()
         current_position = simulation.get_positions()
         boids[i] = dict()
