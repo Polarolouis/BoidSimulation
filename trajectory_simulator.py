@@ -216,7 +216,7 @@ if loop_menu(parameters, max_parameters):
 
     # Saving the data to a file
     print("\n--------Saving data to a file--------")
-    filename = f"{parameters['NUMBER_OF_BOIDS']}_boids_in_{parameters['WIDTH']}x{parameters['HEIGHT']}_space_with_{parameters['NUMBER_OF_STEPS']}_steps"
+    filename = f"{parameters['NUMBER_OF_BOIDS']}_boids_in_{parameters['WIDTH']}x{parameters['HEIGHT']}_space_with_{parameters['NUMBER_OF_STEPS']}_steps_alignment_force_{parameters['ALIGNMENT_FORCE_MULTIPLICATOR']}_cohesion_force_{parameters['COHESION_FORCE_MULTIPLICATOR']}_separation_force_{parameters['SEPARATION_FORCE_MULTIPLICATOR']}_wind_speed_{parameters['WIND_SPEED']}_wind_direction_{parameters['WIND_DIRECTION']}_goal_force_{parameters['GOAL_FORCE_MULTIPLICATOR']}_goal_position_{parameters['GOAL_X']}x{parameters['GOAL_Y']}_bouncing_{parameters['BOUNCING']}"
     # Checking if the file exists
     if not os.path.isfile(filename):
         with open(f"{filename}.json", "w", encoding="utf8") as file:
