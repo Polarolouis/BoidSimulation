@@ -12,7 +12,7 @@ root.title("Boids")
 # Constants
 #------------------------------------------------------------------------------
 
-WIDTH, HEIGHT = (root.winfo_screenwidth() - 472, root.winfo_screenheight()-300) # (1200, 800)
+WIDTH, HEIGHT = (root.winfo_screenwidth() - 672, root.winfo_screenheight()-300) # (1200, 800)
 NUMBER_OF_BOIDS = 50
 NUMBER_OF_STEPS = 1_000
 BOUNCING = True
@@ -28,54 +28,22 @@ COHESION_FORCE_MULTIPLICATOR = 1
 SEPARATION_FORCE_MULTIPLICATOR = 1
 GOAL_FORCE_MULTIPLICATOR = 1
 
+SIMULATION_SPEED = 10 # Time between each step in milliseconds
+
 sim_space = None
 
 #------------------------------------------------------------------------------
 # Divisions of the main window
 #------------------------------------------------------------------------------
 
-# Top Frame
-top_frame = tkinter.Frame(root)
-top_frame.grid(row=0, column=0, sticky="n")
-
-
-##
-label_messages = tkinter.Label(top_frame, text="", font=("Helvetica", 12))
-label_messages.grid(row=0, column=0, sticky="w")
-
-# Bottom Frame
-bottom_frame = tkinter.Frame(root)
-bottom_frame.grid(row=0, column=0, sticky="s")
-
-## Button to start the simulation
-button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 12), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), \
-    button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start(), canvas.bind("<Button-1>", lambda e: integrate_click(*callback(e)))))
-button_start.grid(row=0, column=0, sticky="w")
-
-## Button to pause the simulation
-button_pause = tkinter.Button(bottom_frame, text="Pause/Resume", font=("Helvetica", 12), command=lambda: (sim_space.toggle_pause(), label_messages.config(text="Simulation paused" if sim_space.paused else "", fg="red")))
-button_pause.config(state="disable")
-button_pause.grid(row=0, column=1, sticky="w")
-
-## Button to reset the simulation
-button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 12), command=lambda: (reset_simulation(sim_space, canvas), \
-    button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), \
-        enable_parameters_on_reset(), label_messages.config(text="Simulation reset", fg="red"), canvas.unbind("<Button-1>")))
-button_reset.config(state="disable")
-button_reset.grid(row=0, column=2, sticky="e")
-
-# Parameters frame (right)
-parameters_frame = tkinter.LabelFrame(root, text="Parameters", font=("Helvetica", 12))
-parameters_frame.grid(row=0, column=3, sticky="e")
-
-## Validation button
 def validate_parameters():
     """Set the parameters
     Global variables are set to the values of the parameters"""
 
     global NUMBER_OF_BOIDS, NUMBER_OF_STEPS, BOUNCING, WIND_SPEED, \
         WIND_DIRECTION, GOAL_X, GOAL_Y, ALIGNMENT_FORCE_MULTIPLICATOR, \
-        COHESION_FORCE_MULTIPLICATOR, SEPARATION_FORCE_MULTIPLICATOR, GOAL_FORCE_MULTIPLICATOR
+        COHESION_FORCE_MULTIPLICATOR, SEPARATION_FORCE_MULTIPLICATOR, \
+        GOAL_FORCE_MULTIPLICATOR, SIMULATION_SPEED
     BOUNCING = True if bouncing_boolean.get() else False
     NUMBER_OF_BOIDS = int(number_of_boids_slider.get())
     label_number_of_boids.config(text=f"Boids : {NUMBER_OF_BOIDS}")
@@ -91,10 +59,51 @@ def validate_parameters():
     COHESION_FORCE_MULTIPLICATOR = float(cohesion_force_slider.get())
     SEPARATION_FORCE_MULTIPLICATOR = float(separation_force_slider.get())
     GOAL_FORCE_MULTIPLICATOR = float(goal_force_slider.get())
+
+    SIMULATION_SPEED = int(simulation_speed_slider.get())
     
     boid.Boid.set_goal_position(GOAL_X, GOAL_Y)
     boid.Boid.set_force_parameters(ALIGNMENT_FORCE_MULTIPLICATOR, COHESION_FORCE_MULTIPLICATOR, SEPARATION_FORCE_MULTIPLICATOR, GOAL_FORCE_MULTIPLICATOR, WIND_SPEED, WIND_DIRECTION, BOUNCING)
     set_recap_labels()
+
+# Top Frame
+top_frame = tkinter.Frame(root)
+top_frame.grid(row=0, column=0, sticky="n")
+
+
+##
+label_messages = tkinter.Label(top_frame, text="", font=("Helvetica", 12))
+label_messages.grid(row=0, column=0, sticky="w")
+
+# Bottom Frame
+bottom_frame = tkinter.Frame(root)
+bottom_frame.grid(row=0, column=0, sticky="s")
+
+## Slider to set the simulation speed
+simulation_speed_slider = tkinter.Scale(bottom_frame, from_=1, to=100, orient=tkinter.HORIZONTAL, label="Simulation speed", length=200, command=lambda e: validate_parameters())
+simulation_speed_slider.set(SIMULATION_SPEED)
+simulation_speed_slider.grid(row=0, column=0, sticky="w")
+
+## Button to start the simulation
+button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 12), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), \
+    button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start(), canvas.bind("<Button-1>", lambda e: integrate_click(*callback(e)))))
+button_start.grid(row=1, column=0, sticky="w")
+
+## Button to pause the simulation
+button_pause = tkinter.Button(bottom_frame, text="Pause/Resume", font=("Helvetica", 12), command=lambda: (sim_space.toggle_pause(), label_messages.config(text="Simulation paused" if sim_space.paused else "", fg="red")))
+button_pause.config(state="disable")
+button_pause.grid(row=1, column=1, sticky="w")
+
+## Button to reset the simulation
+button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 12), command=lambda: (reset_simulation(sim_space, canvas), \
+    button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), \
+        enable_parameters_on_reset(), label_messages.config(text="Simulation reset", fg="red"), canvas.unbind("<Button-1>")))
+button_reset.config(state="disable")
+button_reset.grid(row=1, column=2, sticky="e")
+
+# Parameters frame (right)
+parameters_frame = tkinter.LabelFrame(root, text="Parameters", font=("Helvetica", 12))
+parameters_frame.grid(row=0, column=3, sticky="nswe")
 
 ## Bouncing checkbox 
 bouncing_boolean = tkinter.BooleanVar()
@@ -410,6 +419,7 @@ def clear_canvas(simulation_space, canvas):
         label_messages.after(2000, lambda: label_messages.config(text=""))
 
 def simulation_loop(root, canvas, simulation_space):
+    global SIMULATION_SPEED
     """Simulation loop
     Arguments:
         root {tkinter.Tk} -- The root
@@ -431,7 +441,7 @@ def simulation_loop(root, canvas, simulation_space):
         label_iterations.config(text=f"Iterations : {simulation_space.iteration}")
         # Check if the simulation is finished
     # Continue the simulation loop
-    root.after(10, lambda: simulation_loop(root, canvas, simulation_space))
+    root.after(SIMULATION_SPEED, lambda: simulation_loop(root, canvas, simulation_space))
 
 def max_iterations_reached(simulation_space):
     """Check if the maximum number of iterations is reached
