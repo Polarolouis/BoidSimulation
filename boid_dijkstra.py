@@ -1,3 +1,4 @@
+import dijkstra
 import logging
 import math
 import random
@@ -667,3 +668,15 @@ class SimulationSpace:
 
         logging.debug('Simulation %s cleared', self.counter)
 
+A = dijkstra.Node ('A', 0, 0, 'BCDEF', 'goal')
+B = dijkstra.Node ('B', 30, 20, 'ACDEF', 'block')
+C = dijkstra.Node ('C', 30, 40, 'ABDEF', 'block')
+D = dijkstra.Node ('D', 50, 40, 'ABCEF', 'block')
+E = dijkstra.Node ('E', 50, 20, 'ABCDF', 'block')
+F = dijkstra.Node ('F', 60, 50, 'ABCDE', 'start')
+
+#initialize the graph path
+A.knock_out_path()
+
+formated_paths = A.djikstra_format()
+print(A.djikstra_algo(F,A))

@@ -1,30 +1,36 @@
 from math import sqrt, ceil
-from operator import eq
 from shapely.geometry import LineString, Point
 
 class Node () :
     
     all_nodes = []
-    goal_node_id = 'A'
-    stat_node_id = 'F'
     
     def __init__(self, id = str, x_pos = int, y_pos = int, neigh = str, node_type = str) : 
-        
+        """
+        Node class initialisation
+        Args:
+            id (str): identification of the node
+            x_pos (int): x_position
+            y_pos (int): y_position
+            neigh (str): the neighbour nodes
+            node_type (str): the node type
+        """
         self.id = id
         self.x_pos = float(x_pos)
         self.y_pos = float(y_pos)
         self.neigh = neigh
         self.node_type = node_type
         
-        self.distance = {}
-        self.ray = {}
-        
+        #initialisation of the list of nodes
         self.all_nodes.append(self)
 
     def dist (self, node_2):
-        """Calculate the geometrical distance between the node and a seconde one
-        Args : the second node
-        Returns : the algebric distance 
+        """
+        Calculate the geometrical distance between the node and a seconde one
+            Args : 
+                node_2 (Node): the second node
+            Returns :
+                the algebric distance between the self.node and the node_2
         """
         return(sqrt( abs(self.x_pos - node_2.x_pos)**2 + abs(self.y_pos - node_2.y_pos)**2))
     
@@ -43,6 +49,12 @@ class Node () :
                 return (self.all_nodes[i])
             
     def get_all_block (self) :
+        """"
+        Gives back all the nodes that are "block" type
+            Args : 
+            Returns :
+                block_nodes (list): a list containing all the block nodes 
+        """
         block_nodes = []
         for i in range (len(self.all_nodes)) :
             if self.all_nodes[i].is_block_node () :
@@ -50,10 +62,15 @@ class Node () :
         return block_nodes
 
     def block_intersection (self, start_node, goal_node) :
-        """Verify that a block is obstruing the path"""
+        """
+        Verify that a block is obstruing the path
+            Args : 
+                start_node (Node): the beginning path node, goal_node = the end path node
+            Returns : 
+                intersections (list): the list containing all the [x,y] values of the intersection(s) with the block
+        """
         intersections = []
         block_nodes = self.get_all_block ()
-        block_nodes_pos = [ [block_nodes [i].x_pos, block_nodes [i].y_pos] for i in range (len(block_nodes))]
         
         A = (start_node.x_pos, start_node.y_pos)
         B = (goal_node.x_pos, goal_node.y_pos)
@@ -74,7 +91,13 @@ class Node () :
         return(intersections)
     
     def notation_intersections (self, intersections) :
-        """create a notation based on the nature of the intersection (block node or else)"""
+        """
+        Create a notation based on the nature of the intersection (block node or else)
+            Args : 
+                intersections (list):  the list of intersections for two segments (given by self.block_intersection)
+            Returns : 
+                ceil_value (int): the up-rounded intersection value
+        """
         
         block_nodes = self.get_all_block ()
         block_nodes_pos = [ [block_nodes [i].x_pos, block_nodes [i].y_pos] for i in range (len(block_nodes))]
@@ -88,7 +111,11 @@ class Node () :
         return (ceil(value))
 
     def knock_out_path (self) :
-        """actualize real interaction through nodes (depending on block) in each node"""
+        """
+        Actualize real paths through the graph (depending on block) for each node
+            Args : 
+            Returns : 
+        """
         
         for i in range (len (self.all_nodes)) :
             actual_neigh = ""
@@ -103,12 +130,12 @@ class Node () :
     def djikstra_format (self) :
         """
         Changes the notations of nodes to better fit the djikstra algorithm
-        Args : 
-        Returns : a dict which has the following caracteristic
-            {
-                'Node1' : {'Node2 : dist between Node1 and Node2, ...}
-                .....
-            }
+            Args : 
+            Returns : a dict which has the following caracteristic
+                {
+                    'Node1' : {'Node2 : dist between Node1 and Node2, ...}
+                    .....
+                }
         """
         formatted_nodes = {}
         for i in range (len(self.all_nodes)) :
@@ -121,6 +148,12 @@ class Node () :
         return (formatted_nodes)          
             
     def djikstra_algo (self, starting_node, goal_node):
+        """
+        Finds the shortest path in a graph
+        Args:
+            starting_node (Node): the beginning node
+            goal_node (Node): the end node
+        """
         graph = self.djikstra_format()
         initial_id = str(starting_node.id)
         path = {} 
@@ -150,32 +183,13 @@ class Node () :
                 if path[i] > alternate:
                     path[i] = alternate
                     adj_node[i] = current_node
-
-        goal_node_name = str(goal_node.id)
         
-        print(f'The path between {goal_node_name} to {initial_id}')
-        print(goal_node_name, end = '<-')
+        final_node_path = []
+        final_node_path.append(goal_node)
         
         while True :
-            goal_node_name = adj_node[goal_node_name]
-            if goal_node_name is None:
-                print("")
+            goal_node.id = adj_node[goal_node.id]
+            if goal_node.id is None:
                 break
-            print(goal_node_name, end = '<-')
-    
-### Programme principal
-
-A = Node ('A', 0, 0, 'BCDEF', 'goal')
-B = Node ('B', 30, 20, 'ACDEF', 'block')
-C = Node ('C', 30, 40, 'ABDEF', 'block')
-D = Node ('D', 50, 40, 'ABCEF', 'block')
-E = Node ('E', 50, 20, 'ABCDF', 'block')
-F = Node ('F', 60, 50, 'ABCDE', 'start')
-
-### Programme principal
-
-#initialize the graph path
-A.knock_out_path()
-
-formated_paths = A.djikstra_format()
-print(A.djikstra_algo(F,A))
+            final_node_path.append(goal_node)
+        return(final_node_path)
