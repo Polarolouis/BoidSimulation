@@ -2,6 +2,9 @@ import json
 import os
 import tkinter
 
+PAUSED = False
+SPEED = 10
+
 def get_json_files_name():
     """List all the json files in the current directory"""
     # Get all the files in the directory
@@ -46,11 +49,35 @@ with open(filename, "r", encoding="utf8") as f:
     for key in raw_data:
         data[int(key)] = raw_data[key]
 
+alignment_force = 0.0
+cohesion_force = 0.0
+separation_force = 0.0
+wind_speed = 0.0
+wind_direction = 0
+goal_force = 0.0
+goal_position_string = ""
+goal_x = 0.0
+goal_y = 0.0
 
-number_of_boids, _, _, geometry, _, _, max_iteration, *_ = filename.strip().split("_")
+if len(filename.strip().split("_"))>8:
+    number_of_boids, _, _, geometry, _, _, max_iteration, \
+        _, _, _, alignment_force, _, _, cohesion_force, _, _,\
+        separation_force, _, _, wind_speed, _, _, wind_direction,\
+        _, _, goal_force, _, _, goal_position_string, _, \
+        bouncing = filename.strip().split("_")
+else:
+    number_of_boids, _, _, geometry, _, _, max_iteration, *_ = filename.strip().split("_")
 
 number_of_boids = int(number_of_boids)
 max_iteration = int(max_iteration)
+alignment_force = float(alignment_force)
+cohesion_force = float(cohesion_force)
+separation_force = float(separation_force)
+wind_speed = float(wind_speed)
+wind_direction = int(wind_direction)
+goal_force = float(goal_force)
+goal_position_string = goal_position_string.split("x")
+goal_x, goal_y = (float(x) for x in goal_position_string)
 
 print(f"Max iteration: {max_iteration}")
 
@@ -63,15 +90,63 @@ width, height = geometry.split("x")
 width = int(width)
 height = int(height)
 
+canvas = tkinter.Canvas(root, width=width, height=height, bg="white")
+canvas.grid(row=1, column=1, columnspan=3)
+
+# Top Frame
+top_frame = tkinter.Frame(root)
+top_frame.grid(row=0, column=1, columnspan=3)
+
+iteration_label = tkinter.Label(top_frame, text="Iteration:", font=("Helvetica", 20))
+iteration_label.grid(row=0, column=0)
+
 # Left frame
 left_frame = tkinter.Frame(root)
-left_frame.pack(side=tkinter.LEFT)
+left_frame.grid(row=0, column=0, rowspan=2)
 
-iteration_label = tkinter.Label(left_frame, text="Iteration:")
-iteration_label.pack()
+# Speed slider
+speed_slider = tkinter.Scale(left_frame, from_=1, to=1000, length=200, orient=tkinter.HORIZONTAL, command=lambda e: set_speed())
+speed_slider.set(SPEED)
+speed_slider.grid(row=1, column=0, columnspan=3)
 
-canvas = tkinter.Canvas(root, width=width, height=height, bg="white")
-canvas.pack()
+# Start button
+start_button = tkinter.Button(left_frame, text="Start", command=lambda : (update_canvas(1)))
+start_button.grid(row=2, column=0)
+
+# Pause/Resume button
+pause_button = tkinter.Button(left_frame, text="Pause", command=lambda e: pause_unpause())
+pause_button.grid(row=2, column=1)
+
+# Quit button
+quit_button = tkinter.Button(left_frame, text="Quit", command=root.quit, bg="red")
+quit_button.grid(row=2, column=2)
+
+# Right frame
+right_frame = tkinter.Frame(root)
+right_frame.grid(row=0, column=4, rowspan=2)
+
+bouncing_label = tkinter.Label(right_frame, text=f"Bouncing: {bouncing}")
+
+alignment_force_label = tkinter.Label(right_frame, text=f"Alignment force: {alignment_force}")
+alignment_force_label.grid(row=0, column=0)
+
+cohesion_force_label = tkinter.Label(right_frame, text=f"Cohesion force: {cohesion_force}")
+cohesion_force_label.grid(row=1, column=0)
+
+separation_force_label = tkinter.Label(right_frame, text=f"Separation force: {separation_force}")
+separation_force_label.grid(row=2, column=0)
+
+wind_force_label = tkinter.Label(right_frame, text=f"Wind force: {wind_speed}")
+wind_force_label.grid(row=3, column=0)
+
+wind_speed_label = tkinter.Label(right_frame, text=f"Wind speed: {wind_speed}")
+wind_speed_label.grid(row=4, column=0)
+
+goal_force_label = tkinter.Label(right_frame, text=f"Goal force: {goal_force}")
+goal_force_label.grid(row=5, column=0)
+
+goal_position_label = tkinter.Label(right_frame, text=f"Goal position: {goal_x}, {goal_y}")
+
 
 list_of_boid_canvas = []
 
@@ -80,20 +155,34 @@ for i in range(number_of_boids):
     x, y = data[0][str(i)]
     list_of_boid_canvas.append(canvas.create_oval(x-5, y-5, x+5, y+5, fill="grey"))
 
-iteration_label.configure(text=f"Iteration: {0}/{max_iteration}")
-
-current_turn = 1
+iteration_label.configure(text=f"Iteration: {0}/{max_iteration}", font=("Helvetica", 20))
 
 def update_canvas(current_turn):
     """Update the canvas"""
-    iteration_label.configure(text=f"Iteration: {current_turn}/{max_iteration}")
-    for i in range(number_of_boids):
-        x, y = data[current_turn][str(i)]
-        canvas.coords(list_of_boid_canvas[i], x-5, y-5, x+5, y+5)
-    root.after(50, lambda : (update_canvas(current_turn+1) if current_turn < max_iteration else None))
+    if not PAUSED:
+        iteration_label.configure(text=f"Iteration: {current_turn}/{max_iteration}")
+        for i in range(number_of_boids):
+            x, y = data[current_turn][str(i)]
+            canvas.coords(list_of_boid_canvas[i], x-5, y-5, x+5, y+5)
+        root.after(SPEED, lambda : (update_canvas(current_turn+1) if current_turn < max_iteration else None))
+    else:
+        root.after(SPEED, lambda : (update_canvas(current_turn)))
 
-update_canvas(current_turn)
+
+def pause_unpause():
+    """Pause or unpause the simulation"""
+    global PAUSED
+    PAUSED = not PAUSED
+
+def set_speed():
+    """Set the speed of the simulation"""
+    global SPEED, speed_slider
+    SPEED = int(speed_slider.get())
+
+
+
 
 # Maximize the window
+root.attributes("-fullscreen", True)
 root.state("zoomed")
 root.mainloop()
