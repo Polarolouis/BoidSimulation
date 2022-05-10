@@ -406,7 +406,7 @@ class Boid:
 
         for obstacle in obstacles_list:
             # We build a list of obstacles that the boid can reach
-            logging.debug('Boid %s is checking if it can reach the obstacle %s', self.id, obstacle.id)
+            logging.debug('Boid %s is checking if it can reach the obstacle', self.id)
             self.bounce_if_collision_with_obstacles(obstacle)
 
 # Update the boid
