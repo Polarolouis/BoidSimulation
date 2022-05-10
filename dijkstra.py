@@ -1,53 +1,6 @@
-from math import sqrt
+from math import sqrt, ceil
 from operator import eq
 from shapely.geometry import LineString, Point
-
-    
-def djikstra():
-    graph = initial_graph()
-    initial = 'F' #2
-
-    path = {} #3
-
-    adj_node = {} #4
-
-    queue = [] #5
-
-    graph = initial_graph() #6
-
-    for node in graph:
-        path[node] = float("inf")
-        adj_node[node] = None
-        queue.append(node)
-
-    path[initial] = 0
-
-    while queue:
-
-        key_min = queue[0]
-        min_val = path[key_min]
-        for n in range(1, len(queue)):
-            if path[queue[n]] < min_val:
-                key_min = queue[n]
-                min_val = path[key_min]
-        cur = key_min
-        queue.remove(cur)
-
-        for i in graph[cur]:
-            alternate = graph[cur][i] + path[cur]
-            if path[i] > alternate:
-                path[i] = alternate
-                adj_node[i] = cur
-
-    x = 'A'
-    print('The path between A to F')
-    print(x, end = '<-')
-    while True:
-        x = adj_node[x]
-        if x is None:
-            print("")
-            break
-        print(x, end='<-')
 
 class Node () :
     
@@ -58,8 +11,8 @@ class Node () :
     def __init__(self, id = str, x_pos = int, y_pos = int, neigh = str, node_type = str) : 
         
         self.id = id
-        self.x_pos = x_pos
-        self.y_pos = y_pos
+        self.x_pos = float(x_pos)
+        self.y_pos = float(y_pos)
         self.neigh = neigh
         self.node_type = node_type
         
@@ -84,29 +37,23 @@ class Node () :
     def is_block_node (self) :
         return (self.node_type == 'block')
     
+    def get_a_node (self, node_name = str) :
+        for i in range (len(self.all_nodes)) :
+            if self.all_nodes[i].id == node_name :
+                return (self.all_nodes[i])
+            
     def get_all_block (self) :
         block_nodes = []
         for i in range (len(self.all_nodes)) :
             if self.all_nodes[i].is_block_node () :
                 block_nodes.append(self.all_nodes [i])
         return block_nodes
-        
-    def djikstra_format (self) :
-        #     return {
 
-#         'A': {'B':36.055, 'C':50, 'E':53.852},
-#         'B': {'A':36.055, 'E':20, 'C':20},
-#         'C': {'A':50, 'B':20, 'D':20},
-#         'D': {'C':20, 'E':20},
-#         'E': {'B':20, 'D':20, 'A':53.852},
-#         'F': {'A':sqrt(i[0]**2+i[1]**2),'B':sqrt((i[0]-20)**2+(i[1]-30)**2)'C':sqrt((i[0]-30)**2+(i[1]-40)**2), 'D':sqrt((i[0]-30)**2+(i[1]-40)**2), 'E':53.852}
-#             }
-        print("haha")
-
-    def verify_block (self, start_node, goal_node) :
-        """verify that a block is obtruing the path"""
+    def block_intersection (self, start_node, goal_node) :
+        """Verify that a block is obstruing the path"""
         intersections = []
         block_nodes = self.get_all_block ()
+        block_nodes_pos = [ [block_nodes [i].x_pos, block_nodes [i].y_pos] for i in range (len(block_nodes))]
         
         A = (start_node.x_pos, start_node.y_pos)
         B = (goal_node.x_pos, goal_node.y_pos)
@@ -118,25 +65,117 @@ class Node () :
             line2 = LineString([C, D])
 
             try :
-                int_pt = line1.intersection(line2)
-                intersections.append ([int_pt.x, int_pt.y])
+                intersec_pt = line1.intersection(line2)
+                intersec_pt_pos = [intersec_pt.x, intersec_pt.y]
+                intersections.append (intersec_pt_pos) 
+                                   
             except AttributeError :
                 pass
         return(intersections)
+    
+    def notation_intersections (self, intersections) :
+        """create a notation based on the nature of the intersection (block node or else)"""
+        
+        block_nodes = self.get_all_block ()
+        block_nodes_pos = [ [block_nodes [i].x_pos, block_nodes [i].y_pos] for i in range (len(block_nodes))]
+        
+        value = 0.0
+        for i in range (len(intersections)) :
+            if intersections[i] in block_nodes_pos :
+                value += 0.5
+            else : 
+                value += 1
+        return (ceil(value))
+
+    def knock_out_path (self) :
+        """actualize real interaction through nodes (depending on block) in each node"""
+        
+        for i in range (len (self.all_nodes)) :
+            actual_neigh = ""
+            for j in range (len (self.all_nodes[i].neigh)) :
+                intersections = self.block_intersection (self.all_nodes[i], self.get_a_node(self.all_nodes[i].neigh[j]))
+                if self.notation_intersections (intersections) == 2 :
+                    pass
+                else :
+                    actual_neigh += self.all_nodes[i].neigh[j]
+            self.all_nodes[i].neigh = actual_neigh
+
+    def djikstra_format (self) :
+        """
+        Changes the notations of nodes to better fit the djikstra algorithm
+        Args : 
+        Returns : a dict which has the following caracteristic
+            {
+                'Node1' : {'Node2 : dist between Node1 and Node2, ...}
+                .....
+            }
+        """
+        formatted_nodes = {}
+        for i in range (len(self.all_nodes)) :
+            neigh_dist = {}
+            for j in range (len(self.all_nodes[i].neigh)) :
+                cur_neigh_node = self.get_a_node (self.all_nodes[i].neigh[j])
+                neigh_dist[f'{self.all_nodes[i].neigh[j]}'] = self.all_nodes[i].dist(cur_neigh_node)
             
+            formatted_nodes[f'{self.all_nodes[i].id}'] = neigh_dist
+        return (formatted_nodes)          
             
+    def djikstra_algo (self, starting_node, goal_node):
+        graph = self.djikstra_format()
+        initial_id = str(starting_node.id)
+        path = {} 
+        adj_node = {} 
+        node_queue = []
+
+        for node in graph :
+            path[node] = float("inf")
+            adj_node[node] = None
+            node_queue.append(node)
+
+        path[initial_id] = 0
+
+        while node_queue :
+            key_min_val = node_queue[0]
+            min_val = path[key_min_val]
+            
+            for n in range(1, len(node_queue)):
+                if path[node_queue[n]] < min_val:
+                    key_min_val = node_queue[n]
+                    min_val = path[key_min_val]
+            current_node = key_min_val
+            node_queue.remove(current_node)
+            
+            for i in graph[current_node]:
+                alternate = graph[current_node][i] + path[current_node]
+                if path[i] > alternate:
+                    path[i] = alternate
+                    adj_node[i] = current_node
+
+        goal_node_name = str(goal_node.id)
+        
+        print(f'The path between {goal_node_name} to {initial_id}')
+        print(goal_node_name, end = '<-')
+        
+        while True :
+            goal_node_name = adj_node[goal_node_name]
+            if goal_node_name is None:
+                print("")
+                break
+            print(goal_node_name, end = '<-')
+    
+### Programme principal
+
+A = Node ('A', 0, 0, 'BCDEF', 'goal')
+B = Node ('B', 30, 20, 'ACDEF', 'block')
+C = Node ('C', 30, 40, 'ABDEF', 'block')
+D = Node ('D', 50, 40, 'ABCEF', 'block')
+E = Node ('E', 50, 20, 'ABCDF', 'block')
+F = Node ('F', 60, 50, 'ABCDE', 'start')
 
 ### Programme principal
 
-A = Node ('A', 0, 0, 'BCE', 'goal')
-B = Node ('B', 30, 20, 'ACE', 'block')
-C = Node ('C', 30, 40, 'ADB', 'block')
-D = Node ('D', 50, 40, 'CE', 'block')
-E = Node ('E', 50, 20, 'DB', 'block')
-F = Node ('F', 80, 60, 'ABCDE', 'start') #must be linked to all other nodes
+#initialize the graph path
+A.knock_out_path()
 
-# print(A.dist(B))
-
-print(A.get_all_block())
-
-print(A.verify_block(A,F))
+formated_paths = A.djikstra_format()
+print(A.djikstra_algo(F,A))
