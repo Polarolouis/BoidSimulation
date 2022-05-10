@@ -12,7 +12,7 @@ root.title("Boids")
 # Constants
 #------------------------------------------------------------------------------
 
-WIDTH, HEIGHT = (root.winfo_screenwidth() - 672, root.winfo_screenheight()-300) # (1200, 800)
+WIDTH, HEIGHT = (root.winfo_screenwidth() - 472, root.winfo_screenheight()-300) # (1200, 800)
 NUMBER_OF_BOIDS = 50
 NUMBER_OF_STEPS = 1_000
 BOUNCING = True
@@ -73,7 +73,7 @@ top_frame.grid(row=0, column=0, sticky="n")
 
 ##
 label_messages = tkinter.Label(top_frame, text="", font=("Helvetica", 12))
-label_messages.grid(row=0, column=0, sticky="w")
+label_messages.grid(row=0, column=0, sticky="nswe")
 
 # Bottom Frame
 bottom_frame = tkinter.Frame(root)
@@ -82,11 +82,11 @@ bottom_frame.grid(row=0, column=0, sticky="s")
 ## Slider to set the simulation speed
 simulation_speed_slider = tkinter.Scale(bottom_frame, from_=1, to=100, orient=tkinter.HORIZONTAL, label="Simulation speed", length=200, command=lambda e: validate_parameters())
 simulation_speed_slider.set(SIMULATION_SPEED)
-simulation_speed_slider.grid(row=0, column=0, sticky="w")
+simulation_speed_slider.grid(row=0, columnspan=3, sticky="w")
 
 ## Button to start the simulation
 button_start = tkinter.Button(bottom_frame, text="Start", font=("Helvetica", 12), command=lambda: (stock_simulation((start_simulation(root, NUMBER_OF_BOIDS, WIDTH, HEIGHT))), \
-    button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start(), canvas.bind("<Button-1>", lambda e: integrate_click(*callback(e)))))
+    button_start.config(state="disable"), button_reset.config(state="normal"), button_pause.config(state="normal"), disable_parameters_on_start(), canvas.bind("<Button-1>", lambda e: integrate_click(*callback(e)))), bg="green")
 button_start.grid(row=1, column=0, sticky="w")
 
 ## Button to pause the simulation
@@ -97,9 +97,13 @@ button_pause.grid(row=1, column=1, sticky="w")
 ## Button to reset the simulation
 button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 12), command=lambda: (reset_simulation(sim_space, canvas), \
     button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), \
-        enable_parameters_on_reset(), label_messages.config(text="Simulation reset", fg="red"), canvas.unbind("<Button-1>")))
+        enable_parameters_on_reset(), label_messages.config(text="Simulation reset", fg="red"), canvas.unbind("<Button-1>")), fg="red")
 button_reset.config(state="disable")
 button_reset.grid(row=1, column=2, sticky="e")
+
+## Button to quit
+button_quit = tkinter.Button(bottom_frame, text="Quit", font=("Helvetica", 12), command=lambda: (root.destroy()), bg="red")
+button_quit.grid(row=1, column=3, sticky="e")
 
 # Parameters frame (right)
 parameters_frame = tkinter.LabelFrame(root, text="Parameters", font=("Helvetica", 12))
@@ -481,5 +485,6 @@ def reset_simulation(simulation_space, canvas):
 #------------------------------------------------------------------------------
 
 # the window is maximized
+root.attributes("-fullscreen", True)
 root.state('zoomed')
 root.mainloop()
