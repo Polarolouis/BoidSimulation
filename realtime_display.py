@@ -496,5 +496,6 @@ def reset_simulation(simulation_space, canvas):
 
 # the window is maximized
 root.attributes("-fullscreen", True)
-root.state('zoomed')
+root.rowconfigure(0, weight=1)
+root.columnconfigure(0, weight=1)
 root.mainloop()
