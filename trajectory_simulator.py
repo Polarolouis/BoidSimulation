@@ -1,5 +1,7 @@
+import datetime
 import json
 import os
+import time
 import boid
 import colored
 
@@ -9,6 +11,15 @@ import colored
 # ---------------------------------------------------------------------------------------------------------------------
 
 SEPARATION_LINE = "-" * (104)
+
+RED = colored.fg("red")
+GREEN = colored.fg("green")
+WHITE = colored.fg("white")
+YELLOW = colored.fg("yellow")
+
+ETA_ITERATION_SEPARATOR = 25
+
+LENGHT_PROGRESSBAR = 60
 
 DEFAULT_WIDTH, DEFAULT_HEIGHT = (1200, 800)
 
@@ -94,11 +105,14 @@ def display_current_values(parameters_name_list):
         parameters_list {list} -- The list of the parameters
     """
     os.system("cls" if os.name == "nt" else "clear")
+    print(f'{"+----------------------+":^104}')
+    print(f'{"| Trajectory Simulator |":^104}')
+    print(f'{"+----------------------+":^104}')
     print(SEPARATION_LINE)
-    print(f"|{'Current values':^102}|")
+    print(f"+{'Current values':^102}+")
     print(SEPARATION_LINE)
     for index, (parameter_name, value) in enumerate(parameters_name_list.items()):
-        print(f"{f'{index + 1}. {parameter_name} = {value}':^104}")
+        print(f"|{f'{index + 1}. {parameter_name} = {value}':^102}|")
 
 def menu(parameters, max_parameters):
     """Display the menu and return the new value for constants
@@ -107,13 +121,10 @@ def menu(parameters, max_parameters):
     """
     # Display the current values of the constants
     display_current_values(parameters)
-    red = colored.fg("red")
-    green = colored.fg("green")
-    white = colored.fg("white")
     #default_color = colored.fg("default")
     print(SEPARATION_LINE)
-    print(f'{green}0. Validate')
-    print(f'{red}-1. Exit{white}')
+    print(f'|{f"{GREEN}    0. Validate{WHITE}":<121}|')
+    print(f'|{f"{RED}   -1. Exit{WHITE}":<121}|')
     print(SEPARATION_LINE)
 
     # Get the input
@@ -198,7 +209,19 @@ def loop_menu(parameters, max_parameters):
         return True
 
 if loop_menu(parameters, max_parameters):
-    print("\n---------Simulation started---------")
+    filename = f"{parameters['NUMBER_OF_BOIDS']}_boids_in_{parameters['WIDTH']}x{parameters['HEIGHT']}_space_with_{parameters['NUMBER_OF_STEPS']}_steps_alignment_force_{parameters['ALIGNMENT_FORCE_MULTIPLICATOR']}_cohesion_force_{parameters['COHESION_FORCE_MULTIPLICATOR']}_separation_force_{parameters['SEPARATION_FORCE_MULTIPLICATOR']}_wind_speed_{parameters['WIND_SPEED']}_wind_direction_{parameters['WIND_DIRECTION']}_goal_force_{parameters['GOAL_FORCE_MULTIPLICATOR']}_goal_position_{parameters['GOAL_X']}x{parameters['GOAL_Y']}_bouncing_{parameters['BOUNCING']}"
+    if os.path.isfile(filename):
+        print(f"WARNING : {RED}The file {filename} already exists !{WHITE}")
+        print(f"Do you want to overwrite it ? {YELLOW}(y/n) {WHITE}")
+        answer = input()
+        if answer == "y":
+            print(f"{GREEN}The file {filename} will be overwritten !{WHITE}")
+        elif answer == "n":
+            print(f"{RED}The file {filename} will not be overwritten !{WHITE}")
+            exit()
+    print(SEPARATION_LINE)
+    print(f'{"SIMULATION STARTED":^104}')
+    print(SEPARATION_LINE)
     # Create the simulation
     width, height = parameters["WIDTH"], parameters["HEIGHT"]
     simulation = boid.SimulationSpace(width, height)
@@ -218,31 +241,54 @@ if loop_menu(parameters, max_parameters):
         return '#%02x%02x%02x' % (r, g, b)
 
     # Iterate the simulation
-    print("\n--------Computing simulation--------")
+    print(SEPARATION_LINE)
+    print(f'{"COMPUTING SIMULATION":^104}')
+    print(SEPARATION_LINE)
+    start = 0
+    end = 0
+    time_between_steps = 0
+    estimated_remaining_time = parameters["NUMBER_OF_STEPS"] * parameters["NUMBER_OF_BOIDS"]
+    start_full = time.time()
     for i in range(1, parameters["NUMBER_OF_STEPS"]+1):
         ratio = (i/parameters["NUMBER_OF_STEPS"])
-        progressbar = "[" + "#"*int(ratio*28) + " "*(28-int(ratio*28)) + "]"
+        progressbar = "[" + "#"*int(ratio*79) + " "*(79-int(ratio*79)) + "]"
         red_part = 255 - int(ratio*255)
         green_part = int(ratio*255)
         blue_part = 0
         color = colored.fg(rgb_to_hex(red_part, green_part, blue_part))
-        white = colored.fg("#ffffff")
-        percentage = str(round(ratio*100, 2))
-        progressbar = f"{color + progressbar:=<29}{white} {percentage}%"
-        print("\r{}".format(progressbar), end="")
+        percentage = round(ratio*100, 2)
+        time_between_steps += round(end - start, 2) * (1/ETA_ITERATION_SEPARATOR)
+        if i%ETA_ITERATION_SEPARATOR == 0:
+            estimated_remaining_time = round((parameters["NUMBER_OF_STEPS"] - i) * time_between_steps, 2)
+            
+            # Reset the time_between_steps
+            time_between_steps = 0
+            
+            estimated_remaining_time = datetime.timedelta(seconds=estimated_remaining_time)
+        progressbar = f"{color + progressbar:=<29}{WHITE} {percentage:2.2f}% | ETA {estimated_remaining_time}"
+        print(f"\r{progressbar:^100}", end="")
         #print(f"\r{percentage}%", end="")
+        start = time.time()
         simulation.next_step()
         current_position = simulation.get_positions()
         boids[i] = dict()
         for boid_id in range(parameters["NUMBER_OF_BOIDS"]):
             boids[i][boid_id] = current_position[boid_id]
-    print("\n--------Simulation ended--------")
+        end = time.time()
+    end_full = time.time()
+    time_to_completion = datetime.timedelta(seconds=round(end_full - start_full, 2))
+    print(f"\nSimulation completed in {time_to_completion}")
+    print("\n" + SEPARATION_LINE)
+    print(f'{"SIMULATION FINISHED":^104}')
+    print(SEPARATION_LINE)
 
     # Saving the data to a file
-    print("\n--------Saving data to a file--------")
-    filename = f"{parameters['NUMBER_OF_BOIDS']}_boids_in_{parameters['WIDTH']}x{parameters['HEIGHT']}_space_with_{parameters['NUMBER_OF_STEPS']}_steps_alignment_force_{parameters['ALIGNMENT_FORCE_MULTIPLICATOR']}_cohesion_force_{parameters['COHESION_FORCE_MULTIPLICATOR']}_separation_force_{parameters['SEPARATION_FORCE_MULTIPLICATOR']}_wind_speed_{parameters['WIND_SPEED']}_wind_direction_{parameters['WIND_DIRECTION']}_goal_force_{parameters['GOAL_FORCE_MULTIPLICATOR']}_goal_position_{parameters['GOAL_X']}x{parameters['GOAL_Y']}_bouncing_{parameters['BOUNCING']}"
+    print(SEPARATION_LINE)
+    print(f'{"SAVING SIMULATION":^104}')
+    print(SEPARATION_LINE)
     # Checking if the file exists
-    if not os.path.isfile(filename):
-        with open(f"{filename}.json", "w", encoding="utf8") as file:
-            json.dump(boids, file)
-    print("\n--------Data saved to a file--------")
+    with open(f"{filename}.json", "w", encoding="utf8") as file:
+        json.dump(boids, file)
+    print(SEPARATION_LINE)
+    print(f'{f"SIMULATION SAVED TO : {filename:<50}.json":^104}')
+    print(SEPARATION_LINE)
