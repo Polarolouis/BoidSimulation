@@ -46,6 +46,10 @@ def validate_parameters():
         GOAL_FORCE_MULTIPLICATOR, SIMULATION_SPEED
     BOUNCING = True if bouncing_boolean.get() else False
     NUMBER_OF_BOIDS = int(number_of_boids_slider.get())
+    if NUMBER_OF_BOIDS >= 100:
+        label_warning.config(text="A lot of boids means slower real-time simulation consider using pre-computing !", fg="red", font=("Helvectica", 16))
+    else:
+        label_warning.config(text="", fg="black")
     label_number_of_boids.config(text=f"Boids : {NUMBER_OF_BOIDS}")
     NUMBER_OF_STEPS = int(number_of_steps_spinbox.get())
 
@@ -99,11 +103,11 @@ button_reset = tkinter.Button(bottom_frame, text="Reset", font=("Helvetica", 12)
     button_start.config(state="normal"), button_reset.config(state="disable"), button_pause.config(state="disable"), label_messages.config(text=""), \
         enable_parameters_on_reset(), label_messages.config(text="Simulation reset", fg="red"), canvas.unbind("<Button-1>")), fg="red")
 button_reset.config(state="disable")
-button_reset.grid(row=1, column=2, sticky="e")
+button_reset.grid(row=2, column=0, sticky="e")
 
 ## Button to quit
 button_quit = tkinter.Button(bottom_frame, text="Quit", font=("Helvetica", 12), command=lambda: (root.destroy()), bg="red")
-button_quit.grid(row=1, column=3, sticky="e")
+button_quit.grid(row=2, column=1, sticky="e")
 
 # Parameters frame (right)
 parameters_frame = tkinter.LabelFrame(root, text="Parameters", font=("Helvetica", 12))
@@ -117,7 +121,7 @@ if BOUNCING:
 bouncing_checkbox.grid(row=0, column=0, sticky="w")
 
 ## Number of boids slider
-number_of_boids_slider = tkinter.Scale(parameters_frame, from_=1, to=1000, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
+number_of_boids_slider = tkinter.Scale(parameters_frame, from_=1, to=400, orient=tkinter.HORIZONTAL, length=200, label="Number of boids", font=("Helvetica", 12), command=lambda e: (validate_parameters()))
 number_of_boids_slider.set(NUMBER_OF_BOIDS)
 number_of_boids_slider.grid(row=1, column=0, sticky="w")
 
@@ -286,6 +290,12 @@ def enable_parameters_on_reset():
 #------------------------------------------------------------------------------
 canvas = tkinter.Canvas(root, width=WIDTH, height=HEIGHT, background='ivory')
 canvas.grid(row=0, column=1, columnspan=2, sticky="")
+
+#------------------------------------------------------------------------------
+# Pre-computing message label
+#------------------------------------------------------------------------------
+label_warning = tkinter.Label(root, text="", font=("Helvetica", 12), fg="red")
+label_warning.grid(row=1, column=1, columnspan=2, sticky="")
 
 #------------------------------------------------------------------------------
 # Functions
