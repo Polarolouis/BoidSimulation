@@ -19,21 +19,22 @@
   <li><a href="">Première implémentation : Modèle vectoriel</a></li>
   <ul>
     <li><a href="">Calcul des distances</a></li>
-    <li><a href="">Comportement boidien</a></li> 
+    <li><a href="">Comportement boidien</a></li>
     <ol>
       <li><a href="">Attaction</a></li>
       <li><a href="">Orientation</a></li>
-      <li><a href="">Repulsion</a></li> 
+      <li><a href="">Repulsion</a></li>
     <ol>
   </ul>
   <li><a href="">Sources et ressources</a></li>
-  <li><a href="">Contact</a></li> 
+  <li><a href="">Contact</a></li>
 </ol>
 
-#  A propos du projet 
+# A propos du projet
 
 **But du projet** : réalisation d'une simulation 2D de comportements de foule, en vue top-down.
 On souhaite simuler un comportement de type boidien qui est régie par ces trois caractéristiques :
+
 1. l'alignement : les individus sont attirés vers un centre de gravité global calculé entre tous les individus.
 2. la séparation : les individus ne peuvent pas se superposer (ie ils ne pauvent pas avoir de collisions), ils ont donc un comportement d'évitement.
 3. la cohésion : les boids se rapprocheront les uns des autres.
@@ -45,6 +46,7 @@ Globalement, on peut représenter les boids comme des points, caractérisés par
 </p>
 
 On définira donc trois zones :
+
 - une zone rosée, qui va représenter l'attraction : tout voisin qui entre dans cette zone se verra attiré vers le boid lui même.
 - une zone rouge, qui va représenter l'orientation : un voisin qui entre dans cette zone "suivra" le boid.
 - une zone rouge foncée, qui représente la zone de répulsion : le voisin s'éloignera du boid en rentrant dans cette zone.
@@ -55,7 +57,7 @@ Nous avons commencé par créer une fenêtre graphique nous permettant de change
 <p align="center">
   <img src=https://i.pinimg.com/originals/c4/7d/ca/c47dca23ad35f3d92d9d0b96c93ceea2.jpg alt="fenetre graphique" width=""/>
 </p>
-Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de la simulation en cours d'éxecution. 
+Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de la simulation en cours d'éxecution.
 C'est sur le panneau de droite que nous pourrons changer les paramètres pour pouvoir observer de manière direct les comportements de notre simulation.
 
 Nous avons implémenté un comportement de rebond aux limites.
@@ -65,6 +67,7 @@ Nous avons implémenté un comportement de rebond aux limites.
 Une première réalisation dite vectorielle a été codée (voir fichier python `boid.py` et `display.py`). Les trois comportements d'un boid y sont r
 
 Les boids sont définis ainsi :
+
 ```python
 class Boid:
     """Boid class"""
@@ -84,6 +87,7 @@ Pour chaque boid, nous calculons les boids les plus proches (calcul de distance 
 
 Dans un premier temps, on retrouve de manière calculatoire les boids qui sont proches du boid concerné, pour chaque boid présent dans la simulation.
 Réaliser un premier tri en fonction des coordonées permet de réduire la complexité de l'algorithme. La fonction concernée est indiquée juste ici :
+
 ```python
 # Flock calculation
 def find_near_boids(self, boids):
@@ -151,6 +155,7 @@ def alignment(self):
 ```
 
 ### Repulsion
+
 ```python
 def separation(self):
   """Separation behaviour to avoid collisions with other boids
@@ -171,8 +176,6 @@ def separation(self):
   return separation_correction
 ```
 
-
-
 ## Complexité
 
 Nous avons pu approcher la complexité par le programme `complexity.py`.
@@ -183,13 +186,14 @@ On a tracé ci-dessous le temps de simulation en fonction du nombre d'objets sim
 <p align="center">
   <img src= https://i.pinimg.com/originals/17/61/fc/1761fc369490f2ebb9a135dab987269a.jpg
  alt="fenetre graphique" width=""/>
+  <img src=example_real_time_simulation.gif
+ alt="fenetre graphique" width=""/>
 </p>
 
 # Sources et ressources utilisées
 
-- https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118
-- https://www.codespeedy.com/how-to-implement-dijkstras-shortest-path-algorithm-in-python/
-
+- <https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118>
+- <https://www.codespeedy.com/how-to-implement-dijkstras-shortest-path-algorithm-in-python/>
 
 # Contact
 
@@ -199,4 +203,4 @@ Louis Lacoste - louis.lacoste@agroparistech.fr
 
 Gabin Derache - gabin.derache@agroparistech.fr
 
-Project Link : https://github.com/Polarolouis/BoidSimulation
+Project Link : <https://github.com/Polarolouis/BoidSimulation>
