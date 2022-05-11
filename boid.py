@@ -611,7 +611,6 @@ class SimulationSpace:
             for x_pos in X:
                 for y_pos in Y:
                     positions.append((x_pos, y_pos))
-            print(f"Size of possible positions {len(positions)}")
             for x_pos, y_pos in positions:
                 if len(self.boids) < number_of_boids:
                     x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
