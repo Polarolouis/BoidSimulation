@@ -1,11 +1,14 @@
 import json
 import os
 import boid
-import pickle
+import colored
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 #                                                      CONSTANTS
 # ---------------------------------------------------------------------------------------------------------------------
+
+SEPARATION_LINE = "-" * (104)
 
 DEFAULT_WIDTH, DEFAULT_HEIGHT = (1200, 800)
 
@@ -23,7 +26,7 @@ DEFAULT_GOAL_Y = DEFAULT_HEIGHT/2
 DEFAULT_ALIGNMENT_FORCE_MULTIPLICATOR = 1
 DEFAULT_COHESION_FORCE_MULTIPLICATOR = 1
 DEFAULT_SEPARATION_FORCE_MULTIPLICATOR = 1
-DEFAULT_GOAL_FORCE_MULTIPLICATOR = 1
+DEFAULT_GOAL_FORCE_MULTIPLICATOR = 0
 
 # Assign default values to the constants
 parameters = {"WIDTH":DEFAULT_WIDTH, "HEIGHT":DEFAULT_HEIGHT, "NUMBER_OF_BOIDS":DEFAULT_NUMBER_OF_BOIDS, 
@@ -90,9 +93,12 @@ def display_current_values(parameters_name_list):
     Arguments:
         parameters_list {list} -- The list of the parameters
     """
-    print("\r--------Current values--------")
+    os.system("cls" if os.name == "nt" else "clear")
+    print(SEPARATION_LINE)
+    print(f"|{'Current values':^102}|")
+    print(SEPARATION_LINE)
     for index, (parameter_name, value) in enumerate(parameters_name_list.items()):
-        print(f"{index + 1}. {parameter_name} = {value}")
+        print(f"{f'{index + 1}. {parameter_name} = {value}':^104}")
 
 def menu(parameters, max_parameters):
     """Display the menu and return the new value for constants
@@ -101,8 +107,14 @@ def menu(parameters, max_parameters):
     """
     # Display the current values of the constants
     display_current_values(parameters)
-    print('\n0. Validate')
-    print('\n-1. Exit')
+    red = colored.fg("red")
+    green = colored.fg("green")
+    white = colored.fg("white")
+    #default_color = colored.fg("default")
+    print(SEPARATION_LINE)
+    print(f'{green}0. Validate')
+    print(f'{red}-1. Exit{white}')
+    print(SEPARATION_LINE)
 
     # Get the input
     input_value = input_and_verification("input", -1, 16, int)
@@ -186,7 +198,7 @@ def loop_menu(parameters, max_parameters):
         return True
 
 if loop_menu(parameters, max_parameters):
-    print("\n--------Starting simulation--------")
+    print("\n---------Simulation started---------")
     # Create the simulation
     width, height = parameters["WIDTH"], parameters["HEIGHT"]
     simulation = boid.SimulationSpace(width, height)
@@ -196,17 +208,29 @@ if loop_menu(parameters, max_parameters):
             bouncing = parameters["BOUNCING"])
     boid.Boid.set_goal_position(parameters["GOAL_X"], parameters["GOAL_Y"])
     # Create the boids
-    print(parameters["NUMBER_OF_BOIDS"])
     simulation.populate(parameters["NUMBER_OF_BOIDS"], parameters["GOAL_X"], parameters["GOAL_Y"], space_fill = "even")
 
     # Create the dictionnary of the boids
     boids = {0 : { boid.id : boid.get_coords() for boid in simulation.boids}}
+
+    def rgb_to_hex(r, g, b):
+        """Convert rgb to hex"""
+        return '#%02x%02x%02x' % (r, g, b)
+
     # Iterate the simulation
-    print("\n--------Starting simulation--------")
+    print("\n--------Computing simulation--------")
     for i in range(1, parameters["NUMBER_OF_STEPS"]+1):
-        percentage = (i/parameters["NUMBER_OF_STEPS"])*100
-        if percentage%10 == 0:
-            print(f"\b{percentage} %")
+        ratio = (i/parameters["NUMBER_OF_STEPS"])
+        progressbar = "[" + "#"*int(ratio*28) + " "*(28-int(ratio*28)) + "]"
+        red_part = 255 - int(ratio*255)
+        green_part = int(ratio*255)
+        blue_part = 0
+        color = colored.fg(rgb_to_hex(red_part, green_part, blue_part))
+        white = colored.fg("#ffffff")
+        percentage = str(round(ratio*100, 2))
+        progressbar = f"{color + progressbar:=<29}{white} {percentage}%"
+        print("\r{}".format(progressbar), end="")
+        #print(f"\r{percentage}%", end="")
         simulation.next_step()
         current_position = simulation.get_positions()
         boids[i] = dict()
