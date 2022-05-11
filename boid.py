@@ -597,6 +597,7 @@ class Obstacle:
 class SimulationSpace:
     """Class for the simulation space"""
     counter = 0
+
     def __init__(self, width, height):
         """Initialize the simulation space
         Arguments:
@@ -666,7 +667,6 @@ class SimulationSpace:
         self.obstacles.append(Obstacle(x0, y0, x1, y1))
         logging.debug('Created obstacle at (%s, %s) to (%s, %s)', x0, y0, x1, y1)
 
-    
     def next_step(self):
         """Calculate the next iteration of the simulation"""
 
