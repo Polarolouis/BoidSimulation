@@ -16,6 +16,7 @@ class Boid:
     near_distance_alignment = 10*radius # Distance to be considered near
     near_distance_cohesion = 0.5*near_distance_alignment
     near_distance_separation = 4*radius
+    near_distance_collision= 2.5*radius
     chaotic_probability = 0.0
     bouncing = False
     
@@ -26,7 +27,7 @@ class Boid:
     wind_speed = 0
     wind_direction = 0
 
-    max_speed = 5
+    max_speed = 3
     max_alignment_force = 1
     max_cohesion_force = 1
     max_separation_force = 1
@@ -57,6 +58,7 @@ class Boid:
         self.near_boids_alignment = []
         self.near_boids_cohesion = []
         self.near_boids_separation = []
+        self.near_boids_collision = []
 
         # Initialise the boid color related variables
         self.the_chosen_one = the_chosen_one
@@ -121,6 +123,7 @@ class Boid:
         self.near_boids_alignment = []
         self.near_boids_cohesion = []
         self.near_boids_separation = []
+        self.near_boids_collision=[]
 
         filtered_boids = (boid for boid in boids if (not np.array_equal(self.position, boid.position)) and ((self.position[0] - self.near_distance_alignment < boid.position[0] and self.position[1] - self.near_distance_alignment < boid.position[1]) and (self.position[0] + self.near_distance_alignment > boid.position[0] and self.position[1] + self.near_distance_alignment > boid.position[1])))
         logging.debug('Filtered boids: %s', filtered_boids)
@@ -138,10 +141,15 @@ class Boid:
             if (boid not in self.near_boids_separation) and dist < self.near_distance_separation:
                 self.near_boids_separation.append((boid, dist))
                 boid.near_boids_separation.append((self, dist))
+                
+            if (boid not in self.near_boids_collision) and dist < self.near_distance_collision:
+                    self.near_boids_collision.append((boid, dist))
+                    boid.near_boids_collision.append((self, dist))    
         logging.debug('Near boids ids for alignment: %s', [boid.id for boid, _ in self.near_boids_alignment])
         logging.debug('Near boids ids for cohesion: %s', [boid.id for boid, _ in self.near_boids_cohesion])
         logging.debug('Near boids ids for separation: %s', [boid.id for boid, _ in self.near_boids_separation])
-
+        logging.debug('Near boids ids for collision: %s', [boid.id for boid, _ in self.near_boids_collision])
+        
 
 # Flock behaviour
     def alignment(self):
@@ -207,6 +215,26 @@ class Boid:
         
         return separation_correction * Boid.separation_force
 
+    def collision(self):
+        """collision behavior to prevent boids from going through each other
+        Returns:
+            np.array([float,float]) -- [x velocity, y velocity]"""
+        #self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
+        x_vel=self.velocity[0][0]
+        y_vel=self.velocity[1][0]
+        vel=np.array([x_vel,y_vel], dtype=np.float64)
+        for boid, distance in self.near_boids_collision:
+            diff=self.position- boid.position
+            x_diff=diff[0][0]
+            y_diff=diff[1][0]
+            normal=np.array([[-y_diff,x_diff]], dtype=np.float64)
+            normal_norm= np.linalg.norm(normal)
+            new_vel = (np.dot(normal,vel)/(normal_norm**2))*normal
+            x_new_vel=new_vel[0][0]
+            y_new_vel=new_vel[0][1]
+            self.velocity=np.array([[x_new_vel],[y_new_vel]], dtype=np.float)
+    #(np.dot(normal,self.velocity)/(normal_norm**2))*normal
+    
     def wind(self):
         """Apply wind to the boid
         Returns:
@@ -267,6 +295,7 @@ class Boid:
         if self.separation_force > 0:
             separation = self.separation()
             self.acceleration += separation
+        
 
         logging.debug('Boid %s acceleration: %s', self.id, self.acceleration)
         logging.debug('----------------------------------')
@@ -429,6 +458,10 @@ class Boid:
             angle = random.uniform(0, 2 * math.pi)
             self.velocity[0] += math.cos(angle)
             self.velocity[1] += math.sin(angle)
+        
+        #Collision
+        if self.near_boids_collision:
+            self.collision()
 
         # Check if the boid is out of bounds and apply the correction
         if self.bouncing:
