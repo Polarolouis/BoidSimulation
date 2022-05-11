@@ -221,17 +221,25 @@ class Boid:
             np.array([float,float]) -- [x velocity, y velocity]"""
         x_vel = self.velocity[0][0]
         y_vel = self.velocity[1][0]
+
+        # We store the velocity in a line vector to apply dot product
         vel = np.array([x_vel,y_vel], dtype=np.float64)
-        for boid, _ in self.near_boids_collision:
+
+        average_anti_collision_velocity = np.array([[0], [0]], dtype=np.float64)
+
+        for boid, distance in self.near_boids_collision:
             diff = self.position - boid.position
             x_diff = diff[0][0]
             y_diff = diff[1][0]
             normal = np.array([[-y_diff,x_diff]], dtype=np.float64)
             normal_norm = np.linalg.norm(normal)
-            new_vel = (np.dot(normal,vel)/(normal_norm**2))*normal
-            x_new_vel = new_vel[0][0]
-            y_new_vel = new_vel[0][1]
-            self.velocity = np.array([[x_new_vel],[y_new_vel]], dtype=np.float)
+
+            # If the boid is too close we don't want them to collide
+            self.velocity = -self.velocity
+            # new_vel = (np.dot(normal,vel)/(normal_norm**2))*normal
+            # x_new_vel = new_vel[0][0]
+            # y_new_vel = new_vel[0][1]
+            # average_anti_collision_velocity += np.array([[x_new_vel],[y_new_vel]], dtype=np.float)/distance
 
     
     def wind(self):
