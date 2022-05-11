@@ -220,19 +220,19 @@ class Boid:
         Returns:
             np.array([float,float]) -- [x velocity, y velocity]"""
         #self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
-        x_vel=self.velocity[0][0]
-        y_vel=self.velocity[1][0]
-        vel=np.array([x_vel,y_vel], dtype=np.float64)
-        for boid, distance in self.near_boids_collision:
-            diff=self.position- boid.position
-            x_diff=diff[0][0]
-            y_diff=diff[1][0]
-            normal=np.array([[-y_diff,x_diff]], dtype=np.float64)
-            normal_norm= np.linalg.norm(normal)
+        x_vel = self.velocity[0][0]
+        y_vel = self.velocity[1][0]
+        vel = np.array([x_vel,y_vel], dtype=np.float64)
+        for boid, _ in self.near_boids_collision:
+            diff = self.position - boid.position
+            x_diff = diff[0][0]
+            y_diff = diff[1][0]
+            normal = np.array([[-y_diff,x_diff]], dtype=np.float64)
+            normal_norm = np.linalg.norm(normal)
             new_vel = (np.dot(normal,vel)/(normal_norm**2))*normal
-            x_new_vel=new_vel[0][0]
-            y_new_vel=new_vel[0][1]
-            self.velocity=np.array([[x_new_vel],[y_new_vel]], dtype=np.float)
+            x_new_vel = new_vel[0][0]
+            y_new_vel = new_vel[0][1]
+            self.velocity = np.array([[x_new_vel],[y_new_vel]], dtype=np.float)
     #(np.dot(normal,self.velocity)/(normal_norm**2))*normal
     
     def wind(self):
