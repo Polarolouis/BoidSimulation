@@ -219,7 +219,6 @@ class Boid:
         """collision behavior to prevent boids from going through each other
         Returns:
             np.array([float,float]) -- [x velocity, y velocity]"""
-        #self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
         x_vel = self.velocity[0][0]
         y_vel = self.velocity[1][0]
         vel = np.array([x_vel,y_vel], dtype=np.float64)
@@ -233,7 +232,7 @@ class Boid:
             x_new_vel = new_vel[0][0]
             y_new_vel = new_vel[0][1]
             self.velocity = np.array([[x_new_vel],[y_new_vel]], dtype=np.float)
-    #(np.dot(normal,self.velocity)/(normal_norm**2))*normal
+
     
     def wind(self):
         """Apply wind to the boid
