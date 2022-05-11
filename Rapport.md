@@ -186,7 +186,7 @@ On a tracé ci-dessous le temps de simulation en fonction du nombre d'objets sim
 <p align="center">
   <img src= https://i.pinimg.com/originals/17/61/fc/1761fc369490f2ebb9a135dab987269a.jpg
  alt="fenetre graphique" width=""/>
-  <img src=example_real_time_simulation.gif
+  <img src=images/example_real_time_simulation.gif
  alt="fenetre graphique" width=""/>
 </p>
 
