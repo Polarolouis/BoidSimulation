@@ -10,6 +10,11 @@ import colored
 #                                                      CONSTANTS
 # ---------------------------------------------------------------------------------------------------------------------
 
+# To save the file
+
+ROOT_JSON_PATH = "./json/"
+
+# For the display
 SEPARATION_LINE = "-" * (104)
 
 RED = colored.fg("red")
@@ -20,6 +25,8 @@ YELLOW = colored.fg("yellow")
 ETA_ITERATION_SEPARATOR = 25
 
 LENGHT_PROGRESSBAR = 60
+
+# Settings for the computation
 
 DEFAULT_WIDTH, DEFAULT_HEIGHT = (1200, 800)
 
@@ -210,7 +217,8 @@ def loop_menu(parameters, max_parameters):
 
 if loop_menu(parameters, max_parameters):
     filename = f"{parameters['NUMBER_OF_BOIDS']}_boids_in_{parameters['WIDTH']}x{parameters['HEIGHT']}_space_with_{parameters['NUMBER_OF_STEPS']}_steps_alignment_force_{parameters['ALIGNMENT_FORCE_MULTIPLICATOR']}_cohesion_force_{parameters['COHESION_FORCE_MULTIPLICATOR']}_separation_force_{parameters['SEPARATION_FORCE_MULTIPLICATOR']}_wind_speed_{parameters['WIND_SPEED']}_wind_direction_{parameters['WIND_DIRECTION']}_goal_force_{parameters['GOAL_FORCE_MULTIPLICATOR']}_goal_position_{parameters['GOAL_X']}x{parameters['GOAL_Y']}_bouncing_{parameters['BOUNCING']}"
-    if os.path.isfile(filename):
+    full_path = ROOT_JSON_PATH + filename + ".json" 
+    if os.path.isfile(full_path):
         print(f"WARNING : {RED}The file {filename} already exists !{WHITE}")
         print(f"Do you want to overwrite it ? {YELLOW}(y/n) {WHITE}")
         answer = input()
@@ -257,6 +265,8 @@ if loop_menu(parameters, max_parameters):
         blue_part = 0
         color = colored.fg(rgb_to_hex(red_part, green_part, blue_part))
         percentage = round(ratio*100, 2)
+        if percentage < 10:
+            percentage = " " + str(percentage)
         time_between_steps += round(end - start, 2) * (1/ETA_ITERATION_SEPARATOR)
         if i%ETA_ITERATION_SEPARATOR == 0:
             estimated_remaining_time = round((parameters["NUMBER_OF_STEPS"] - i) * time_between_steps, 2)
@@ -265,7 +275,7 @@ if loop_menu(parameters, max_parameters):
             time_between_steps = 0
             
             estimated_remaining_time = datetime.timedelta(seconds=estimated_remaining_time)
-        progressbar = f"{color + progressbar:=<29}{WHITE} {percentage:2.2f}% | ETA {estimated_remaining_time}"
+        progressbar = f"{color + progressbar:=<29}{WHITE} {percentage}% | ETA {str(estimated_remaining_time)[:-4]}"
         print(f"\r{progressbar:^100}", end="")
         #print(f"\r{percentage}%", end="")
         start = time.time()
@@ -287,7 +297,7 @@ if loop_menu(parameters, max_parameters):
     print(f'{"SAVING SIMULATION":^104}')
     print(SEPARATION_LINE)
     # Checking if the file exists
-    with open(f"{filename}.json", "w", encoding="utf8") as file:
+    with open(full_path, "w", encoding="utf8") as file:
         json.dump(boids, file)
     print(SEPARATION_LINE)
     print(f'{f"SIMULATION SAVED TO : {filename:<50}.json":^104}')
