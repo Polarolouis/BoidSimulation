@@ -55,7 +55,10 @@ On définira donc trois zones :
 
 Nous avons commencé par créer une fenêtre graphique nous permettant de changer les paramètres de la simulation de manière quasi-dynamique.
 <p align="center">
-  <img src=https://i.pinimg.com/originals/c4/7d/ca/c47dca23ad35f3d92d9d0b96c93ceea2.jpg alt="fenetre graphique" width=""/>
+  <img src=https://i.pinimg.com/originals/c4/7d/ca/c47dca23ad35f3d92d9d0b96c93ceea2.jpg 
+  alt="fenetre graphique" width=""/>
+  <img src=images/example_real_time_simulation.gif 
+  alt="fenetre graphique" width=""/>
 </p>
 Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de la simulation en cours d'éxecution.
 C'est sur le panneau de droite que nous pourrons changer les paramètres pour pouvoir observer de manière direct les comportements de notre simulation.
@@ -185,8 +188,6 @@ On a tracé ci-dessous le temps de simulation en fonction du nombre d'objets sim
 
 <p align="center">
   <img src= https://i.pinimg.com/originals/17/61/fc/1761fc369490f2ebb9a135dab987269a.jpg
- alt="fenetre graphique" width=""/>
-  <img src=images/example_real_time_simulation.gif
  alt="fenetre graphique" width=""/>
 </p>
 
