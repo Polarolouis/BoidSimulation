@@ -1,3 +1,4 @@
+from wsgiref.handlers import format_date_time
 import dijkstra
 import logging
 import math
@@ -31,7 +32,6 @@ class Boid:
     max_cohesion_force = 1
     max_separation_force = 1
     max_goal_force = 1
-    
     
     
     def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
@@ -668,6 +668,7 @@ class SimulationSpace:
 
         logging.debug('Simulation %s cleared', self.counter)
 
+
 A = dijkstra.Node ('A', 0, 0, 'BCDEF', 'goal')
 B = dijkstra.Node ('B', 30, 20, 'ACDEF', 'block')
 C = dijkstra.Node ('C', 30, 40, 'ABDEF', 'block')
@@ -678,5 +679,10 @@ F = dijkstra.Node ('F', 60, 50, 'ABCDE', 'start')
 #initialize the graph path
 A.knock_out_path()
 
-formated_paths = A.djikstra_format()
-print(A.djikstra_algo(F,A))
+#the shortest path
+formatted_paths = A.djikstra_format()
+print(formatted_paths)
+
+shortest_path = A.djikstra_algo(formatted_paths, A, F)
+print(shortest_path)
+print(A.path_direction(shortest_path))
