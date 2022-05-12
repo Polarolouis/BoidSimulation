@@ -20,6 +20,8 @@ class Boid:
     chaotic_probability = 0.0
     bouncing = False
     
+    goal_position = np.array([[0], [0]], dtype=np.float64)
+    
     alignment_force = 1
     cohesion_force = 1
     separation_force = 1
