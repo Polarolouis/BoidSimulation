@@ -8,7 +8,7 @@ SPEED = 10
 def get_json_files_name():
     """List all the json files in the current directory"""
     # Get all the files in the directory
-    files = os.listdir(".")
+    files = os.listdir("./json")
     # Get the file names
     files_name = [file for file in files if file.endswith(".json")]
     return files_name
@@ -44,7 +44,7 @@ if not filename:
     quit()
 print(f"Selected file: {filename}")
 data = dict()
-with open(filename, "r", encoding="utf8") as f:
+with open("json/" + filename, "r", encoding="utf8") as f:
     raw_data = json.load(f)
     for key in raw_data:
         data[int(key)] = raw_data[key]
