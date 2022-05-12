@@ -149,11 +149,14 @@ goal_position_label = tkinter.Label(right_frame, text=f"Goal position: {goal_x},
 
 
 list_of_boid_canvas = []
+goal_canvas = 0
 
 # Creation of the canvas
 for i in range(number_of_boids):
     x, y = data[0][str(i)]
     list_of_boid_canvas.append(canvas.create_oval(x-5, y-5, x+5, y+5, fill="grey"))
+if goal_force != 0:
+    goal_canvas = canvas.create_oval(goal_x-5, goal_y-5, goal_x+5, goal_y+5, fill="blue")
 
 iteration_label.configure(text=f"Iteration: {0}/{max_iteration}", font=("Helvetica", 20))
 
@@ -164,6 +167,8 @@ def update_canvas(current_turn):
         for i in range(number_of_boids):
             x, y = data[current_turn][str(i)]
             canvas.coords(list_of_boid_canvas[i], x-5, y-5, x+5, y+5)
+        if goal_force != 0:
+            canvas.coords(goal_canvas, goal_x-5, goal_y-5, goal_x+5, goal_y+5)
         root.after(SPEED, lambda : (update_canvas(current_turn+1) if current_turn < max_iteration else None))
     else:
         root.after(SPEED, lambda : (update_canvas(current_turn)))
