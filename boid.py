@@ -616,7 +616,7 @@ class SimulationSpace:
         SimulationSpace.counter += 1
         
     
-    def populate(self, number_of_boids, goal_x, goal_y, space_fill = "random"):
+    def populate(self, number_of_boids, space_fill = "random"):
         """Populate the simulation space with boids
         Arguments:
             number_of_boids {int} -- The number of boids to populate
