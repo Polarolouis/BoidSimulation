@@ -26,7 +26,7 @@ class Boid:
     alignment_force = 1
     cohesion_force = 1
     separation_force = 1
-    goal_force = 1
+    goal_multiplicator_force = 1
     wind_speed = 0
     wind_direction = 0
 
@@ -272,18 +272,18 @@ class Boid:
             goal_force = self.goal_position - self.position
 
             # Distance based coefficient
-            # goal_force *= np.linalg.norm(goal_force)
+            goal_force =  np.linalg.norm(goal_force) * goal_force 
 
             if np.linalg.norm(goal_force) > self.max_goal_force:
                 goal_force = goal_force / \
                     np.linalg.norm(goal_force) * self.max_goal_force
 
         logging.debug('Goal force: %s', goal_force)
-        logging.debug('The goal force is: %s', Boid.goal_force)
+        logging.debug('The goal force is: %s', Boid.goal_multiplicator_force)
         logging.debug('The correction for goal is: %s',
-                      goal_force * Boid.goal_force)
+                      goal_force * Boid.goal_multiplicator_force)
 
-        return goal_force * Boid.goal_force
+        return goal_force * Boid.goal_multiplicator_force
 
     def apply_rules(self):
         """Apply the rules of the flock to the boid
@@ -294,7 +294,7 @@ class Boid:
 
         if self.goal_force > 0:
             goal = self.goal()
-            self.acceleration += goal
+            self.acceleration += goal * (1/2 - self.boids_rate/Boid.id)
 
         if self.wind_speed > 0:
             wind = self.wind()
@@ -306,11 +306,11 @@ class Boid:
 
         if self.cohesion_force > 0:
             cohesion = self.cohesion()
-            self.acceleration += cohesion
+            self.acceleration += cohesion * (1/2 - self.boids_rate/Boid.id)
 
         if self.separation_force > 0:
             separation = self.separation()
-            self.acceleration += separation
+            self.acceleration += separation * (1 - self.boids_rate/Boid.id)
 
         logging.debug('Boid %s acceleration: %s', self.id, self.acceleration)
         logging.debug('----------------------------------')
