@@ -331,7 +331,7 @@ class Boid:
 
         if self.alignment_force > 0:
             alignment = self.alignment()
-            self.acceleration += alignment
+            self.acceleration += alignment 
 
         if self.cohesion_force > 0:
             cohesion = self.cohesion()
@@ -339,11 +339,11 @@ class Boid:
 
         if self.separation_force > 0:
             separation = self.separation()
-            self.acceleration += separation * (1 - self.boids_rate/Boid.id)
+            self.acceleration += separation * (1 + self.boids_rate/Boid.id)
 
-        if len(self.near_boids_collision) >= 3:
-            # norm_vel=np.linalg.norm(self.velocity)
-            self.velocity = -self.velocity
+        # if len(self.near_boids_collision) >= 3:
+        #     # norm_vel=np.linalg.norm(self.velocity)
+        #     self.velocity = -self.velocity
 
         logging.debug('Boid %s acceleration: %s', self.id, self.acceleration)
         logging.debug('----------------------------------')
