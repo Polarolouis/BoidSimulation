@@ -4,7 +4,8 @@ import random
 import numpy as np
 
 # Logging setup
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', filename='boid.log', filemode='w')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%H:%M:%S', filename='boid.log', filemode='w')
 logging.info('Started to log')
 
 
@@ -13,13 +14,13 @@ class Boid:
 
     id = 0
     radius = 5
-    near_distance_alignment = 10*radius # Distance to be considered near
+    near_distance_alignment = 10*radius  # Distance to be considered near
     near_distance_cohesion = 0.5*near_distance_alignment
     near_distance_separation = 4*radius
-    near_distance_collision= 2.5*radius
+    near_distance_collision = 2.5*radius
     chaotic_probability = 0.0
     bouncing = False
-    
+
     alignment_force = 1
     cohesion_force = 1
     separation_force = 1
@@ -32,10 +33,8 @@ class Boid:
     max_cohesion_force = 1
     max_separation_force = 1
     max_goal_force = 1
-    
-    
-    
-    def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
+
+    def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one=False):
         """Initialize the boid
         Arguments:
             x_pos {float} -- x position of the boid
@@ -82,7 +81,7 @@ class Boid:
 
         logging.debug('Setting the height of the space to %s', height)
         cls.height = height
-    
+
     @classmethod
     def set_force_parameters(cls, alignment_force, cohesion_force, separation_force, goal_force, wind_speed, wind_direction, bouncing):
         """Class Method : Set the force parameters
@@ -102,8 +101,9 @@ class Boid:
         cls.wind_speed = wind_speed
         cls.wind_direction = wind_direction * 2 * math.pi / 360
         cls.bouncing = bouncing
-        logging.debug('Setting the force parameters to %s', [alignment_force, cohesion_force, separation_force, goal_force, wind_speed, wind_direction, bouncing])
-    
+        logging.debug('Setting the force parameters to %s', [
+                      alignment_force, cohesion_force, separation_force, goal_force, wind_speed, wind_direction, bouncing])
+
     @classmethod
     def set_goal_position(cls, goal_x, goal_y):
         """Class Method : Set the goal position
@@ -123,9 +123,10 @@ class Boid:
         self.near_boids_alignment = []
         self.near_boids_cohesion = []
         self.near_boids_separation = []
-        self.near_boids_collision=[]
+        self.near_boids_collision = []
 
-        filtered_boids = (boid for boid in boids if (not np.array_equal(self.position, boid.position)) and ((self.position[0] - self.near_distance_alignment < boid.position[0] and self.position[1] - self.near_distance_alignment < boid.position[1]) and (self.position[0] + self.near_distance_alignment > boid.position[0] and self.position[1] + self.near_distance_alignment > boid.position[1])))
+        filtered_boids = (boid for boid in boids if (not np.array_equal(self.position, boid.position)) and ((self.position[0] - self.near_distance_alignment < boid.position[0] and self.position[1] - self.near_distance_alignment < boid.position[1]) and (
+            self.position[0] + self.near_distance_alignment > boid.position[0] and self.position[1] + self.near_distance_alignment > boid.position[1])))
         logging.debug('Filtered boids: %s', filtered_boids)
 
         for boid in filtered_boids:
@@ -133,49 +134,59 @@ class Boid:
             if (boid not in self.near_boids_alignment) and dist < self.near_distance_alignment and dist > self.near_distance_cohesion:
                 self.near_boids_alignment.append((boid, dist))
                 boid.near_boids_alignment.append((self, dist))
-            
+
             if (boid not in self.near_boids_cohesion) and dist < self.near_distance_cohesion and dist > self.near_distance_separation:
                 self.near_boids_cohesion.append((boid, dist))
                 boid.near_boids_cohesion.append((self, dist))
-            
+
             if (boid not in self.near_boids_separation) and dist < self.near_distance_separation:
                 self.near_boids_separation.append((boid, dist))
                 boid.near_boids_separation.append((self, dist))
-                
+
             if (boid not in self.near_boids_collision) and dist < self.near_distance_collision:
-                    self.near_boids_collision.append((boid, dist))
-                    boid.near_boids_collision.append((self, dist))    
-        logging.debug('Near boids ids for alignment: %s', [boid.id for boid, _ in self.near_boids_alignment])
-        logging.debug('Near boids ids for cohesion: %s', [boid.id for boid, _ in self.near_boids_cohesion])
-        logging.debug('Near boids ids for separation: %s', [boid.id for boid, _ in self.near_boids_separation])
-        logging.debug('Near boids ids for collision: %s', [boid.id for boid, _ in self.near_boids_collision])
-        
+                self.near_boids_collision.append((boid, dist))
+                boid.near_boids_collision.append((self, dist))
+
+        logging.debug('Near boids ids for alignment: %s', [
+                      boid.id for boid, _ in self.near_boids_alignment])
+        logging.debug('Near boids ids for cohesion: %s', [
+                      boid.id for boid, _ in self.near_boids_cohesion])
+        logging.debug('Near boids ids for separation: %s', [
+                      boid.id for boid, _ in self.near_boids_separation])
+        logging.debug('Near boids ids for collision: %s', [
+                      boid.id for boid, _ in self.near_boids_collision])
+
 
 # Flock behaviour
+
+
     def alignment(self):
         """Alignment behaviour to steer towards the average heading of the boids in the near_boids list
         Returns:
-            np.array([float, float]) -- [x acceleration, y acceleration]""" 
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
 
         # Calculate the average heading of the boids
         heading_correction = np.array([[0], [0]], dtype=np.float64)
-        if self.near_boids_alignment:          
+        if self.near_boids_alignment:
             # Taking the the fastest boid as a leader
-            heading_correction = max(self.near_boids_alignment, key=lambda boid_and_distance: np.linalg.norm(boid_and_distance[0].velocity))[0].velocity
-        
+            heading_correction = max(self.near_boids_alignment, key=lambda boid_and_distance: np.linalg.norm(
+                boid_and_distance[0].velocity))[0].velocity
+
         if np.linalg.norm(heading_correction) > self.max_alignment_force:
-            heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_alignment_force
-        
+            heading_correction = heading_correction / \
+                np.linalg.norm(heading_correction) * self.max_alignment_force
+
         logging.debug('Alignment heading correction: %s', heading_correction)
         logging.debug('The alignment force is: %s', Boid.alignment_force)
-        logging.debug('The correction for alignment is: %s', heading_correction * Boid.alignment_force)
-        
+        logging.debug('The correction for alignment is: %s',
+                      heading_correction * Boid.alignment_force)
+
         return heading_correction * Boid.alignment_force
 
     def cohesion(self):
         """Cohesion behaviour to steer towards the average position of the boids in the near_boids list
         Returns:
-            np.array([float, float]) -- [x acceleration, y acceleration]""" 
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
 
         # Calculate the average position of the boids
         correction_to_avg = np.array([[0], [0]], dtype=np.float64)
@@ -186,12 +197,14 @@ class Boid:
             position_avg /= len(self.near_boids_cohesion)
             correction_to_avg = position_avg - self.position
         if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
-            correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_cohesion_force
-        
+            correction_to_avg = correction_to_avg / \
+                np.linalg.norm(correction_to_avg) * self.max_cohesion_force
+
         logging.debug('Cohesion correction to avg: %s', correction_to_avg)
         logging.debug('The cohesion force is: %s', Boid.cohesion_force)
-        logging.debug('The correction for cohesion is: %s', correction_to_avg * Boid.cohesion_force)
-        
+        logging.debug('The correction for cohesion is: %s',
+                      correction_to_avg * Boid.cohesion_force)
+
         return correction_to_avg * Boid.cohesion_force
 
     def separation(self):
@@ -207,34 +220,61 @@ class Boid:
         if self.near_boids_separation:
             separation_correction /= len(self.near_boids_separation)
         if np.linalg.norm(separation_correction):
-            separation_correction = (separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
-        
+            separation_correction = (
+                separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
+
         logging.debug('Separation correction: %s', separation_correction)
         logging.debug('The separation force is: %s', Boid.separation_force)
-        logging.debug('The correction for separation is: %s', separation_correction * Boid.separation_force)
-        
+        logging.debug('The correction for separation is: %s',
+                      separation_correction * Boid.separation_force)
+
         return separation_correction * Boid.separation_force
 
     def collision(self):
         """collision behavior to prevent boids from going through each other
         Returns:
             np.array([float,float]) -- [x velocity, y velocity]"""
-        #self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
-        x_vel=self.velocity[0][0]
-        y_vel=self.velocity[1][0]
-        vel=np.array([x_vel,y_vel], dtype=np.float64)
-        for boid, distance in self.near_boids_collision:
-            diff=self.position- boid.position
-            x_diff=diff[0][0]
-            y_diff=diff[1][0]
-            normal=np.array([[-y_diff,x_diff]], dtype=np.float64)
-            normal_norm= np.linalg.norm(normal)
-            new_vel = (np.dot(normal,vel)/(normal_norm**2))*normal
-            x_new_vel=new_vel[0][0]
-            y_new_vel=new_vel[0][1]
-            self.velocity=np.array([[x_new_vel],[y_new_vel]], dtype=np.float)
-    #(np.dot(normal,self.velocity)/(normal_norm**2))*normal
-    
+        if len(self.near_boids_collision) == 1:
+            x_vel = self.velocity[0][0]
+            y_vel = self.velocity[1][0]
+            vel = np.array([x_vel, y_vel], dtype=np.float64)
+
+            for boid, distance in self.near_boids_collision:
+                diff = self.position - boid.position
+                diff_norm = np.linalg.norm(diff)
+                x_diff = diff[0][0]
+                y_diff = diff[1][0]
+                if distance <= 1.9*boid.radius:
+                    self.velocity = np.array(
+                        [[-x_diff/diff_norm], [-y_diff/diff_norm]], dtype=np.float64)
+                else:
+                    normal = np.array([[-y_diff, x_diff]], dtype=np.float64)
+                    normal_norm = np.linalg.norm(normal)
+                    new_vel = (np.dot(normal, vel)/(normal_norm**2))*normal
+                    x_new_vel = new_vel[0][0]
+                    y_new_vel = new_vel[0][1]
+                    self.velocity = np.array(
+                        [[x_new_vel], [y_new_vel]], dtype=np.float64)
+        elif len(self.near_boids_collision) == 2:
+            """We want the boid to go away from it's two neighbors"""
+            boid1 = self.near_boids_collision[0][0]
+            boid2 = self.near_boids_collision[1][0]
+            diff = boid1.position-boid2.position
+            x_diff = diff[0][0]
+            y_diff = diff[1][0]
+            normal = np.array([[-y_diff], [x_diff]], dtype=np.float64)
+            normal_norm = np.linalg.norm(normal)
+            # determining if using the normal vector as velocity reduces or augments the distance between boids
+            new_pos = self.position+(normal/normal_norm)
+            new_diff = new_pos-boid1.position
+            new_dist = np.linalg.norm(new_diff)
+            if new_dist <= self.near_distance_collision:
+                new_vel = -2 * normal / normal_norm
+            else:
+                new_vel = 2 * normal / normal_norm
+            self.vel = new_vel
+    # (np.dot(normal,self.velocity)/(normal_norm**2))*normal
+
     def wind(self):
         """Apply wind to the boid
         Returns:
@@ -246,26 +286,28 @@ class Boid:
         logging.debug('x wind speed: %s', x_wind_speed)
         logging.debug('y wind speed: %s', y_wind_speed)
 
-        return np.array([[x_wind_speed],[y_wind_speed]], dtype=np.float64)
+        return np.array([[x_wind_speed], [y_wind_speed]], dtype=np.float64)
 
     def goal(self):
         """Apply goal force to the boid
         Returns:
             np.array([float, float]) -- [x acceleration, y acceleration]"""
- 
+
         goal_force = np.array([[0], [0]], dtype=np.float64)
         if self.goal_position is not None:
             goal_force = self.goal_position - self.position
-            
+
             # Distance based coefficient
-            # goal_force *= np.linalg.norm(goal_force)
+            goal_force *= np.linalg.norm(goal_force)
 
             if np.linalg.norm(goal_force) > self.max_goal_force:
-                goal_force = goal_force / np.linalg.norm(goal_force) * self.max_goal_force
-        
+                goal_force = goal_force / \
+                    np.linalg.norm(goal_force) * self.max_goal_force
+
         logging.debug('Goal force: %s', goal_force)
         logging.debug('The goal force is: %s', Boid.goal_force)
-        logging.debug('The correction for goal is: %s', goal_force * Boid.goal_force)
+        logging.debug('The correction for goal is: %s',
+                      goal_force * Boid.goal_force)
 
         return goal_force * Boid.goal_force
 
@@ -279,7 +321,7 @@ class Boid:
         if self.goal_force > 0:
             goal = self.goal()
             self.acceleration += goal
-        
+
         if self.wind_speed > 0:
             wind = self.wind()
             self.acceleration += wind
@@ -291,11 +333,14 @@ class Boid:
         if self.cohesion_force > 0:
             cohesion = self.cohesion()
             self.acceleration += cohesion
-        
+
         if self.separation_force > 0:
             separation = self.separation()
             self.acceleration += separation
-        
+
+        if len(self.near_boids_collision) >= 3:
+            # norm_vel=np.linalg.norm(self.velocity)
+            self.velocity = -self.velocity
 
         logging.debug('Boid %s acceleration: %s', self.id, self.acceleration)
         logging.debug('----------------------------------')
@@ -320,7 +365,7 @@ class Boid:
                 velocity[1] = -self.velocity[1]
             if self.position[1] + self.velocity[1] > self.height - self.radius:
                 velocity[1] = -self.velocity[1]
-            
+
             logging.debug('Boid %s velocity: %s', self.id, velocity)
 
             return velocity
@@ -353,14 +398,15 @@ class Boid:
             return True
         else:
             return False
-    
+
     def bring_back_to_space(self):
         """Bring the boid back to space"""
 
         if self.is_out_of_space():
-            self.position[0] =  self.width / 2
+            self.position[0] = self.width / 2
             self.position[1] = self.height / 2
-            logging.warning("Boid %s is out of space, brought back to space", self.id)
+            logging.warning(
+                "Boid %s is out of space, brought back to space", self.id)
 
 # Functions to color the boid according to the surrounding density
     def calculate_near_boids_number(self):
@@ -369,12 +415,13 @@ class Boid:
             int -- number of boids near the boid in the cohesion and separation circles"""
 
         return len(self.near_boids_cohesion) + len(self.near_boids_separation)
-    
+
     def update_color_boids_rate(self):
         """Update the color of the boid based on the density of the boids near it
         Sets the color of the boid according to the color of the density of the boids near it"""
 
         boids_rate = self.boids_rate
+
         def rgb_hack(rgb):
             return "#%02x%02x%02x" % rgb
         red = 255
@@ -392,7 +439,7 @@ class Boid:
     def reverse_velocity(self):
         """Reverse the velocity of the boid"""
         self.velocity *= -1
-    
+
     def bounce_if_collision_with_obstacles(self, obstacle):
         """Check if the boid collides with the obstacle
         and if it does, bounce it
@@ -419,14 +466,15 @@ class Boid:
         jump_coords = list(self.position)
         jump_coords[0] = jump_coords[0][0] + x_vel
         jump_coords[1] = jump_coords[1][0] + y_vel
-        logging.debug('Boid %s jump coords: (x=%s, y=%s)', self.id, jump_coords[0], jump_coords[1])
+        logging.debug('Boid %s jump coords: (x=%s, y=%s)',
+                      self.id, jump_coords[0], jump_coords[1])
         if jump_coords in obstacle:
-            logging.debug('Boid %s collided with obstacle, reversing velocity', self.id)
+            logging.debug(
+                'Boid %s collided with obstacle, reversing velocity', self.id)
             logging.debug('Boid %s velocity: %s', self.id, self.velocity)
             self.reverse_velocity()
             logging.debug('Boid %s velocity: %s', self.id, self.velocity)
 
-        
     def get_the_obstacles_collisions(self, obstacles_list):
         """Check if the boid collides with an obstacle
         And reverse the velocity if it does
@@ -435,7 +483,8 @@ class Boid:
 
         for obstacle in obstacles_list:
             # We build a list of obstacles that the boid can reach
-            logging.debug('Boid %s is checking if it can reach the obstacle', self.id)
+            logging.debug(
+                'Boid %s is checking if it can reach the obstacle', self.id)
             self.bounce_if_collision_with_obstacles(obstacle)
 
 # Update the boid
@@ -448,18 +497,20 @@ class Boid:
         logging.debug('Boid %s position: %s', self.id, self.position)
 
         # Update the velocity
-        logging.debug('Boid %s is updating the velocity from %s', self.id, self.velocity)
+        logging.debug('Boid %s is updating the velocity from %s',
+                      self.id, self.velocity)
         self.velocity += self.acceleration
         logging.debug('to %s', self.velocity)
-        
+
         # Chaotic behaviour
         if self.chaotic_probability < random.random():
             logging.debug('Boid %s ', self.id)
             angle = random.uniform(0, 2 * math.pi)
             self.velocity[0] += math.cos(angle)
             self.velocity[1] += math.sin(angle)
-        
-        #Collision
+
+        # Collision
+
         if self.near_boids_collision:
             self.collision()
 
@@ -470,14 +521,16 @@ class Boid:
         else:
             # If we don't bounce the output is the position
             self.position = self.check_edges()
-        
+
         # Check if the boid will collide with an obstacle
         self.get_the_obstacles_collisions(obstacles_list)
 
         # If velocity exceeds the max speed, set it to the max speed
         if np.linalg.norm(self.velocity) > self.max_speed:
-            logging.debug('Boid %s velocity exceeds the max speed, setting it to the max speed', self.id)
-            self.velocity = self.velocity / np.linalg.norm(self.velocity) * self.max_speed
+            logging.debug(
+                'Boid %s velocity exceeds the max speed, setting it to the max speed', self.id)
+            self.velocity = self.velocity / \
+                np.linalg.norm(self.velocity) * self.max_speed
             logging.debug('Boid %s velocity: %s', self.id, self.velocity)
         # Update the position
         self.position += self.velocity
@@ -495,7 +548,7 @@ class Boid:
             (x, y) the coordinates of the boid"""
         x_pos, y_pos = self.position
 
-        return (*x_pos, *y_pos) # unpacking the tuple
+        return (*x_pos, *y_pos)  # unpacking the tuple
 
     def set_coords(self, x, y):
         """Set the coordinates of the boid
@@ -512,7 +565,7 @@ class Boid:
 
         x_vel, y_vel = self.velocity
         return (*x_vel, *y_vel)
-    
+
     def set_velocity(self, x_vel, y_vel):
         """Set the velocity of the boid
         Arguments:
@@ -529,8 +582,10 @@ class Boid:
         x_pos, y_pos = self.position
         return (x_pos - self.radius, y_pos - self.radius, x_pos + self.radius, y_pos + self.radius)
 
+
 class Obstacle:
     """Class for the obstacles"""
+
     def __init__(self, x0, y0, x1, y1) -> None:
         self.coordinates = np.array([[x0, y0], [x1, y1]], dtype=np.float64)
 
@@ -549,7 +604,7 @@ class Obstacle:
             return True
         logging.debug('Point (%s, %s) is outside the obstacle', x, y)
         return False
-    
+
     def x_between_bounds(self, x):
         """Check if the x coordinate is between the x bounds of the obstacle
         Returns:
@@ -575,7 +630,7 @@ class Obstacle:
         if y_coord[0] <= y <= y_coord[1]:
             return True
         return False
-    
+
     def get_coords(self):
         """Returns the coordinates of the obstacle
         Returns:
@@ -585,7 +640,7 @@ class Obstacle:
         X = (top_left_corner[0], bottom_right_corner[0])
         Y = (top_left_corner[1], bottom_right_corner[1])
         return (X, Y)
-    
+
     def get_center(self):
         """Returns the center of the obstacle
         Returns:
@@ -594,9 +649,11 @@ class Obstacle:
         X, Y = self.get_coords()
         return np.array([[(X[0] + X[1]) / 2], [(Y[0] + Y[1]) / 2]], dtype=np.float64)
 
+
 class SimulationSpace:
     """Class for the simulation space"""
     counter = 0
+
     def __init__(self, width, height):
         """Initialize the simulation space
         Arguments:
@@ -614,9 +671,8 @@ class SimulationSpace:
         self.number_of_steps = 10
         self.counter = SimulationSpace.counter
         SimulationSpace.counter += 1
-        
-    
-    def populate(self, number_of_boids, goal_x, goal_y, space_fill = "random"):
+
+    def populate(self, number_of_boids, goal_x, goal_y, space_fill="random"):
         """Populate the simulation space with boids
         Arguments:
             number_of_boids {int} -- The number of boids to populate
@@ -626,21 +682,27 @@ class SimulationSpace:
         Boid.set_width(self.width)
         Boid.set_height(self.height)
         if space_fill == "random":
-            logging.info('Populating the simulation space with %s boids in random pattern', number_of_boids)
+            logging.info(
+                'Populating the simulation space with %s boids in random pattern', number_of_boids)
             for _ in range(number_of_boids):
                 x_pos = random.randint(0, self.width)
                 y_pos = random.randint(0, self.height)
                 x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
                 y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
-                logging.debug('Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)	
-                boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
+                logging.debug(
+                    'Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)
+                # True if _ == 0 else False
+                boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False)
                 self.boids.append(boid)
         elif space_fill == "even":
-            logging.info('Populating the simulation space with %s boids in even pattern', number_of_boids)
-            X = np.arange(0+Boid.radius, self.width-Boid.radius, math.sqrt((self.width*self.height)/number_of_boids))
-            Y = np.arange(0+Boid.radius, self.height-Boid.radius, math.sqrt((self.width*self.height)/number_of_boids))
+            logging.info(
+                'Populating the simulation space with %s boids in even pattern', number_of_boids)
+            X = np.arange(0+Boid.radius, self.width-Boid.radius,
+                          math.sqrt((self.width*self.height)/number_of_boids))
+            Y = np.arange(0+Boid.radius, self.height-Boid.radius,
+                          math.sqrt((self.width*self.height)/number_of_boids))
             positions = []
-            
+
             for x_pos in X:
                 for y_pos in Y:
                     positions.append((x_pos, y_pos))
@@ -648,13 +710,15 @@ class SimulationSpace:
                 if len(self.boids) < number_of_boids:
                     x_vel = random.randint(-Boid.max_speed, Boid.max_speed)
                     y_vel = random.randint(-Boid.max_speed, Boid.max_speed)
-                    logging.debug('Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)
-                    boid = Boid(x_pos, y_pos, x_vel, y_vel, the_chosen_one=False) # True if _ == 0 else False
+                    logging.debug(
+                        'Creating boid at (%s, %s) with velocity (%s, %s)', x_pos, y_pos, x_vel, y_vel)
+                    # True if _ == 0 else False
+                    boid = Boid(x_pos, y_pos, x_vel, y_vel,
+                                the_chosen_one=False)
                     self.boids.append(boid)
                 else:
                     break
 
-    
     def create_obstacle(self, x0, y0, x1, y1):
         """Create an obstacle
         Arguments:
@@ -664,9 +728,9 @@ class SimulationSpace:
             y1 {float} -- The y coordinate of the bottom right corner of the obstacle"""
 
         self.obstacles.append(Obstacle(x0, y0, x1, y1))
-        logging.debug('Created obstacle at (%s, %s) to (%s, %s)', x0, y0, x1, y1)
+        logging.debug('Created obstacle at (%s, %s) to (%s, %s)',
+                      x0, y0, x1, y1)
 
-    
     def next_step(self):
         """Calculate the next iteration of the simulation"""
 
@@ -676,9 +740,10 @@ class SimulationSpace:
         for boid in self.boids:
             boid.find_near_boids(self.boids)
             boid.apply_rules()
-            boid.set_boids_rate(boid.calculate_near_boids_number()/len(self.boids))
+            boid.set_boids_rate(
+                boid.calculate_near_boids_number()/len(self.boids))
             boid.update_color_boids_rate()
-        
+
         for boid in self.boids:
             boid.update(self.obstacles)
         logging.info('-----------------')
@@ -690,7 +755,7 @@ class SimulationSpace:
 
         return {boid.id: boid.get_coords() for boid in self.boids}
 
-# Method to control the state of the simulation   
+# Method to control the state of the simulation
     def start_simulation(self, number_of_steps=10):
         """Start the simulation
         Keyword Arguments:
@@ -717,7 +782,7 @@ class SimulationSpace:
         logging.info('Simulation %s finished', self.counter)
 
 # Method to clear the simulation space
-    
+
     def clear(self):
         """Reset the simulation"""
 
@@ -725,6 +790,3 @@ class SimulationSpace:
         self.iteration = 0
         self.paused = True
         self.finished = False
-
-
-
