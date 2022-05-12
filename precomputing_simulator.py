@@ -239,7 +239,7 @@ if loop_menu(parameters, max_parameters):
             bouncing = parameters["BOUNCING"])
     boid.Boid.set_goal_position(parameters["GOAL_X"], parameters["GOAL_Y"])
     # Create the boids
-    simulation.populate(parameters["NUMBER_OF_BOIDS"], parameters["GOAL_X"], parameters["GOAL_Y"], space_fill = "even")
+    simulation.populate(parameters["NUMBER_OF_BOIDS"], space_fill = "even")
 
     # Create the dictionnary of the boids
     boids = {0 : { boid.id : boid.get_coords() for boid in simulation.boids}}
