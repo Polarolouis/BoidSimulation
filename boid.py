@@ -416,6 +416,10 @@ class Boid:
         Arguments:
             obstacle {Obstacle} -- The obstacle to check against"""
 
+        (obs_x0, obs_x1), (obs_y0, obs_y1) = obstacle.get_coords()
+
+        x, y = self.get_coords()
+
         x_vel = self.velocity[0]
         y_vel = self.velocity[1]
         # If the boid is moving to the right
@@ -432,18 +436,11 @@ class Boid:
         else:
             logging.debug('Boid %s is moving up', self.id)
             y_vel = self.velocity[1] - self.radius
-
-        jump_coords = list(self.position)
-        jump_coords[0] = jump_coords[0][0] + x_vel
-        jump_coords[1] = jump_coords[1][0] + y_vel
-        logging.debug('Boid %s jump coords: (x=%s, y=%s)',
-                      self.id, jump_coords[0], jump_coords[1])
-        if jump_coords in obstacle:
-            logging.debug(
-                'Boid %s collided with obstacle, reversing velocity', self.id)
-            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
-            self.reverse_velocity()
-            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
+        if (x + x_vel >= obs_x0 and x + x_vel <= obs_x1) and (y + y_vel >= obs_y0 and y + y_vel <= obs_y1):
+            if y <= obs_y0 or  y >= obs_y1:
+                self.velocity[1] = -self.velocity[1]
+            if x <= obs_x0 or x >= obs_x1:
+                self.velocity[0] = -self.velocity[0]
 
     def get_the_obstacles_collisions(self, obstacles_list):
         """Check if the boid collides with an obstacle
@@ -582,7 +579,7 @@ class Obstacle:
         Arguments:
             x {float} -- The x coordinate to check"""
 
-        x_coord = self.get_coords()
+        x_coord, _ = self.get_coords()
         if x_coord[0] <= x <= x_coord[1]:
             return True
         return False
@@ -595,7 +592,7 @@ class Obstacle:
         Arguments:
             y {float} -- The y coordinate to check"""
 
-        y_coord = self.get_coords()
+        _, y_coord = self.get_coords()
         if y_coord[0] <= y <= y_coord[1]:
             return True
         return False
