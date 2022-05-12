@@ -42,7 +42,7 @@ On souhaite simuler un comportement de type boidien qui est régie par ces trois
 Globalement, on peut représenter les boids comme des points, caractérisés par leur comportement lorsqu'ils rencontrent des congénères. On peut retrouver ici un schéma simplifié qui dicte les différents comportements :
 
 <p align="center">
-  <img src= https://upload.wikimedia.org/wikipedia/commons/1/17/Boids.png alt="schema boid" width="400"/>
+  <img src= images/boids.png alt="schema boid" width=""/>
 </p>
 
 On définira donc trois zones :
@@ -51,37 +51,40 @@ On définira donc trois zones :
 - une zone rouge, qui va représenter l'orientation : un voisin qui entre dans cette zone "suivra" le boid.
 - une zone rouge foncée, qui représente la zone de répulsion : le voisin s'éloignera du boid en rentrant dans cette zone.
 
-# Fenêtre graphique
+# Fenêtre graphique en temps réel
 
 Nous avons commencé par créer une fenêtre graphique nous permettant de changer les paramètres de la simulation de manière quasi-dynamique.
 <p align="center">
-  <img src=https://i.pinimg.com/originals/c4/7d/ca/c47dca23ad35f3d92d9d0b96c93ceea2.jpg 
-  alt="fenetre graphique" width=""/>
+  <img src = images/280061579_550147653192539_8183857592037787828_n.png
+  alt="fenetre graphique" width="500"/>
+</p>
+
+Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de la simulation en cours d'éxecution.
+C'est sur le panneau de droite que nous pourrons changer les paramètres en temps réel pour pouvoir observer de manière direct les comportements de notre simulation.
+
+<p align="center">
   <img src=images/example_real_time_simulation.gif 
   alt="fenetre graphique" width=""/>
 </p>
-Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de la simulation en cours d'éxecution.
-C'est sur le panneau de droite que nous pourrons changer les paramètres pour pouvoir observer de manière direct les comportements de notre simulation.
 
-Nous avons implémenté un comportement de rebond aux limites.
+Nous avons implémenté un comportement de rebond aux limites du système.
+Nous avons aussi implémenté une indication visuelle de la densité des boids au sein d'une simulation. Le gradient de coloration s'affiche directement sur les boids, en suivant le comportement suivant : plus la densité est forte plus la coloration rouge sera intense.
 
 # Première implémentation : Modèle vectoriel
 
-Une première réalisation dite vectorielle a été codée (voir fichier python `boid.py` et `display.py`). Les trois comportements d'un boid y sont r
+Une première réalisation dite vectorielle a été codée (voir fichier python `boid.py` et `display.py` qui permet un affichage graphique du comportement).
 
 Les boids sont définis ainsi :
 
 ```python
-class Boid:
-    """Boid class"""
-    radius = 5
-    near_distance = 10*radius # Distance to be considered near
-    chaotic_probability = 0.1
-    max_speed = 5
-    max_alignment_force = 1
-    max_cohesion_force = 1
-    max_separation_force = 1
-    max_goal_force = 1
+def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
+        """Initialize the boid
+        Arguments:
+            x_pos {float} -- x position of the boid
+            y_pos {float} -- y position of the boid
+            x_vel {float} -- x velocity of the boid
+            y_vel {float} -- y velocity of the boid
+            the_chosen_one {bool} -- True if the boid is the chosen one"""
 ```
 
 Pour chaque boid, nous calculons les boids les plus proches (calcul de distance vectoriel)
