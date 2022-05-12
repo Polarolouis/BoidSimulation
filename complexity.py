@@ -33,7 +33,7 @@ def simulate(n):
     """Simulate the boids"""
     size = 500
     space = bd.SimulationSpace(size, size)
-    space.populate(n, bouncing=False)
+    space.populate(n, space_fill="even")
     for _ in range(50):
         space.next_step()
 
