@@ -21,6 +21,8 @@ class Boid:
     chaotic_probability = 0.0
     bouncing = False
 
+    goal_position = np.array([[0], [0]], dtype=np.float64)
+
     alignment_force = 1
     cohesion_force = 1
     separation_force = 1
@@ -159,7 +161,6 @@ class Boid:
 
 # Flock behaviour
 
-
     def alignment(self):
         """Alignment behaviour to steer towards the average heading of the boids in the near_boids list
         Returns:
@@ -274,6 +275,7 @@ class Boid:
                 new_vel = 2 * normal / normal_norm
             self.vel = new_vel
     # (np.dot(normal,self.velocity)/(normal_norm**2))*normal
+
 
     def wind(self):
         """Apply wind to the boid
@@ -446,6 +448,10 @@ class Boid:
         Arguments:
             obstacle {Obstacle} -- The obstacle to check against"""
 
+        (obs_x0, obs_x1), (obs_y0, obs_y1) = obstacle.get_coords()
+
+        x, y = self.get_coords()
+
         x_vel = self.velocity[0]
         y_vel = self.velocity[1]
         # If the boid is moving to the right
@@ -462,18 +468,11 @@ class Boid:
         else:
             logging.debug('Boid %s is moving up', self.id)
             y_vel = self.velocity[1] - self.radius
-
-        jump_coords = list(self.position)
-        jump_coords[0] = jump_coords[0][0] + x_vel
-        jump_coords[1] = jump_coords[1][0] + y_vel
-        logging.debug('Boid %s jump coords: (x=%s, y=%s)',
-                      self.id, jump_coords[0], jump_coords[1])
-        if jump_coords in obstacle:
-            logging.debug(
-                'Boid %s collided with obstacle, reversing velocity', self.id)
-            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
-            self.reverse_velocity()
-            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
+        if (x + x_vel >= obs_x0 and x + x_vel <= obs_x1) and (y + y_vel >= obs_y0 and y + y_vel <= obs_y1):
+            if y <= obs_y0 or  y >= obs_y1:
+                self.velocity[1] = -self.velocity[1]
+            if x <= obs_x0 or x >= obs_x1:
+                self.velocity[0] = -self.velocity[0]
 
     def get_the_obstacles_collisions(self, obstacles_list):
         """Check if the boid collides with an obstacle
@@ -510,7 +509,6 @@ class Boid:
             self.velocity[1] += math.sin(angle)
 
         # Collision
-
         if self.near_boids_collision:
             self.collision()
 
@@ -613,7 +611,7 @@ class Obstacle:
         Arguments:
             x {float} -- The x coordinate to check"""
 
-        x_coord = self.get_coords()
+        x_coord, _ = self.get_coords()
         if x_coord[0] <= x <= x_coord[1]:
             return True
         return False
@@ -626,7 +624,7 @@ class Obstacle:
         Arguments:
             y {float} -- The y coordinate to check"""
 
-        y_coord = self.get_coords()
+        _, y_coord = self.get_coords()
         if y_coord[0] <= y <= y_coord[1]:
             return True
         return False
@@ -672,7 +670,7 @@ class SimulationSpace:
         self.counter = SimulationSpace.counter
         SimulationSpace.counter += 1
 
-    def populate(self, number_of_boids, goal_x, goal_y, space_fill="random"):
+    def populate(self, number_of_boids, space_fill="random"):
         """Populate the simulation space with boids
         Arguments:
             number_of_boids {int} -- The number of boids to populate
