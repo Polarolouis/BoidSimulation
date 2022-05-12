@@ -148,6 +148,7 @@ class Boid:
             if (boid not in self.near_boids_collision) and dist < self.near_distance_collision:
                 self.near_boids_collision.append((boid, dist))
                 boid.near_boids_collision.append((self, dist))
+
         logging.debug('Near boids ids for alignment: %s', [
                       boid.id for boid, _ in self.near_boids_alignment])
         logging.debug('Near boids ids for cohesion: %s', [
@@ -234,20 +235,47 @@ class Boid:
         """collision behavior to prevent boids from going through each other
         Returns:
             np.array([float,float]) -- [x velocity, y velocity]"""
-        x_vel = self.velocity[0][0]
-        y_vel = self.velocity[1][0]
-        vel = np.array([x_vel, y_vel], dtype=np.float64)
-        for boid, _ in self.near_boids_collision:
-            diff = self.position - boid.position
+        if len(self.near_boids_collision) == 1:
+            x_vel = self.velocity[0][0]
+            y_vel = self.velocity[1][0]
+            vel = np.array([x_vel, y_vel], dtype=np.float64)
+
+            for boid, distance in self.near_boids_collision:
+                diff = self.position - boid.position
+                diff_norm = np.linalg.norm(diff)
+                x_diff = diff[0][0]
+                y_diff = diff[1][0]
+                if distance <= 1.9*boid.radius:
+                    self.velocity = np.array(
+                        [[-x_diff/diff_norm], [-y_diff/diff_norm]], dtype=np.float64)
+                else:
+                    normal = np.array([[-y_diff, x_diff]], dtype=np.float64)
+                    normal_norm = np.linalg.norm(normal)
+                    new_vel = (np.dot(normal, vel)/(normal_norm**2))*normal
+                    x_new_vel = new_vel[0][0]
+                    y_new_vel = new_vel[0][1]
+                    self.velocity = np.array(
+                        [[x_new_vel], [y_new_vel]], dtype=np.float64)
+        elif len(self.near_boids_collision) == 2:
+            """We want the boid to go away from it's two neighbors"""
+            boid1 = self.near_boids_collision[0][0]
+            boid2 = self.near_boids_collision[1][0]
+            diff = boid1.position-boid2.position
             x_diff = diff[0][0]
             y_diff = diff[1][0]
-            normal = np.array([[-y_diff, x_diff]], dtype=np.float64)
+            normal = np.array([[-y_diff], [x_diff]], dtype=np.float64)
             normal_norm = np.linalg.norm(normal)
-            new_vel = (np.dot(normal, vel)/(normal_norm**2))*normal
-            x_new_vel = new_vel[0][0]
-            y_new_vel = new_vel[0][1]
-            self.velocity = np.array(
-                [[x_new_vel], [y_new_vel]], dtype=np.float)
+            # determining if using the normal vector as velocity reduces or augments the distance between boids
+            new_pos = self.position+(normal/normal_norm)
+            new_diff = new_pos-boid1.position
+            new_dist = np.linalg.norm(new_diff)
+            if new_dist <= self.near_distance_collision:
+                new_vel = -2 * normal / normal_norm
+            else:
+                new_vel = 2 * normal / normal_norm
+            self.vel = new_vel
+    # (np.dot(normal,self.velocity)/(normal_norm**2))*normal
+
 
     def wind(self):
         """Apply wind to the boid
@@ -273,6 +301,7 @@ class Boid:
 
             # Distance based coefficient
             goal_force =  np.linalg.norm(goal_force) * goal_force 
+
 
             if np.linalg.norm(goal_force) > self.max_goal_force:
                 goal_force = goal_force / \
@@ -311,6 +340,10 @@ class Boid:
         if self.separation_force > 0:
             separation = self.separation()
             self.acceleration += separation * (1 - self.boids_rate/Boid.id)
+
+        if len(self.near_boids_collision) >= 3:
+            # norm_vel=np.linalg.norm(self.velocity)
+            self.velocity = -self.velocity
 
         logging.debug('Boid %s acceleration: %s', self.id, self.acceleration)
         logging.debug('----------------------------------')
