@@ -42,7 +42,7 @@ On souhaite simuler un comportement de type boidien qui est régie par ces trois
 Globalement, on peut représenter les boids comme des points, caractérisés par leur comportement lorsqu'ils rencontrent des congénères. On peut retrouver ici un schéma simplifié qui dicte les différents comportements :
 
 <p align="center">
-  <img src= images/boids.png alt="schema boid" width=""/>
+  <img src= images/boids.png alt="schema boid" width="400"/>
 </p>
 
 On définira donc trois zones :
@@ -56,21 +56,21 @@ On définira donc trois zones :
 Nous avons commencé par créer une fenêtre graphique nous permettant de changer les paramètres de la simulation de manière quasi-dynamique.
 <p align="center">
   <img src = images/280061579_550147653192539_8183857592037787828_n.png
-  alt="fenetre graphique" width="500"/>
+  alt="fenetre graphique" width=""/>
 </p>
 
 Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de la simulation en cours d'éxecution.
 C'est sur le panneau de droite que nous pourrons changer les paramètres en temps réel pour pouvoir observer de manière direct les comportements de notre simulation.
 
 <p align="center">
-  <img src="images/example-full-usage.gif"
+  <img src=images/example_real_time_simulation.gif 
   alt="fenetre graphique" width=""/>
 </p>
 
 Nous avons implémenté un comportement de rebond aux limites du système.
 Nous avons aussi implémenté une indication visuelle de la densité des boids au sein d'une simulation. Le gradient de coloration s'affiche directement sur les boids, en suivant le comportement suivant : plus la densité est forte plus la coloration rouge sera intense.
 
-# Première implémentation : Modèle vectoriel et équation de Newton
+# Première implémentation : Modèle vectoriel
 
 Une première réalisation dite vectorielle a été codée (voir fichier python `boid.py` et `display.py` qui permet un affichage graphique du comportement).
 
@@ -217,10 +217,21 @@ On a tracé ci-dessous le temps de simulation en fonction du nombre d'objets sim
  alt="fenetre graphique" width=""/>
 </p>
 
+# Deuxième implémentation : Modèle particulaire
+
+Comme deuxième approche, nous sommes partis du constat que les foules, lorqu'elles présentent une densité suffisante, peuvent être approchées par de la mécanique des fluides (cf. https://www.shf-lhb.org/articles/lhb/pdf/1963/08/lhb1963067.pdf).
+
+Nous sommes repartis de ce constat pour réaliser une simulation de foule avec une approche similaire à celle de Navier-Stokes.
+
+## Génération des chemins optimaux pour une particule
+
+Un des prérequis de l'étude que nous avons 
 # Sources et ressources utilisées
 
 - <https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118>
 - <https://www.codespeedy.com/how-to-implement-dijkstras-shortest-path-algorithm-in-python/>
+- ESAIM: PROCEEDINGS, July 2007, Vol.18, 143-152
+Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
 
 # Contact
 
