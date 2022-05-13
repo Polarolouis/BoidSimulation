@@ -23,6 +23,8 @@ class Boid:
 
     goal_position = np.array([[0], [0]], dtype=np.float64)
 
+    number_of_around_to_be_dense = 2
+
     alignment_force = 1
     cohesion_force = 1
     separation_force = 1
@@ -65,6 +67,8 @@ class Boid:
         self.the_chosen_one = the_chosen_one
         self.color = "green" if self.the_chosen_one else "white"
         self.boids_rate = 0
+        self.density = len(self.near_boids_cohesion) / \
+            self.number_of_around_to_be_dense
 
     @classmethod
     def set_width(cls, width):
@@ -160,6 +164,7 @@ class Boid:
 
 
 # Flock behaviour
+
 
     def alignment(self):
         """Alignment behaviour to steer towards the average heading of the boids in the near_boids list
@@ -276,7 +281,6 @@ class Boid:
             self.vel = new_vel
     # (np.dot(normal,self.velocity)/(normal_norm**2))*normal
 
-
     def wind(self):
         """Apply wind to the boid
         Returns:
@@ -300,8 +304,7 @@ class Boid:
             goal_force = self.goal_position - self.position
 
             # Distance based coefficient
-            goal_force =  np.linalg.norm(goal_force) * goal_force 
-
+            goal_force = np.linalg.norm(goal_force) * goal_force
 
             if np.linalg.norm(goal_force) > self.max_goal_force:
                 goal_force = goal_force / \
@@ -323,7 +326,7 @@ class Boid:
 
         if self.goal_force > 0:
             goal = self.goal()
-            self.acceleration += goal * (1/2 - self.boids_rate/Boid.id)
+            self.acceleration += goal * (1/2 - self.density)
 
         if self.wind_speed > 0:
             wind = self.wind()
@@ -331,15 +334,15 @@ class Boid:
 
         if self.alignment_force > 0:
             alignment = self.alignment()
-            self.acceleration += alignment 
+            self.acceleration += alignment
 
         if self.cohesion_force > 0:
             cohesion = self.cohesion()
-            self.acceleration += cohesion * (1/2 - self.boids_rate/Boid.id)
+            self.acceleration += cohesion * (1/2 - self.density)
 
         if self.separation_force > 0:
             separation = self.separation()
-            self.acceleration += separation * (1 + self.boids_rate/Boid.id)
+            self.acceleration += separation * (1 + self.density)
 
         # if len(self.near_boids_collision) >= 3:
         #     # norm_vel=np.linalg.norm(self.velocity)
@@ -453,7 +456,7 @@ class Boid:
 
         x, y = self.get_coords()
 
-        if (x,y) in obstacle:
+        if (x, y) in obstacle:
             # If the boids are trapped in the obstacle, we teleport them out
             self.position = np.array([[obs_x0 - self.radius], [obs_y0/2]])
 
@@ -474,7 +477,7 @@ class Boid:
             logging.debug('Boid %s is moving up', self.id)
             y_vel = self.velocity[1] - self.radius
         if (x + x_vel >= obs_x0 and x + x_vel <= obs_x1) and (y + y_vel >= obs_y0 and y + y_vel <= obs_y1):
-            if y <= obs_y0 or  y >= obs_y1:
+            if y <= obs_y0 or y >= obs_y1:
                 self.velocity[1] = -self.velocity[1]
             if x <= obs_x0 or x >= obs_x1:
                 self.velocity[0] = -self.velocity[0]

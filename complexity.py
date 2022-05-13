@@ -15,6 +15,7 @@ def rgb_to_hex(r, g, b):
     """Convert RGB to hex"""
     return f"#{r:02x}{g:02x}{b:02x}"
 
+
 ETA_ITERATION_SEPARATOR = 5
 WHITE = colored.fg(rgb_to_hex(255, 255, 255))
 
