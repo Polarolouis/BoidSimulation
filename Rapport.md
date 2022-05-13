@@ -70,7 +70,7 @@ C'est sur le panneau de droite que nous pourrons changer les paramètres en temp
 Nous avons implémenté un comportement de rebond aux limites du système.
 Nous avons aussi implémenté une indication visuelle de la densité des boids au sein d'une simulation. Le gradient de coloration s'affiche directement sur les boids, en suivant le comportement suivant : plus la densité est forte plus la coloration rouge sera intense.
 
-# Première implémentation : Modèle vectoriel
+# Première implémentation : Modèle vectoriel et équation de Newton
 
 Une première réalisation dite vectorielle a été codée (voir fichier python `boid.py` et `display.py` qui permet un affichage graphique du comportement).
 
