@@ -63,7 +63,7 @@ Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de l
 C'est sur le panneau de droite que nous pourrons changer les paramètres en temps réel pour pouvoir observer de manière direct les comportements de notre simulation.
 
 <p align="center">
-  <img src=images/example_real_time_simulation.gif 
+  <img src="images/example-full-usage.gif"
   alt="fenetre graphique" width=""/>
 </p>
 
