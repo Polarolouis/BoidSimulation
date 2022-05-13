@@ -127,8 +127,8 @@ class Boid:
         self.near_boids_separation = []
         self.near_boids_collision = []
 
-        filtered_boids = (boid for boid in boids if (not np.array_equal(self.position, boid.position)) and ((self.position[0] - self.near_distance_alignment < boid.position[0] and self.position[1] - self.near_distance_alignment < boid.position[1]) and (
-            self.position[0] + self.near_distance_alignment > boid.position[0] and self.position[1] + self.near_distance_alignment > boid.position[1])))
+        filtered_boids = (boid for boid in boids if (self.id != boid.id) and ((self.position[0][0] - self.near_distance_alignment < boid.position[0][0] and self.position[1][0] - self.near_distance_alignment < boid.position[1][0]) and (
+            self.position[0][0] + self.near_distance_alignment > boid.position[0][0] and self.position[1][0] + self.near_distance_alignment > boid.position[1][0])))
         logging.debug('Filtered boids: %s', filtered_boids)
 
         for boid in filtered_boids:
@@ -453,6 +453,10 @@ class Boid:
 
         x, y = self.get_coords()
 
+        if (x,y) in obstacle:
+            # If the boids are trapped in the obstacle, we teleport them out
+            self.position = np.array([[obs_x0 - self.radius], [obs_y0/2]])
+
         x_vel = self.velocity[0]
         y_vel = self.velocity[1]
         # If the boid is moving to the right
@@ -474,6 +478,11 @@ class Boid:
                 self.velocity[1] = -self.velocity[1]
             if x <= obs_x0 or x >= obs_x1:
                 self.velocity[0] = -self.velocity[0]
+        new_x, new_y = x + self.velocity[0], y + self.velocity[1]
+        if (new_x, new_y) in obstacle:
+            # If the boid will be in the obstacle even with the correction
+            # we stop
+            self.velocity = -self.velocity
 
     def get_the_obstacles_collisions(self, obstacles_list):
         """Check if the boid collides with an obstacle
@@ -545,9 +554,9 @@ class Boid:
         """Returns the coordinates of the boid
         Returns:
             (x, y) the coordinates of the boid"""
-        x_pos, y_pos = self.position
+        x_pos, y_pos = self.position[0][0], self.position[1][0]
 
-        return (*x_pos, *y_pos)  # unpacking the tuple
+        return (x_pos, y_pos)  # unpacking the tuple
 
     def set_coords(self, x, y):
         """Set the coordinates of the boid
