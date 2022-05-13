@@ -256,7 +256,7 @@ class Boid:
                 else:
                     normal = np.array([[-y_diff, x_diff]], dtype=np.float64)
                     normal_norm = np.linalg.norm(normal)
-                    new_vel = (np.dot(normal, vel)/(normal_norm**2))*normal
+                    new_vel = (np.dot(normal, vel)/(normal_norm**2))*normal if normal_norm != 0 else self.velocity
                     x_new_vel = new_vel[0][0]
                     y_new_vel = new_vel[0][1]
                     self.velocity = np.array(
@@ -271,14 +271,14 @@ class Boid:
             normal = np.array([[-y_diff], [x_diff]], dtype=np.float64)
             normal_norm = np.linalg.norm(normal)
             # determining if using the normal vector as velocity reduces or augments the distance between boids
-            new_pos = self.position+(normal/normal_norm)
+            new_pos = self.position+(normal/normal_norm) if normal_norm != 0 else self.position
             new_diff = new_pos-boid1.position
             new_dist = np.linalg.norm(new_diff)
             if new_dist <= self.near_distance_collision:
-                new_vel = -2 * normal / normal_norm
+                new_vel = -2 * normal / normal_norm if normal_norm != 0 else self.velocity
             else:
-                new_vel = 2 * normal / normal_norm
-            self.vel = new_vel
+                new_vel = 2 * normal / normal_norm if normal_norm != 0 else self.velocity
+            self.velocity = new_vel
     # (np.dot(normal,self.velocity)/(normal_norm**2))*normal
 
     def wind(self):
