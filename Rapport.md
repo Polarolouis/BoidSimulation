@@ -225,7 +225,27 @@ Nous sommes repartis de ce constat pour réaliser une simulation de foule avec u
 
 ## Génération des chemins optimaux pour une particule
 
-Un des prérequis de l'étude que nous avons 
+Un des prérequis de l'étude que nous avons dû implémenter est l'automatisation de la recherche et de la représentation des chemins optimaux.
+
+Nous avons pour cela utilisé un graphe de réseau. La structure était la suivante : 
+- un noeud représentant l'objectif du réseau (le noeud vers lequel tous les objets présents sur le graph veulent converger).
+- un ou des obstacles (modélisés sur le graph comme quatres noeds reliés entre eux deux à deux pour former des rectangles).
+- un noeud représentant l'endroit d'oû part la particule en elle même (sa position initiale).
+
+Dans une conformation avec un seul obstacle, nous obtenons donc dans un premier temps un graph de réseau similaire à celui ci :
+
+<p align="center">
+  <img src= "images/2022-05-13 11_37_35-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="fenetre graphique" width=""/>
+</p>
+
+Où les nodes 1,2,3,4 sont les "angles" de l'obstacles, et les nodes 5 et 6 sont respectivement la position initiale et le goal.
+
+Cependant, il est nécessaire de considérer des mouvements de particules impossibles au sein même de l'obstacle.
+
+<p align="center">
+  <img src= "images/2022-05-13 11_29_43-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="fenetre graphique" width=""/>
+</p>
+
 # Sources et ressources utilisées
 
 - <https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118>
