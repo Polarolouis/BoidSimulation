@@ -223,17 +223,12 @@ Comme deuxième approche, nous sommes partis du constat que les foules, lorqu'el
 
 Nous sommes repartis de ce constat pour réaliser une simulation de foule avec une approche similaire à celle de Navier-Stokes.
 
-<<<<<<< Updated upstream
 ## Génération des chemins optimaux pour une particule
 
-=======
 Vous pouvez trouver le code correspondant à cette partie sur ce lien suivant : [code du modèle particulaire]
-
-## Génération des chemins optimaux pour une particule
 
 ### Création d'un graph de réseau
 
->>>>>>> Stashed changes
 Un des prérequis de l'étude que nous avons dû implémenter est l'automatisation de la recherche et de la représentation des chemins optimaux.
 
 Nous avons pour cela utilisé un graphe de réseau. La structure était la suivante : 
@@ -241,9 +236,6 @@ Nous avons pour cela utilisé un graphe de réseau. La structure était la suiva
 - un ou des obstacles (modélisés sur le graph comme quatres noeds reliés entre eux deux à deux pour former des rectangles).
 - un noeud représentant l'endroit d'oû part la particule en elle même (sa position initiale).
 
-<<<<<<< Updated upstream
-Dans une conformation avec un seul obstacle, nous obtenons donc dans un premier temps un graph de réseau similaire à celui ci :
-=======
 Nous avons donc implémenté une classe Node à notre système, qui est définie ainsi :
 
 ```python
@@ -272,17 +264,11 @@ class Node () :
 ### Modélisation des obstacles 
 
 Dans une conformation avec un seul obstacle, nous obtenons donc dans un premier temps un graph de réseau similaire à celui-ci par exemple :
->>>>>>> Stashed changes
 
 <p align="center">
   <img src= "images/2022-05-13 11_37_35-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="fenetre graphique" width=""/>
 </p>
 
-<<<<<<< Updated upstream
-Où les nodes 1,2,3,4 sont les "angles" de l'obstacles, et les nodes 5 et 6 sont respectivement la position initiale et le goal.
-
-Cependant, il est nécessaire de considérer des mouvements de particules impossibles au sein même de l'obstacle.
-=======
 Où les nodes 1,2,3,4 sont les "angles" de l'obstacle, et les nodes 5 et 6 sont respectivement la position initiale et le goal du réseau.
 
 Cependant, il est nécessaire de considérer que les mouvements de particules sont impossibles au sein même de l'obstacle. Il faut pour cela "mettre à jour" le graph de réseau, de manière à éliminer les arrêtes qui traversent l'obstacle.
@@ -325,13 +311,10 @@ Cette boucle permet de faire la liste de toutes les intersections entre une lign
 En couplant cette méthode avec la méthode `notation_intersections` (qui donne une note à un point d'intersection en fonction du type de l'intersection : si c'est une réelle intersection ou une intersection entre deux arrêtes de l'obstacle) et la méthode  `knock_out_path` (qui permet de mettre à jour les voisins de chaque node pour que l'obstacle soit pris en compte).
 
 On obtient alors un graphe similaire à celui ci :
->>>>>>> Stashed changes
-
 <p align="center">
   <img src= "images/2022-05-13 11_29_43-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="fenetre graphique" width=""/>
 </p>
 
-<<<<<<< Updated upstream
 # Sources et ressources utilisées
 
 - <https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118>
@@ -339,22 +322,10 @@ On obtient alors un graphe similaire à celui ci :
 - ESAIM: PROCEEDINGS, July 2007, Vol.18, 143-152
 Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
 
-# Contact
-=======
-
-
-# Sources et ressources utilisées
-
-- https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118
-- https://www.codespeedy.com/how-to-implement-dijkstras-shortest-path-algorithm-in-python/
-- ESAIM : PROCEEDINGS, July 2007, Vol.18, 143-152, Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
-  
 <!-- LINKS IN THE MD -->
 [documentation de la bibliothèque shapely]: https://shapely.readthedocs.io/en/stable/manual.html
 [code du modèle particulaire]: https://github.com/Polarolouis/BoidSimulation/blob/boid_flow/dijkstra.py
-
-# Contacts
->>>>>>> Stashed changes
+# Contact
 
 Joseph Allyndrée - joseph.allyndree@agroparistech.fr
 
@@ -362,9 +333,5 @@ Louis Lacoste - louis.lacoste@agroparistech.fr
 
 Gabin Derache - gabin.derache@agroparistech.fr
 
-<<<<<<< Updated upstream
-Project Link : <https://github.com/Polarolouis/BoidSimulation>
-=======
 Project Link : <https://github.com/Polarolouis/BoidSimulation>
 
->>>>>>> Stashed changes
