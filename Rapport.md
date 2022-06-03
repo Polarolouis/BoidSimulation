@@ -15,21 +15,21 @@
 # Sommaire
 - [A propos du projet](#a-propos-du-projet)
 - [Fenêtre graphique en temps réel](#fentre-graphique-en-temps-réel)
-- [Première implémentation : Modèle vectoriel](#premire-implmentation--modle-vectoriel)
+- [Première implémentation : Modèle vectoriel](#première-implémentation--modèle-vectoriel)
   - [Calcul des distances](#calcul-des-distances)
   - [Comportement boidien](#comportement-boidien)
   - [Ajout par rapport au comportement boidien](#ajout-par-rapport-au-comportement-boidien)
   - [Optimisations](#optimisations)
-  - [Complexité](#complexit)
-  - [La simulation précalculée pour pallier à la complexité](#la-simulation-prcalcule-pour-pallier--la-complexit)
+  - [Complexité](#complexité)
+  - [La simulation précalculée pour pallier à la complexité](#la-simulation-précalculée-pour-pallier--la-complexité)
   - [Usage du programme](#usage-du-programme)
-- [Deuxième implémentation : Modèle particulaire](#deuxime-implmentation--modle-particulaire)
-  - [Génération des chemins optimaux pour une particule](#gnration-des-chemins-optimaux-pour-une-particule)
+- [Deuxième implémentation : Modèle particulaire](#deuxième-implémentation--modèle-particulaire)
+  - [Génération des chemins optimaux pour une particule](#génération-des-chemins-optimaux-pour-une-particule)
 - [Documentation](#documentation)
 - [Sources et ressources utilisées](#sources-et-ressources-utilises)
   - [Modules notables de l'installation de base](#modules-notables-de-linstallation-de-base)
-  - [Modules supplémentaires utilisés](#modules-supplmentaires-utiliss)
-  - [Services en ligne utilisés](#services-en-ligne-utiliss)
+  - [Modules supplémentaires utilisés](#modules-supplémentaires-utilisés)
+  - [Services en ligne utilisés](#services-en-ligne-utilisés)
 - [Contact](#contact)
 
 # A propos du projet
@@ -44,7 +44,7 @@ On souhaite simuler un comportement de type boidien qui est régie par ces trois
 Globalement, on peut représenter les boids comme des points, caractérisés par leur comportement lorsqu'ils rencontrent des congénères. On peut retrouver ici un schéma simplifié qui dicte les différents comportements :
 
 <p align="center">
-  <img src= images/boids.png alt="schema boid" width="400"/>
+  <img src= images/Boids.png alt="schema boid" width="400"/>
 </p>
 
 On définira donc trois zones :
@@ -71,7 +71,7 @@ C'est sur le panneau de droite que nous pourrons changer les paramètres en temp
 </p>
 
 Nous avons implémenté un comportement de rebond aux limites du système.
-Nous avons aussi implémenté une indication visuelle de la "densité" des boids au sein d'une simulation. Le gradient de coloration s'affiche directement sur les boids, en suivant le comportement suivant : plus la densité est forte plus la coloration rouge sera intense.
+Nous avons aussi implémenté une indication visuelle de la "densité" des *boids* au sein d'une simulation. Le gradient de coloration s'affiche directement sur les boids, en suivant le comportement suivant : plus la densité est forte plus la coloration rouge sera intense.
 
 Cette fenêtre a été développé de manière à pouvoir supporter différents modules de calculs tant que ceux-ci disposent de certaines *interfaces*, ainsi on peut imaginer coder
 d'autres modules de calculs, par exemple comme écrit plus haut des modules sous le paradigme du calcul impératif. Le code de la fenêtre est dans le fichier `realtime_display.py`.
@@ -80,7 +80,7 @@ d'autres modules de calculs, par exemple comme écrit plus haut des modules sous
 
 Une première réalisation dite vectorielle a été codée (voir fichier python `boid.py` et `display.py` qui permet un affichage graphique du comportement).
 
-Les boids sont définis ainsi :
+Les *boids* sont définis ainsi :
 
 ```python
 def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
@@ -93,7 +93,7 @@ def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
             the_chosen_one {bool} -- True if the boid is the chosen one"""
 ```
 
-Pour chaque boid, nous calculons les boids les plus proches (calcul de distance vectoriel)
+Pour chaque boid, nous calculons les *boids* les plus proches (calcul de distance vectoriel)
 
 Notre approche se fait ici dans la logique de la Programmation Orientée Objet *(POO)*, nous avons trouvé ce paradigme de programmation très utiles
 pour faire des collections de structures, variables et méthodes. Cette approche est plus "intuitive" (littéraire en quelque sorte puisque le code peut se lire facilement)
@@ -102,7 +102,7 @@ comparaison pourrait être intéressante.
 
 ## Calcul des distances
 
-Dans un premier temps, on retrouve de manière calculatoire les boids qui sont proches du boid concerné, pour chaque boid présent dans la simulation.
+Dans un premier temps, on retrouve de manière calculatoire les *boids* qui sont proches du boid concerné, pour chaque boid présent dans la simulation.
 Réaliser un premier tri en fonction des coordonées permet de réduire la complexité de l'algorithme. La fonction concernée est indiquée juste ici :
 
 ```python
@@ -235,7 +235,7 @@ Le code est le suivant :
 
 #### Densité calcul
 La "densité" est calculée grâce à un paramètre que nous avons défini arbitrairement selon ce qui nous semblait acceptable.
-Ainsi en prenant en compte que le rayon de cohésion est relativement faible nous avons considéré qu'avoir 2 boids dans 
+Ainsi en prenant en compte que le rayon de cohésion est relativement faible nous avons considéré qu'avoir 2 *boids* dans 
 le champ de cohésion était déjà élevée. *La définition choisie n'est donc pas vraiment celle d'une densité en tant que telle*.
 ```python
         self.density = len(self.near_boids_cohesion) / \
@@ -266,21 +266,21 @@ Ce code donne des résultats que nous avons jugés acceptables mais il pourrait 
             self.acceleration += separation * (1 + self.density)
 ```
 
-A noter que malgré tout à la fin, nous avons réussi à diminuer mais pas à effacer tous les chevauchement des boids.
+A noter que malgré tout à la fin, nous avons réussi à diminuer mais pas à effacer tous les chevauchement des *boids*.
 
 ## Optimisations
 
 Afin d'essayer d'optimiser nos différentes itérations nous avons utilisées plusieurs approches :
 
 ### Construction de listes des distances
-#### Filtrage des boids 
+#### Filtrage des *boids* 
 Avant de calculer les distances nous définissons un carré autour du *boid* qui sera parcouru pour détecter les autres *boids* et calculer la distance par rapport à eux.
 **Cette étape d'optimisation nous a fait gagner un temps de calcul considérable, nous permettant de doubler le nombre de *boids* que l'affichage temps réel pouvait simuler.**
 
 Plutôt que de recalculer les distances à la volée nous faisons entre chaque itération un calcul de toutes les distances entre les différents *boids*,
 ces distances sont ensuite stockées dans des listes qui sont reparcourues quand nécessaire.
 
-Enfin les distances étant symétriques entre deux boids nous stockons la distance dans le *boid* considéré par la boucle comme origine et dans l'*autre boid* ainsi nous divisons par 
+Enfin les distances étant symétriques entre deux *boids* nous stockons la distance dans le *boid* considéré par la boucle comme origine et dans l'*autre boid* ainsi nous divisons par 
 deux le nombre de calculs de distances nécessaires.
 
 Le code se déploie donc ainsi :
@@ -341,7 +341,7 @@ Les modules de pré-calcul se décompose en deux parties.
 
 ### Simulateur 
 
-[precomputing_simulators.py](https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/precomputing_simulator.py)
+[precomputing_simulator.py](https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/precomputing_simulator.py)
 
 Le simulateur se compose d'un menu de sélection des différents paramètres de la simulation (nous perdons donc l'aspect dynamique de la simulation
 temps réelle).
@@ -528,4 +528,3 @@ Louis Lacoste - louis.lacoste@agroparistech.fr
 Gabin Derache - gabin.derache@agroparistech.fr
 
 Project Link : <https://github.com/Polarolouis/BoidSimulation>
-
