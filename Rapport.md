@@ -2,7 +2,7 @@
 <br />
 <div align="center">
   <a href="flo cimage">
-    <img src=https://images.unsplash.com/photo-1516434233442-0c69c369b66d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80
+    <img src="https://images.unsplash.com/photo-1516434233442-0c69c369b66d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
   alt="Logo" width="734" height="489">
   </a>
 
@@ -44,7 +44,7 @@ On souhaite simuler un comportement de type boidien qui est régie par ces trois
 Globalement, on peut représenter les boids comme des points, caractérisés par leur comportement lorsqu'ils rencontrent des congénères. On peut retrouver ici un schéma simplifié qui dicte les différents comportements :
 
 <p align="center">
-  <img src= images/Boids.png alt="schema boid" width="400"/>
+  <img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/Boids.png" alt="schema boid" width="400"/>
 </p>
 
 On définira donc trois zones :
@@ -58,7 +58,7 @@ On définira donc trois zones :
 Nous avons commencé par créer une fenêtre graphique nous permettant de changer les paramètres de la simulation de manière quasi-dynamique en utilisant pour 
 l'affichage la bibliothèque graphique `tkinter`(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md#sources-et-ressources-utilisées).
 <p align="center">
-  <img src = images/280061579_550147653192539_8183857592037787828_n.png
+  <img src ="https://github.com/Polarolouis/BoidSimulation/raw/main/images/280061579_550147653192539_8183857592037787828_n.png"
   alt="fenetre graphique" width=""/>
 </p>
 
@@ -66,9 +66,10 @@ Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de l
 C'est sur le panneau de droite que nous pourrons changer les paramètres en temps réel pour pouvoir observer de manière directe les comportements de notre simulation.
 
 <p align="center">
-  <img src=images/example_real_time_simulation.gif 
-  alt="fenetre graphique" width=""/>
+  <img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/example_real_time_simulation.gif"
+  alt="Gif d'example d'une simulation temps réelle" width=""/>
 </p>
+*Note*: l'image ci-dessus est un GIF visible sur le [dépôt GitHub](https://github.com/Polarolouis/BoidSimulation/)
 
 Nous avons implémenté un comportement de rebond aux limites du système.
 Nous avons aussi implémenté une indication visuelle de la "densité" des *boids* au sein d'une simulation. Le gradient de coloration s'affiche directement sur les boids, en suivant le comportement suivant : plus la densité est forte plus la coloration rouge sera intense.
@@ -326,8 +327,8 @@ En terme de complexité algorithmique, on observe un comportement proche du N²,
 Nous avons tracé ci-dessous le temps de simulation en fonction du nombre d'objets simulés.
 
 <p align="center">
-  <img src= https://i.pinimg.com/originals/17/61/fc/1761fc369490f2ebb9a135dab987269a.jpg
- alt="fenetre graphique" width=""/>
+  <img src="https://i.pinimg.com/originals/17/61/fc/1761fc369490f2ebb9a135dab987269a.jpg"
+ alt="Complexité temporelle du projet" width=""/>
 </p>
 
 Malgré les optimisations que nous avons implémenté, l'ordre de grandeur reste en O(N²) mais nous estimons être proche de N²/2.
@@ -439,7 +440,7 @@ class Node () :
 Dans une conformation avec un seul obstacle, nous obtenons donc dans un premier temps un graph de réseau similaire à celui-ci par exemple :
 
 <p align="center">
-  <img src= "images/2022-05-13 11_37_35-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="fenetre graphique" width=""/>
+  <img src= "https://github.com/Polarolouis/BoidSimulation/raw/main/images/2022-05-13 11_37_35-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="Graph" width=""/>
 </p>
 
 Où les nodes 1,2,3,4 sont les "angles" de l'obstacle, et les nodes 5 et 6 sont respectivement la position initiale et le goal du réseau.
@@ -485,7 +486,7 @@ En couplant cette méthode avec la méthode `notation_intersections` (qui donne 
 
 On obtient alors un graphe similaire à celui ci :
 <p align="center">
-  <img src= "images/2022-05-13 11_29_43-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="fenetre graphique" width=""/>
+  <img src= "https://github.com/Polarolouis/BoidSimulation/raw/main/images/2022-05-13 11_29_43-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="Graph intersections" width=""/>
 </p>
 
 # Documentation 
