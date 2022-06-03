@@ -69,6 +69,7 @@ C'est sur le panneau de droite que nous pourrons changer les paramètres en temp
   <img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/example_real_time_simulation.gif"
   alt="Gif d'example d'une simulation temps réelle" width=""/>
 </p>
+
 *Note*: l'image ci-dessus est un GIF visible dans le rapport sur le [dépôt GitHub](https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md)
 
 Nous avons implémenté un comportement de rebond aux limites du système.
