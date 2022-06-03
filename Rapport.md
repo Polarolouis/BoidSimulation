@@ -377,15 +377,15 @@ python -m pip install -r requirements.txt
 ```
 
 2 - Choisir le module que l'on souhaite utiliser :
-	a - `realtime_display.py` se lance à partir d'un terminal avec :
+	- `realtime_display.py` se lance à partir d'un terminal avec :
 	```bash
 	python realtime_display.py
 	```
-	b - `precomputing_simulator.py` :
+	- `precomputing_simulator.py` :
 	```bash
 	python precomputing_simulator.py
 	```
-	c - `precomputing_display.py` : 
+	- `precomputing_display.py` : 
 	```bash
 	python precomputing_display.py
 	```
