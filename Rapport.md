@@ -377,18 +377,19 @@ python -m pip install -r requirements.txt
 ```
 
 2 - Choisir le module que l'on souhaite utiliser :
-	- `realtime_display.py` se lance à partir d'un terminal avec :
-	```bash
-	python realtime_display.py
-	```
-	- `precomputing_simulator.py` :
-	```bash
-	python precomputing_simulator.py
-	```
-	- `precomputing_display.py` : 
-	```bash
-	python precomputing_display.py
-	```
+
+- `realtime_display.py` se lance à partir d'un terminal avec :
+```bash
+python realtime_display.py
+```
+- `precomputing_simulator.py` :
+```bash
+python precomputing_simulator.py
+```
+- `precomputing_display.py` : 
+```bash
+python precomputing_display.py
+```
 3 - Utiliser les interfaces qui s'ouvrent pour simuler les *boids*.
 
 # Deuxième implémentation : Modèle particulaire
