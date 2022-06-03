@@ -13,12 +13,14 @@
 <!-- TABLE OF CONTENTS -->
 
 # Sommaire
+- [Sommaire](#sommaire)
 - [A propos du projet](#a-propos-du-projet)
-- [Fenêtre graphique en temps réel](#fenêtre-graphique-en-temps-réel)
+- [Fenêtre graphique en temps réel](#fenêtre-graphique-en-temps-rel)
 - [Première implémentation : Modèle vectoriel](#première-implémentation--modèle-vectoriel)
   - [Calcul des distances](#calcul-des-distances)
+  - [Actions des forces : Principe fondamental de la dynamique](#actions-des-forces--principe-fondamental-de-la-dynamique)
   - [Comportement boidien](#comportement-boidien)
-  - [Ajout par rapport au comportement boidien](#ajout-par-rapport-au-comportement-boidien)
+  - [Ajouts par rapport au comportement boidien](#ajouts-par-rapport-au-comportement-boidien)
   - [Optimisations](#optimisations)
   - [Complexité](#complexité)
   - [La simulation précalculée pour pallier à la complexité](#la-simulation-précalculée-pour-pallier--la-complexité)
@@ -26,10 +28,11 @@
 - [Deuxième implémentation : Modèle particulaire](#deuxième-implémentation--modèle-particulaire)
   - [Génération des chemins optimaux pour une particule](#génération-des-chemins-optimaux-pour-une-particule)
 - [Documentation](#documentation)
-- [Sources et ressources utilisées](#sources-et-ressources-utilises)
+- [Sources et ressources utilisées](#sources-et-ressources-utilisées)
   - [Modules notables de l'installation de base](#modules-notables-de-linstallation-de-base)
   - [Modules supplémentaires utilisés](#modules-supplémentaires-utilisés)
   - [Services en ligne utilisés](#services-en-ligne-utilisés)
+- [Licence](#licence)
 - [Contact](#contact)
 
 # A propos du projet
