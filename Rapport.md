@@ -66,7 +66,7 @@ Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de l
 C'est sur le panneau de droite que nous pourrons changer les paramètres en temps réel pour pouvoir observer de manière directe les comportements de notre simulation.
 
 <p align="center">
-  <img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/example_real_time_simulation.gif"
+  <img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/example-full-usage.gif?raw=true"
   alt="Gif d'example d'une simulation temps réelle" width=""/>
 </p>
 
