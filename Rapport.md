@@ -14,7 +14,7 @@
 
 # Sommaire
 - [A propos du projet](#a-propos-du-projet)
-- [Fenêtre graphique en temps réel](#fentre-graphique-en-temps-réel)
+- [Fenêtre graphique en temps réel](#fenêtre-graphique-en-temps-réel)
 - [Première implémentation : Modèle vectoriel](#première-implémentation--modèle-vectoriel)
   - [Calcul des distances](#calcul-des-distances)
   - [Comportement boidien](#comportement-boidien)
