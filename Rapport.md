@@ -521,6 +521,11 @@ Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
 <!-- LINKS IN THE MD -->
 [documentation de la bibliothèque shapely]: https://shapely.readthedocs.io/en/stable/manual.html
 [code du modèle particulaire]: https://github.com/Polarolouis/BoidSimulation/blob/boid_flow/dijkstra.py
+
+# Licence
+
+Ce projet est fourni sous la MIT LICENSE, pour plus d'informations voir `LICENSE.txt`.
+
 # Contact
 
 Joseph Allyndrée - joseph.allyndree@agroparistech.fr
