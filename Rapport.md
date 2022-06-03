@@ -357,7 +357,7 @@ et un affichage dynamique d'une bar de progression.
 
 *Note* : les couleurs dans le terminal sont obtenues grâce au package `colored`(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md#sources-et-ressources-utilisées).
 
-### Affichage des simulation précalculées
+### Affichage des simulations précalculées
 
 [precomputing_display.py](https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/precomputing_display.py)
 
