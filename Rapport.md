@@ -85,7 +85,36 @@ Une première réalisation dite vectorielle a été codée (voir fichier python 
 Les *boids* sont définis ainsi :
 
 ```python
-def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
+class Boid:
+    """Boid class"""
+
+    id = 0
+    radius = 5
+    near_distance_alignment = 10*radius  # Distance to be considered near
+    near_distance_cohesion = 0.5*near_distance_alignment
+    near_distance_separation = 4*radius
+    near_distance_collision = 2.5*radius
+    chaotic_probability = 0.0
+    bouncing = False
+
+    goal_position = np.array([[0], [0]], dtype=np.float64)
+
+    number_of_around_to_be_dense = 2
+
+    alignment_force = 1
+    cohesion_force = 1
+    separation_force = 1
+    goal_multiplicator_force = 1
+    wind_speed = 0
+    wind_direction = 0
+
+    max_speed = 3
+    max_alignment_force = 1
+    max_cohesion_force = 1
+    max_separation_force = 1
+    max_goal_force = 1
+
+    def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one=False):
         """Initialize the boid
         Arguments:
             x_pos {float} -- x position of the boid
@@ -93,6 +122,29 @@ def __init__(self, x_pos, y_pos, x_vel, y_vel, the_chosen_one = False):
             x_vel {float} -- x velocity of the boid
             y_vel {float} -- y velocity of the boid
             the_chosen_one {bool} -- True if the boid is the chosen one"""
+
+        # Identification of the boid
+        self.id = Boid.id
+        Boid.id += 1
+
+        # Initialise the boid position and velocity
+        self.position = np.array([[x_pos], [y_pos]], dtype=np.float64)
+        self.velocity = np.array([[x_vel], [y_vel]], dtype=np.float64)
+        self.acceleration = np.array([[0], [0]], dtype=np.float64)
+        self.new_acceleration = np.array([[0], [0]], dtype=np.float64)
+
+        # Initialise the boid neighbours lists
+        self.near_boids_alignment = []
+        self.near_boids_cohesion = []
+        self.near_boids_separation = []
+        self.near_boids_collision = []
+
+        # Initialise the boid color related variables
+        self.the_chosen_one = the_chosen_one
+        self.color = "green" if self.the_chosen_one else "white"
+        self.boids_rate = 0
+        self.density = len(self.near_boids_cohesion) / \
+            self.number_of_around_to_be_dense
 ```
 
 Pour chaque boid, nous calculons les *boids* les plus proches (calcul de distance vectoriel)
@@ -141,101 +193,267 @@ Réaliser un premier tri en fonction des coordonées permet de réduire la compl
                 boid.near_boids_collision.append((self, dist))
 ```
 
+## Actions des forces : Principe fondamental de la dynamique
+
+Nous introduirons les effets des différentes forces en utilisant la 2ème loi de Newton (autrement appelée Principe Fondamental de la Dynamique).
+
+
+Ainsi la somme des forces donnera l'accélération du *boid*, sa masse étant considéré comme valant 1. Le code appliquant cela est le suivant : 
+```python
+    def apply_rules(self):
+        """Apply the rules of the flock to the boid
+        By adding the forces of the different behaviours to the acceleration"""
+
+        logging.debug('Applying rules to boid %s', self.id)
+        logging.debug('----------------------------------')
+
+        if self.goal_force > 0:
+            goal = self.goal()
+            self.acceleration += goal * (1/2 - self.density)
+
+        if self.wind_speed > 0:
+            wind = self.wind()
+            self.acceleration += wind
+
+        if self.alignment_force > 0:
+            alignment = self.alignment()
+            self.acceleration += alignment
+
+        if self.cohesion_force > 0:
+            cohesion = self.cohesion()
+            self.acceleration += cohesion * (1/2 - self.density)
+
+        if self.separation_force > 0:
+            separation = self.separation()
+            self.acceleration += separation * (1 + self.density)
+[...]
+
+# Update the boid
+    def update(self, obstacles_list):
+        """Update the velocity and the position of the boid
+        Arguments:
+            obstacles_list {list} -- List of obstacles to check against"""
+
+        logging.debug('Boid %s is updating', self.id)
+        logging.debug('Boid %s position: %s', self.id, self.position)
+
+        # Update the velocity
+        logging.debug('Boid %s is updating the velocity from %s',
+                      self.id, self.velocity)
+        self.velocity += self.acceleration
+        logging.debug('to %s', self.velocity)
+
+        # Chaotic behaviour
+        if self.chaotic_probability < random.random():
+            logging.debug('Boid %s ', self.id)
+            angle = random.uniform(0, 2 * math.pi)
+            self.velocity[0] += math.cos(angle)
+            self.velocity[1] += math.sin(angle)
+
+        # Collision
+        if self.near_boids_collision:
+            self.collision()
+
+        # Check if the boid is out of bounds and apply the correction
+        if self.bouncing:
+            # If we bounce the output is the velocity
+            self.velocity = self.check_edges()
+        else:
+            # If we don't bounce the output is the position
+            self.position = self.check_edges()
+
+        # Check if the boid will collide with an obstacle
+        self.get_the_obstacles_collisions(obstacles_list)
+
+        # If velocity exceeds the max speed, set it to the max speed
+        if np.linalg.norm(self.velocity) > self.max_speed:
+            logging.debug(
+                'Boid %s velocity exceeds the max speed, setting it to the max speed', self.id)
+            self.velocity = self.velocity / \
+                np.linalg.norm(self.velocity) * self.max_speed
+            logging.debug('Boid %s velocity: %s', self.id, self.velocity)
+        # Update the position
+        self.position += self.velocity
+        logging.debug('Boid %s new position: %s', self.id, self.position)
+
+        # If the boid is out of space, bring it back to space
+        self.bring_back_to_space()
+
+        # Reset the acceleration
+        self.acceleration = np.array([[0], [0]], dtype=np.float64)
+
+```
 ## Comportement boidien
 
 ### Attraction
 
 ```python
-def cohesion(self):
-  """Cohesion behaviour to steer towards the average position of the boids in the near_boids list
-  Returns : the correction to add to the velocity""" 
-  # Calculate the average position of the boids
-  correction_to_avg = np.array([[0], [0]], dtype=np.float64)
-  if self.near_boids:
-      position_avg = np.array([[0], [0]], dtype=np.float64)
-      for boid in self.near_boids:
-          position_avg += boid.position
-      position_avg /= len(self.near_boids)
-      correction_to_avg = position_avg - self.position
-      if np.linalg.norm(correction_to_avg):
-          correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_speed
-  if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
-      correction_to_avg = correction_to_avg / np.linalg.norm(correction_to_avg) * self.max_cohesion_force
-  return correction_to_avg
+    def cohesion(self):
+        """Cohesion behaviour to steer towards the average position of the boids in the near_boids list
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
+
+        # Calculate the average position of the boids
+        correction_to_avg = np.array([[0], [0]], dtype=np.float64)
+        if self.near_boids_cohesion:
+            position_avg = np.array([[0], [0]], dtype=np.float64)
+            for boid, _ in self.near_boids_cohesion:
+                position_avg += boid.position
+            position_avg /= len(self.near_boids_cohesion)
+            correction_to_avg = position_avg - self.position
+        if np.linalg.norm(correction_to_avg) > self.max_cohesion_force:
+            correction_to_avg = correction_to_avg / \
+                np.linalg.norm(correction_to_avg) * self.max_cohesion_force
+
+        logging.debug('Cohesion correction to avg: %s', correction_to_avg)
+        logging.debug('The cohesion force is: %s', Boid.cohesion_force)
+        logging.debug('The correction for cohesion is: %s',
+                      correction_to_avg * Boid.cohesion_force)
+
+        return correction_to_avg * Boid.cohesion_force
 ```
 
 ### Orientation
 
 ```python
-# Flock behaviour
-def alignment(self):
-  """Alignment behaviour to steer towards the average heading of the boids in the near_boids list
-  Returns : the correction to add to the velocity""" 
-  # Calculate the average heading of the boids
-  heading_correction = np.array([[0], [0]], dtype=np.float64)
-  if self.near_boids:            
-      # Taking the the fastest boid as a leader
-      heading_correction = max(self.near_boids, key=lambda boid: np.linalg.norm(boid.velocity)).velocity
+    def alignment(self):
+        """Alignment behaviour to steer towards the average heading of the boids in the near_boids list
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
 
-  if np.linalg.norm(heading_correction):
-      heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_speed
-  
-  if np.linalg.norm(heading_correction) > self.max_alignment_force:
-      heading_correction = heading_correction / np.linalg.norm(heading_correction) * self.max_alignment_force
-  return heading_correction
+        # Calculate the average heading of the boids
+        heading_correction = np.array([[0], [0]], dtype=np.float64)
+        if self.near_boids_alignment:
+            # Taking the the fastest boid as a leader
+            heading_correction = max(self.near_boids_alignment, key=lambda boid_and_distance: np.linalg.norm(
+                boid_and_distance[0].velocity))[0].velocity
+
+        if np.linalg.norm(heading_correction) > self.max_alignment_force:
+            heading_correction = heading_correction / \
+                np.linalg.norm(heading_correction) * self.max_alignment_force
+
+        logging.debug('Alignment heading correction: %s', heading_correction)
+        logging.debug('The alignment force is: %s', Boid.alignment_force)
+        logging.debug('The correction for alignment is: %s',
+                      heading_correction * Boid.alignment_force)
+
+        return heading_correction * Boid.alignment_force
 ```
 
 ### Répulsion
 
 ```python
-def separation(self):
-  """Separation behaviour to avoid collisions with other boids
-  Returns : the correction to add to the velocity"""
-  separation_correction = np.array([[0], [0]], dtype=np.float64)
-  for boid in self.near_boids:
-      distance_to_boid = self.distance(boid)
-      diff = self.position - boid.position
-      diff /= distance_to_boid
-      separation_correction += diff
-  if self.near_boids:
-      separation_correction /= len(self.near_boids)
-  if np.linalg.norm(separation_correction) > 0:
-      separation_correction = separation_correction / np.linalg.norm(separation_correction) * self.max_speed
-  if np.linalg.norm(separation_correction):
-      separation_correction = (separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
-  
-  return separation_correction
+    def separation(self):
+        """Separation behaviour to avoid collisions with other boids
+        Returns:
+            np.array([float, float]) -- [x acceleration, y acceleration]"""
+
+        separation_correction = np.array([[0], [0]], dtype=np.float64)
+        for boid, distance in self.near_boids_separation:
+            diff = self.position - boid.position
+            diff /= distance
+            separation_correction += diff
+        if self.near_boids_separation:
+            separation_correction /= len(self.near_boids_separation)
+        if np.linalg.norm(separation_correction):
+            separation_correction = (
+                separation_correction / np.linalg.norm(separation_correction)) * self.max_separation_force
+
+        logging.debug('Separation correction: %s', separation_correction)
+        logging.debug('The separation force is: %s', Boid.separation_force)
+        logging.debug('The correction for separation is: %s',
+                      separation_correction * Boid.separation_force)
+
+        return separation_correction * Boid.separation_force
 ```
 
-## Ajout par rapport au comportement boidien
+## Ajouts par rapport au comportement boidien
 Nous avons ajouté une gestion plus fine de la collision afin de réduire les chevauchements de *boids*.
+
 ### Collisions
 ```python
-def collision(self):
-    """collision behavior to prevent boids from going through each other
-    Returns:
-        np.array([float,float]) -- [x velocity, y velocity]"""
-    x_vel = self.velocity[0][0]
-    y_vel = self.velocity[1][0]
-    vel = np.array([x_vel,y_vel], dtype=np.float64)
-    for boid, _ in self.near_boids_collision:
-        diff = self.position - boid.position
-        x_diff = diff[0][0]
-        y_diff = diff[1][0]
-        normal = np.array([[-y_diff,x_diff]], dtype=np.float64)
-        normal_norm = np.linalg.norm(normal)
-        new_vel = (np.dot(normal,vel)/(normal_norm**2))*normal
-        x_new_vel = new_vel[0][0]
-        y_new_vel = new_vel[0][1]
-        self.velocity = np.array([[x_new_vel],[y_new_vel]], dtype=np.float)
+
+    def collision(self):
+        """collision behavior to prevent boids from going through each other
+        Returns:
+            np.array([float,float]) -- [x velocity, y velocity]"""
+        if len(self.near_boids_collision) == 1:
+            x_vel = self.velocity[0][0]
+            y_vel = self.velocity[1][0]
+            vel = np.array([x_vel, y_vel], dtype=np.float64)
+
+            for boid, distance in self.near_boids_collision:
+                diff = self.position - boid.position
+                diff_norm = np.linalg.norm(diff)
+                x_diff = diff[0][0]
+                y_diff = diff[1][0]
+                if distance <= 1.9*boid.radius:
+                    self.velocity = np.array(
+                        [[-x_diff/diff_norm], [-y_diff/diff_norm]], dtype=np.float64)
+                else:
+                    normal = np.array([[-y_diff, x_diff]], dtype=np.float64)
+                    normal_norm = np.linalg.norm(normal)
+                    new_vel = (np.dot(normal, vel)/(normal_norm**2))*normal if normal_norm != 0 else self.velocity
+                    x_new_vel = new_vel[0][0]
+                    y_new_vel = new_vel[0][1]
+                    self.velocity = np.array(
+                        [[x_new_vel], [y_new_vel]], dtype=np.float64)
+        elif len(self.near_boids_collision) == 2:
+            """We want the boid to go away from it's two neighbors"""
+            boid1 = self.near_boids_collision[0][0]
+            boid2 = self.near_boids_collision[1][0]
+            diff = boid1.position-boid2.position
+            x_diff = diff[0][0]
+            y_diff = diff[1][0]
+            normal = np.array([[-y_diff], [x_diff]], dtype=np.float64)
+            normal_norm = np.linalg.norm(normal)
+            # determining if using the normal vector as velocity reduces or augments the distance between boids
+            new_pos = self.position+(normal/normal_norm) if normal_norm != 0 else self.position
+            new_diff = new_pos-boid1.position
+            new_dist = np.linalg.norm(new_diff)
+            if new_dist <= self.near_distance_collision:
+                new_vel = -2 * normal / normal_norm if normal_norm != 0 else self.velocity
+            else:
+                new_vel = 2 * normal / normal_norm if normal_norm != 0 else self.velocity
+            self.velocity = new_vel
+    # (np.dot(normal,self.velocity)/(normal_norm**2))*normal
 ```
+
+### Force du vent
+
+Nous avons ajouté la possibilité de mettre un vent qui est une force d'intensité constante soufflant dans une direction choisie par un angle.
+
+**ICI UN EXEMPLE**
+
+### Force `goal` ou objectif
+
+Nous avons également ajouté une force d'objectif qui attire les *boids* vers elle et permet donc en modifiant sa position de les diriger sur le terrain de simulation.
+
+**ICI UN EXEMPLE**
+
+### Obstacles
+
+Afin de pouvoir modéliser des mouvements de foules nous avons implémenté la possibilité de poser des obstacles, figuré sur l'affichage temps réel par des rectangles rouges. 
+
+Les boids rebondissent alors sur ces surfaces. Nous avons fait en sorte qu'une fois la simulation lancée, il soit possible de cliquer pour poser le **coin haut-gauche** puis recliquer pour poser le **coin bas-droit**.
+
+Il est alors assez intéressant de regarder les *boids* rebondir sur les différentes surfaces et en utilisant la force `goal` on peut observer un comportement assimilable *sous certaines conditions* à un fluide dans un tuyau.
+
+**ICI UN EXEMPLE**
+
+De même on peut *sous certaines conditions* observer un comportement similaire à l'évacuation d'une foule par une porte.
+
+**ICI UN EXEMPLE**
+
+Nous invitons le lecteur à essayer les différentes possibilités offertes par cet outil.
+
 ### Impact de la distance sur les effets des forces
 
 Le problème des chevauchements a été une des tâches qui nous a le plus occupé et déranger, afin de le réduire nous avons 
 intégré une prise en compte de la distance et de la densité dans l'application des forces citées plus haut.
 Le code est le suivant :
 
-#### Densité calcul
+#### Densité : calcul
 La "densité" est calculée grâce à un paramètre que nous avons défini arbitrairement selon ce qui nous semblait acceptable.
 Ainsi en prenant en compte que le rayon de cohésion est relativement faible nous avons considéré qu'avoir 2 *boids* dans 
 le champ de cohésion était déjà élevée. *La définition choisie n'est donc pas vraiment celle d'une densité en tant que telle*.
