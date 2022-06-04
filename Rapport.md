@@ -15,18 +15,34 @@
 # Sommaire
 - [Sommaire](#sommaire)
 - [A propos du projet](#a-propos-du-projet)
-- [Fenêtre graphique en temps réel](#fenêtre-graphique-en-temps-rel)
+- [Fenêtre graphique en temps réel](#fenêtre-graphique-en-temps-réel)
 - [Première implémentation : Modèle vectoriel](#première-implémentation--modèle-vectoriel)
   - [Calcul des distances](#calcul-des-distances)
   - [Actions des forces : Principe fondamental de la dynamique](#actions-des-forces--principe-fondamental-de-la-dynamique)
   - [Comportement boidien](#comportement-boidien)
+    - [Attraction](#attraction)
+    - [Orientation](#orientation)
+    - [Répulsion](#répulsion)
   - [Ajouts par rapport au comportement boidien](#ajouts-par-rapport-au-comportement-boidien)
+    - [Collisions](#collisions)
+    - [Force du vent](#force-du-vent)
+    - [Force `goal` ou objectif](#force-goal-ou-objectif)
+    - [Obstacles](#obstacles)
+    - [Impact de la distance sur les effets des forces](#impact-de-la-distance-sur-les-effets-des-forces)
+      - [Densité : calcul](#densité--calcul)
+      - [Densité application](#densité-application)
   - [Optimisations](#optimisations)
+    - [Construction de listes des distances](#construction-de-listes-des-distances)
+      - [Filtrage des *boids*](#filtrage-des-boids)
   - [Complexité](#complexité)
-  - [La simulation précalculée pour pallier à la complexité](#la-simulation-précalculée-pour-pallier--la-complexité)
+  - [La simulation précalculée pour pallier à la complexité](#la-simulation-précalculée-pour-pallier-à-la-complexité)
+    - [Simulateur](#simulateur)
+    - [Affichage des simulations précalculées](#affichage-des-simulations-précalculées)
   - [Usage du programme](#usage-du-programme)
 - [Deuxième implémentation : Modèle particulaire](#deuxième-implémentation--modèle-particulaire)
   - [Génération des chemins optimaux pour une particule](#génération-des-chemins-optimaux-pour-une-particule)
+    - [Création d'un graph de réseau](#création-dun-graph-de-réseau)
+    - [Modélisation des obstacles](#modélisation-des-obstacles)
 - [Documentation](#documentation)
 - [Sources et ressources utilisées](#sources-et-ressources-utilisées)
   - [Modules notables de l'installation de base](#modules-notables-de-linstallation-de-base)
@@ -47,7 +63,7 @@ On souhaite simuler un comportement de type boidien qui est régie par ces trois
 Globalement, on peut représenter les boids comme des points, caractérisés par leur comportement lorsqu'ils rencontrent des congénères. On peut retrouver ici un schéma simplifié qui dicte les différents comportements :
 
 <p align="center">
-  <img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/Boids.png" alt="schema boid" width="400"/>
+<img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/Boids.png" alt="schema boid" width="400"/>
 </p>
 
 On définira donc trois zones :
@@ -61,7 +77,7 @@ On définira donc trois zones :
 Nous avons commencé par créer une fenêtre graphique nous permettant de changer les paramètres de la simulation de manière quasi-dynamique en utilisant pour 
 l'affichage la bibliothèque graphique `tkinter`(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md#sources-et-ressources-utilisées).
 <p align="center">
-  <img src ="https://github.com/Polarolouis/BoidSimulation/raw/main/images/280061579_550147653192539_8183857592037787828_n.png"
+<img src ="https://github.com/Polarolouis/BoidSimulation/raw/main/images/280061579_550147653192539_8183857592037787828_n.png"
   alt="fenetre graphique" width=""/>
 </p>
 
@@ -69,7 +85,7 @@ Sur le panneau de gauche, nous pouvons pouvons voir les paramètres actuels de l
 C'est sur le panneau de droite que nous pourrons changer les paramètres en temps réel pour pouvoir observer de manière directe les comportements de notre simulation.
 
 <p align="center">
-  <img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/example-full-usage.gif?raw=true"
+<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/example-full-usage.gif?raw=true"
   alt="Gif d'example d'une simulation temps réelle" width=""/>
 </p>
 
@@ -200,8 +216,8 @@ Réaliser un premier tri en fonction des coordonées permet de réduire la compl
 
 Nous introduirons les effets des différentes forces en utilisant la 2ème loi de Newton (autrement appelée Principe Fondamental de la Dynamique).
 
+Ainsi la somme des forces donnera l'accélération du *boid*, sa masse étant considéré comme valant 1. Le code appliquant cela est le suivant :
 
-Ainsi la somme des forces donnera l'accélération du *boid*, sa masse étant considéré comme valant 1. Le code appliquant cela est le suivant : 
 ```python
     def apply_rules(self):
         """Apply the rules of the flock to the boid
@@ -229,7 +245,8 @@ Ainsi la somme des forces donnera l'accélération du *boid*, sa masse étant co
         if self.separation_force > 0:
             separation = self.separation()
             self.acceleration += separation * (1 + self.density)
-[...]
+
+# [...] Ellipse de parties non essentielle à la compréhension du fonctionnement du code
 
 # Update the boid
     def update(self, obstacles_list):
@@ -284,8 +301,8 @@ Ainsi la somme des forces donnera l'accélération du *boid*, sa masse étant co
 
         # Reset the acceleration
         self.acceleration = np.array([[0], [0]], dtype=np.float64)
-
 ```
+
 ## Comportement boidien
 
 ### Attraction
@@ -371,9 +388,13 @@ Ainsi la somme des forces donnera l'accélération du *boid*, sa masse étant co
 ```
 
 ## Ajouts par rapport au comportement boidien
+
 Nous avons ajouté une gestion plus fine de la collision afin de réduire les chevauchements de *boids*.
 
 ### Collisions
+
+> Ici l'explication du code par Gabin Derache
+
 ```python
 
     def collision(self):
@@ -436,7 +457,7 @@ Nous avons également ajouté une force d'objectif qui attire les *boids* vers e
 
 ### Obstacles
 
-Afin de pouvoir modéliser des mouvements de foules nous avons implémenté la possibilité de poser des obstacles, figuré sur l'affichage temps réel par des rectangles rouges. 
+Afin de pouvoir modéliser des mouvements de foules nous avons implémenté la possibilité de poser des obstacles, figuré sur l'affichage temps réel par des rectangles rouges.
 
 Les boids rebondissent alors sur ces surfaces. Nous avons fait en sorte qu'une fois la simulation lancée, il soit possible de cliquer pour poser le **coin haut-gauche** puis recliquer pour poser le **coin bas-droit**.
 
@@ -452,21 +473,23 @@ Nous invitons le lecteur à essayer les différentes possibilités offertes par 
 
 ### Impact de la distance sur les effets des forces
 
-Le problème des chevauchements a été une des tâches qui nous a le plus occupé et déranger, afin de le réduire nous avons 
-intégré une prise en compte de la distance et de la densité dans l'application des forces citées plus haut.
+Le problème des chevauchements a été une des tâches qui nous a le plus occupé et déranger, afin de le réduire nous avons intégré une prise en compte de la distance et de la densité dans l'application des forces citées plus haut.
 Le code est le suivant :
 
 #### Densité : calcul
+
 La "densité" est calculée grâce à un paramètre que nous avons défini arbitrairement selon ce qui nous semblait acceptable.
-Ainsi en prenant en compte que le rayon de cohésion est relativement faible nous avons considéré qu'avoir 2 *boids* dans 
-le champ de cohésion était déjà élevée. *La définition choisie n'est donc pas vraiment celle d'une densité en tant que telle*.
+Ainsi en prenant en compte que le rayon de cohésion est relativement faible nous avons considéré qu'avoir 2 *boids* dans le champ de cohésion était déjà élevée. *La définition choisie n'est donc pas vraiment celle d'une densité en tant que telle*.
+
 ```python
         self.density = len(self.near_boids_cohesion) / \
             self.number_of_around_to_be_dense
 ```
+
 Ce code donne des résultats que nous avons jugés acceptables mais il pourrait être un point d'amélioration.
 
 #### Densité application
+
 ```python
         if self.goal_force > 0:
             goal = self.goal()
@@ -496,17 +519,19 @@ A noter que malgré tout à la fin, nous avons réussi à diminuer mais pas à e
 Afin d'essayer d'optimiser nos différentes itérations nous avons utilisées plusieurs approches :
 
 ### Construction de listes des distances
-#### Filtrage des *boids* 
+
+#### Filtrage des *boids*
+
 Avant de calculer les distances nous définissons un carré autour du *boid* qui sera parcouru pour détecter les autres *boids* et calculer la distance par rapport à eux.
 **Cette étape d'optimisation nous a fait gagner un temps de calcul considérable, nous permettant de doubler le nombre de *boids* que l'affichage temps réel pouvait simuler.**
 
 Plutôt que de recalculer les distances à la volée nous faisons entre chaque itération un calcul de toutes les distances entre les différents *boids*,
 ces distances sont ensuite stockées dans des listes qui sont reparcourues quand nécessaire.
 
-Enfin les distances étant symétriques entre deux *boids* nous stockons la distance dans le *boid* considéré par la boucle comme origine et dans l'*autre boid* ainsi nous divisons par 
-deux le nombre de calculs de distances nécessaires.
+Enfin les distances étant symétriques entre deux *boids* nous stockons la distance dans le *boid* considéré par la boucle comme origine et dans l'*autre boid* ainsi nous divisons par deux le nombre de calculs de distances nécessaires.
 
 Le code se déploie donc ainsi :
+
 ```python
     def find_near_boids(self, boids):
         """Sets a list of boids that are within a certain distance
@@ -549,7 +574,7 @@ En terme de complexité algorithmique, on observe un comportement proche du N²,
 Nous avons tracé ci-dessous le temps de simulation en fonction du nombre d'objets simulés.
 
 <p align="center">
-  <img src="https://i.pinimg.com/originals/17/61/fc/1761fc369490f2ebb9a135dab987269a.jpg"
+<img src="https://i.pinimg.com/originals/17/61/fc/1761fc369490f2ebb9a135dab987269a.jpg"
  alt="Complexité temporelle du projet" width=""/>
 </p>
 
@@ -557,12 +582,12 @@ Malgré les optimisations que nous avons implémenté, l'ordre de grandeur reste
 
 ## La simulation précalculée pour pallier à la complexité
 
-N'ayant pas de nécessité d'un calcul temps réel nous avons développé des modules de pré-calcul qui génèrent des fichiers contenant les trajectoires 
+N'ayant pas de nécessité d'un calcul temps réel nous avons développé des modules de pré-calcul qui génèrent des fichiers contenant les trajectoires
 des différents *boids* à tous les instants.
 
 Les modules de pré-calcul se décompose en deux parties.
 
-### Simulateur 
+### Simulateur
 
 [precomputing_simulator.py](https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/precomputing_simulator.py)
 
@@ -583,8 +608,8 @@ et un affichage dynamique d'une bar de progression.
 
 [precomputing_display.py](https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/precomputing_display.py)
 
-L'affichage du simulateur utilise le module `tkinter`(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md#sources-et-ressources-utilisées) afin de générer l'affichage. 
-Il se compose d'un menu par terminal pour la sélection des fichiers détectés dans le dossier `/json/` et après la sélection par l'utilisateur du fichier 
+L'affichage du simulateur utilise le module `tkinter`(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md#sources-et-ressources-utilisées) afin de générer l'affichage.
+Il se compose d'un menu par terminal pour la sélection des fichiers détectés dans le dossier `/json/` et après la sélection par l'utilisateur du fichier
 il affiche alors la fenêtre graphique permettant de lancer, faire pause et moduler la vitesse de la simulation.
 
 ## Usage du programme
@@ -732,10 +757,10 @@ Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
 - *tkinter* : [page de documentation](https://docs.python.org/fr/3/library/tk.html)
 
 ## Modules supplémentaires utilisés
-- *numpy* : [site](https://numpy.org/)
-- *colored* : [page sur le site PyPI](https://pypi.org/project/colored/)
-- *pathlib* : [page sur le site PyPI](https://pypi.org/project/pathlib/)
-- *shapely* : [page sur le site PyPI](https://pypi.org/project/Shapely/)
+- `numpy` : [site](https://numpy.org/)
+- `colored` : [page sur le site PyPI](https://pypi.org/project/colored/)
+- `pathlib` : [page sur le site PyPI](https://pypi.org/project/pathlib/)
+- `shapely` : [page sur le site PyPI](https://pypi.org/project/Shapely/)
 
 ## Services en ligne utilisés
 - [HTML Preview](https://htmlpreview.github.io/) pour l'affichage des documents HTML de la documentation auto-générée
@@ -746,7 +771,7 @@ Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
 
 # Licence
 
-Ce projet est fourni sous la MIT LICENSE, pour plus d'informations voir `LICENSE.txt`.
+Ce projet est fourni sous la license du MIT, pour plus d'informations voir [`LICENSE.txt`](https://github.com/Polarolouis/BoidSimulation/raw/main/LICENSE.txt).
 
 # Contact
 
@@ -757,3 +782,4 @@ Louis Lacoste - louis.lacoste@agroparistech.fr
 Gabin Derache - gabin.derache@agroparistech.fr
 
 Project Link : <https://github.com/Polarolouis/BoidSimulation>
+  
