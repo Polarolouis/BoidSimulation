@@ -315,6 +315,16 @@ On obtient alors un graphe similaire à celui ci :
   <img src= "images/2022-05-13 11_29_43-Create Graph online and find shortest path or use other algorithm — Mozilla Fire.png" alt="fenetre graphique" width=""/>
 </p>
 
+Par manque de temps, nous n'avons pas pu finaliser cette partie du projet. Pour autant l'algorithme qui aurait été utilisé aurait eu cette organisation-ci :
+
+A chaque itération de temps :
+- pour chaque boid 
+  - génération du chemin le plus court entre lui et le goal
+  - calcul de la prochaine position sur le chemin
+  - vérification de la superposition entre deux boids ou non
+  - implémentation des comportements de cohésion et de séparation
+
+
 # Sources et ressources utilisées
 
 - <https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118>
