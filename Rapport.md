@@ -431,16 +431,26 @@ def collision(self):
 
 Nous avons ajouté la possibilité de mettre un vent qui est une force d'intensité constante soufflant dans une direction choisie par un angle.
 
+
+Ci dessous la comparaison entre une simulation sans et avec vent (respectivement) : 
 <p align="center">
-<img src ="https://github.com/Polarolouis/BoidSimulation/raw/main/images/280061579_550147653192539_8183857592037787828_n.png"
-  alt="fenetre graphique" width=""/>
+<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%20no%20wind%20%202022-06-08%2015-30-38_Trim.gif?raw=true"
+  alt="Gif simulation sans vent" width=""/>
+</p>
+
+<p align="center">
+<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%202022-06-08%2015-40-54_Trim(1).gif?raw=true"
+  alt="Gif simulation avec vent" width=""/>
 </p>
 
 ### Force `goal` ou objectif
 
 Nous avons également ajouté une force d'objectif qui attire les *boids* vers elle et permet donc en modifiant sa position de les diriger sur le terrain de simulation.
 
-**ICI UN EXEMPLE**
+<p align="center">
+<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%20goal%20demo.gif?raw=true"
+  alt="Gif simulation goal" width=""/>
+</p>
 
 ### Obstacles
 
@@ -450,7 +460,10 @@ Les boids rebondissent alors sur ces surfaces. Nous avons fait en sorte qu'une f
 
 Il est alors assez intéressant de regarder les *boids* rebondir sur les différentes surfaces et en utilisant la force `goal` on peut observer un comportement assimilable *sous certaines conditions* à un fluide dans un tuyau.
 
-**ICI UN EXEMPLE**
+<p align="center">
+<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%20obstacle%20demo.gif?raw=true"
+  alt="Gif simulation obstacle" width=""/>
+</p>
 
 De même on peut *sous certaines conditions* observer un comportement similaire à l'évacuation d'une foule par une porte.
 
@@ -463,14 +476,60 @@ Nous invitons le lecteur à essayer les différentes possibilités offertes par 
 Le problème des chevauchements a été une des tâches qui nous a le plus occupé et déranger, afin de le réduire nous avons intégré une prise en compte de la distance et de la densité dans l'application des forces citées plus haut.
 Le code est le suivant :
 
+> Ici le code de collisions ?
+
+```python
+def collision(self):
+    """collision behavior to prevent boids from going through each other
+    Returns:
+        np.array([float,float]) -- [x velocity, y velocity]"""
+    if len(self.near_boids_collision) == 1:
+        x_vel = self.velocity[0][0]
+        y_vel = self.velocity[1][0]
+        vel = np.array([x_vel, y_vel], dtype=np.float64)
+
+        for boid, distance in self.near_boids_collision:
+            diff = self.position - boid.position
+            diff_norm = np.linalg.norm(diff)
+            x_diff = diff[0][0]
+            y_diff = diff[1][0]
+            if distance <= 1.9*boid.radius:
+                self.velocity = np.array(
+                    [[-x_diff/diff_norm], [-y_diff/diff_norm]], dtype=np.float64)
+            else:
+                normal = np.array([[-y_diff, x_diff]], dtype=np.float64)
+                normal_norm = np.linalg.norm(normal)
+                new_vel = (np.dot(normal, vel)/(normal_norm**2))*normal if normal_norm != 0 else self.velocity
+                x_new_vel = new_vel[0][0]
+                y_new_vel = new_vel[0][1]
+                self.velocity = np.array(
+                    [[x_new_vel], [y_new_vel]], dtype=np.float64)
+    elif len(self.near_boids_collision) == 2:
+        """We want the boid to go away from it's two neighbors"""
+        boid1 = self.near_boids_collision[0][0]
+        boid2 = self.near_boids_collision[1][0]
+        diff = boid1.position-boid2.position
+        x_diff = diff[0][0]
+        y_diff = diff[1][0]
+        normal = np.array([[-y_diff], [x_diff]], dtype=np.float64)
+        normal_norm = np.linalg.norm(normal)
+        # determining if using the normal vector as velocity reduces or augments the distance between boids
+        new_pos = self.position+(normal/normal_norm) if normal_norm != 0 else self.position
+        new_diff = new_pos-boid1.position
+        new_dist = np.linalg.norm(new_diff)
+        if new_dist <= self.near_distance_collision:
+            new_vel = -2 * normal / normal_norm if normal_norm != 0 else self.velocity
+        else:
+            new_vel = 2 * normal / normal_norm if normal_norm != 0 else self.velocity
+        self.velocity = new_vel
+```
 #### Densité : calcul
 
 La "densité" est calculée grâce à un paramètre que nous avons défini arbitrairement selon ce qui nous semblait acceptable.
 Ainsi en prenant en compte que le rayon de cohésion est relativement faible nous avons considéré qu'avoir 2 *boids* dans le champ de cohésion était déjà élevée. *La définition choisie n'est donc pas vraiment celle d'une densité en tant que telle*.
 
 ```python
-        self.density = len(self.near_boids_cohesion) / \
-            self.number_of_around_to_be_dense
+self.density = len(self.near_boids_cohesion) / self.number_of_around_to_be_dense
 ```
 
 Ce code donne des résultats que nous avons jugés acceptables mais il pourrait être un point d'amélioration.
@@ -520,37 +579,37 @@ Enfin les distances étant symétriques entre deux *boids* nous stockons la dist
 Le code se déploie donc ainsi :
 
 ```python
-    def find_near_boids(self, boids):
-        """Sets a list of boids that are within a certain distance
-        Arguments:
-            boids {list} -- list of boids"""
+def find_near_boids(self, boids):
+    """Sets a list of boids that are within a certain distance
+    Arguments:
+        boids {list} -- list of boids"""
 
-        self.near_boids_alignment = []
-        self.near_boids_cohesion = []
-        self.near_boids_separation = []
-        self.near_boids_collision = []
+    self.near_boids_alignment = []
+    self.near_boids_cohesion = []
+    self.near_boids_separation = []
+    self.near_boids_collision = []
 
-        filtered_boids = (boid for boid in boids if (self.id != boid.id) and ((self.position[0][0] - self.near_distance_alignment < boid.position[0][0] and self.position[1][0] - self.near_distance_alignment < boid.position[1][0]) and (
-            self.position[0][0] + self.near_distance_alignment > boid.position[0][0] and self.position[1][0] + self.near_distance_alignment > boid.position[1][0])))
-        logging.debug('Filtered boids: %s', filtered_boids)
+    filtered_boids = (boid for boid in boids if (self.id != boid.id) and ((self.position[0][0] - self.near_distance_alignment < boid.position[0][0] and self.position[1][0] - self.near_distance_alignment < boid.position[1][0]) and (
+        self.position[0][0] + self.near_distance_alignment > boid.position[0][0] and self.position[1][0] + self.near_distance_alignment > boid.position[1][0])))
+    logging.debug('Filtered boids: %s', filtered_boids)
 
-        for boid in filtered_boids:
-            dist = np.linalg.norm(self.position - boid.position)
-            if (boid not in self.near_boids_alignment) and dist < self.near_distance_alignment and dist > self.near_distance_cohesion:
-                self.near_boids_alignment.append((boid, dist))
-                boid.near_boids_alignment.append((self, dist))
+    for boid in filtered_boids:
+        dist = np.linalg.norm(self.position - boid.position)
+        if (boid not in self.near_boids_alignment) and dist < self.near_distance_alignment and dist > self.near_distance_cohesion:
+            self.near_boids_alignment.append((boid, dist))
+            boid.near_boids_alignment.append((self, dist))
 
-            if (boid not in self.near_boids_cohesion) and dist < self.near_distance_cohesion and dist > self.near_distance_separation:
-                self.near_boids_cohesion.append((boid, dist))
-                boid.near_boids_cohesion.append((self, dist))
+        if (boid not in self.near_boids_cohesion) and dist < self.near_distance_cohesion and dist > self.near_distance_separation:
+            self.near_boids_cohesion.append((boid, dist))
+            boid.near_boids_cohesion.append((self, dist))
 
-            if (boid not in self.near_boids_separation) and dist < self.near_distance_separation:
-                self.near_boids_separation.append((boid, dist))
-                boid.near_boids_separation.append((self, dist))
+        if (boid not in self.near_boids_separation) and dist < self.near_distance_separation:
+            self.near_boids_separation.append((boid, dist))
+            boid.near_boids_separation.append((self, dist))
 
-            if (boid not in self.near_boids_collision) and dist < self.near_distance_collision:
-                self.near_boids_collision.append((boid, dist))
-                boid.near_boids_collision.append((self, dist))
+        if (boid not in self.near_boids_collision) and dist < self.near_distance_collision:
+            self.near_boids_collision.append((boid, dist))
+            boid.near_boids_collision.append((self, dist))
 ```
 
 ## Complexité
@@ -572,7 +631,7 @@ Malgré les optimisations que nous avons implémenté, l'ordre de grandeur reste
 N'ayant pas de nécessité d'un calcul temps réel nous avons développé des modules de pré-calcul qui génèrent des fichiers contenant les trajectoires
 des différents *boids* à tous les instants.
 
-Les modules de pré-calcul se décompose en deux parties.
+Les modules de pré-calcul se décompose en deux parties distinctes.
 
 ### Simulateur
 
@@ -642,7 +701,7 @@ Un des prérequis de l'étude que nous avons dû implémenter est l'automatisati
 
 Nous avons pour cela utilisé un graphe de réseau. La structure était la suivante : 
 - un noeud représentant l'objectif du réseau (le noeud vers lequel tous les objets présents sur le graph veulent converger).
-- un ou des obstacles (modélisés sur le graph comme quatres noeds reliés entre eux deux à deux pour former des rectangles).
+- un ou des obstacles (modélisés sur le graph comme quatres noeuds reliés entre eux deux à deux pour former des rectangles).
 - un noeud représentant l'endroit d'oû part la particule en elle même (sa position initiale).
 
 Nous avons donc implémenté une classe Node à notre système, qui est définie ainsi :
@@ -737,8 +796,7 @@ complété par ce rapport et l'utilisation des différent fichiers.
 
 - <https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118>
 - <https://www.codespeedy.com/how-to-implement-dijkstras-shortest-path-algorithm-in-python/>
-- ESAIM: PROCEEDINGS, July 2007, Vol.18, 143-152
-Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
+- ESAIM: PROCEEDINGS, July 2007, Vol.18, 143-152, Jean-Frédéric Gerbeau & Stéphane Labbé, Editors
 
 ## Modules notables de l'installation de base
 - *tkinter* : [page de documentation](https://docs.python.org/fr/3/library/tk.html)
