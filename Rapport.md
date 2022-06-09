@@ -672,10 +672,7 @@ Afin d'utiliser le programme il faut cloner le dépôt GitHub (à l'aide du bout
 Une fois les fichiers récupérés il faut :
 
 1 - Installer les modules non inclus dans le package de base, cela se fait en se plaçant dans le répertoire de travail et en tapant dans un terminal (Bash, CMD, PowerShell ...) la commande suivante :
-<<<<<<< HEAD
 
-=======
->>>>>>> 512ecac011568ce604520cb282e677e6acf7f648
 ```bash
 python -m pip install -r requirements.txt
 ```
