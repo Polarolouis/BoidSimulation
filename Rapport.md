@@ -444,10 +444,14 @@ Ci dessous la comparaison entre une simulation sans et avec vent (respectivement
   alt="Gif simulation sans vent" width=""/>
 </p>
 
+*Note* : l'image ci-dessus est un GIF visible dans le rapport sur le [dépôt GitHub](https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md)
+
 <p align="center">
 <img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/Boids%20wind%20demo.gif"
   alt="Gif simulation avec vent" width=""/>
 </p>
+
+*Note* : l'image ci-dessus est un GIF visible dans le rapport sur le [dépôt GitHub](https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md)
 
 ### Force `goal` ou objectif
 
@@ -457,6 +461,8 @@ Nous avons également ajouté une force d'objectif qui attire les *boids* vers e
 <img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/Boids%20goal%20demo.gif"
   alt="Gif simulation goal" width=""/>
 </p>
+
+*Note* : l'image ci-dessus est un GIF visible dans le rapport sur le [dépôt GitHub](https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md)
 
 ### Obstacles
 
@@ -472,6 +478,8 @@ De même on peut *sous certaines conditions* observer un comportement similaire 
 <img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%20obstacle%20demo.gif?raw=true"
   alt="Gif simulation obstacle" width=""/>
 </p>
+
+*Note* : l'image ci-dessus est un GIF visible dans le rapport sur le [dépôt GitHub](https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md)
 
 De même on peut *sous certaines conditions* observer un comportement similaire à l'évacuation d'une foule par une porte.
 
@@ -836,8 +844,4 @@ Ce projet est fourni sous la license du MIT, pour plus d'informations voir [`LIC
 
 Joseph Allyndrée - joseph.allyndree@agroparistech.fr
 
-Louis Lacoste - louis.lacoste@agroparistech.fr
-
-Gabin Derache - gabin.derache@agroparistech.fr
-
-Project Link : <https://github.com/Polarolouis/BoidSimulation>
+Louis Lac
