@@ -483,8 +483,6 @@ De même on peut *sous certaines conditions* observer un comportement similaire 
 
 De même on peut *sous certaines conditions* observer un comportement similaire à l'évacuation d'une foule par une porte.
 
-**ICI UN EXEMPLE**
-
 Nous invitons le lecteur à essayer les différentes possibilités offertes par cet outil.
 
 ### Impact de la distance sur les effets des forces
@@ -539,6 +537,7 @@ def collision(self):
 ```
 
 #### Densité : calcul
+
 
 La "densité" est calculée grâce à un paramètre que nous avons défini arbitrairement selon ce qui nous semblait acceptable.
 Ainsi en prenant en compte que le rayon de cohésion est relativement faible nous avons considéré qu'avoir 2 *boids* dans le champ de cohésion était déjà élevée. *La définition choisie n'est donc pas vraiment celle d'une densité en tant que telle*.
@@ -844,4 +843,8 @@ Ce projet est fourni sous la license du MIT, pour plus d'informations voir [`LIC
 
 Joseph Allyndrée - joseph.allyndree@agroparistech.fr
 
-Louis Lac
+Louis Lacoste - louis.lacoste@agroparistech.fr
+
+Gabin Derache - gabin.derache@agroparistech.fr
+
+Project Link : <https://github.com/Polarolouis/BoidSimulation>
