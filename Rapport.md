@@ -70,7 +70,7 @@ On définira donc trois zones :
 
 - une zone rosée, qui va représenter l'attraction : tout voisin qui entre dans cette zone se verra attiré vers le boid lui même.
 - une zone rouge, qui va représenter l'orientation : un voisin qui entre dans cette zone "suivra" le boid.
-- une zone rouge foncée, qui représente la zone de répulsion : le voisin s'éloignera du boid en rentrant dans cette zone.
+- une zone rouge foncée, qui représente la zone dpe répulsion : le voisin s'éloignera du boid en rentrant dans cette zone.
 
 # Fenêtre graphique en temps réel
 
@@ -672,10 +672,7 @@ Afin d'utiliser le programme il faut cloner le dépôt GitHub (à l'aide du bout
 Une fois les fichiers récupérés il faut :
 
 1 - Installer les modules non inclus dans le package de base, cela se fait en se plaçant dans le répertoire de travail et en tapant dans un terminal (Bash, CMD, PowerShell ...) la commande suivante :
-<<<<<<< HEAD
 
-=======
->>>>>>> 512ecac011568ce604520cb282e677e6acf7f648
 ```bash
 python -m pip install -r requirements.txt
 ```

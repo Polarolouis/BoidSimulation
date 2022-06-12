@@ -1,0 +1,1287 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+  \usepackage[french]{babel}
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+Crowd Simulation Project
+
+\hypertarget{sommaire}{%
+\section{Sommaire}\label{sommaire}}
+
+\begin{itemize}
+\tightlist
+\item
+  \protect\hyperlink{sommaire}{Sommaire}
+\item
+  \protect\hyperlink{a-propos-du-projet}{A propos du projet}
+\item
+  \protect\hyperlink{fenuxeatre-graphique-en-temps-ruxe9el}{Fenêtre
+  graphique en temps réel}
+\item
+  \protect\hyperlink{premiuxe8re-impluxe9mentation--moduxe8le-vectoriel}{Première
+  implémentation : Modèle vectoriel}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \protect\hyperlink{calcul-des-distances}{Calcul des distances}
+  \item
+    \protect\hyperlink{actions-des-forces--principe-fondamental-de-la-dynamique}{Actions
+    des forces : Principe fondamental de la dynamique}
+  \item
+    \protect\hyperlink{comportement-boidien}{Comportement boidien}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \protect\hyperlink{attraction-cohesion}{Attraction (cohesion)}
+    \item
+      \protect\hyperlink{orientation-alignement}{Orientation
+      (alignement)}
+    \item
+      \protect\hyperlink{ruxe9pulsion-separation}{Répulsion
+      (separation)}
+    \end{itemize}
+  \item
+    \protect\hyperlink{ajouts-par-rapport-au-comportement-boidien}{Ajouts
+    par rapport au comportement boidien}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \protect\hyperlink{collisions}{Collisions}
+    \item
+      \protect\hyperlink{force-du-vent}{Force du vent}
+    \item
+      \protect\hyperlink{force-goal-ou-objectif}{Force \texttt{goal} ou
+      objectif}
+    \item
+      \protect\hyperlink{obstacles}{Obstacles}
+    \item
+      \protect\hyperlink{impact-de-la-distance-sur-les-effets-des-forces}{Impact
+      de la distance sur les effets des forces}
+
+      \begin{itemize}
+      \tightlist
+      \item
+        \protect\hyperlink{densituxe9--calcul}{Densité : calcul}
+      \item
+        \protect\hyperlink{densituxe9-application}{Densité application}
+      \end{itemize}
+    \end{itemize}
+  \item
+    \protect\hyperlink{optimisations}{Optimisations}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \protect\hyperlink{construction-de-listes-des-distances}{Construction
+      de listes des distances}
+
+      \begin{itemize}
+      \tightlist
+      \item
+        \protect\hyperlink{filtrage-des-boids}{Filtrage des
+        \emph{boids}}
+      \end{itemize}
+    \end{itemize}
+  \item
+    \protect\hyperlink{complexituxe9}{Complexité}
+  \item
+    \protect\hyperlink{la-simulation-pruxe9calculuxe9e-pour-pallier-uxe0-la-complexituxe9}{La
+    simulation précalculée pour pallier à la complexité}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \protect\hyperlink{simulateur}{Simulateur}
+    \item
+      \protect\hyperlink{affichage-des-simulations-pruxe9calculuxe9es}{Affichage
+      des simulations précalculées}
+    \end{itemize}
+  \item
+    \protect\hyperlink{usage-du-programme}{Usage du programme}
+  \end{itemize}
+\item
+  \protect\hyperlink{deuxiuxe8me-impluxe9mentation--moduxe8le-particulaire}{Deuxième
+  implémentation : Modèle particulaire}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \protect\hyperlink{guxe9nuxe9ration-des-chemins-optimaux-pour-une-particule}{Génération
+    des chemins optimaux pour une particule}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      \protect\hyperlink{cruxe9ation-dun-graph-de-ruxe9seau}{Création
+      d'un graph de réseau}
+    \item
+      \protect\hyperlink{moduxe9lisation-des-obstacles}{Modélisation des
+      obstacles}
+    \end{itemize}
+  \end{itemize}
+\item
+  \protect\hyperlink{documentation}{Documentation}
+\item
+  \protect\hyperlink{sources-et-ressources-utilisuxe9es}{Sources et
+  ressources utilisées}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \protect\hyperlink{modules-notables-de-linstallation-de-base}{Modules
+    notables de l'installation de base}
+  \item
+    \protect\hyperlink{modules-suppluxe9mentaires-utilisuxe9s}{Modules
+    supplémentaires utilisés}
+  \item
+    \protect\hyperlink{services-en-ligne-utilisuxe9s}{Services en ligne
+    utilisés}
+  \end{itemize}
+\item
+  \protect\hyperlink{licence}{Licence}
+\item
+  \protect\hyperlink{contact}{Contact}
+\end{itemize}
+
+\hypertarget{a-propos-du-projet}{%
+\section{A propos du projet}\label{a-propos-du-projet}}
+
+\textbf{But du projet} : réalisation d'une simulation 2D de
+comportements de foule, en vue top-down. On souhaite simuler un
+comportement de type boidien qui est régie par ces trois
+caractéristiques :
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  l'alignement : les individus sont attirés vers un centre de gravité
+  global calculé entre tous les individus.
+\item
+  la séparation : les individus ne peuvent pas se superposer (ie ils ne
+  pauvent pas avoir de collisions), ils ont donc un comportement
+  d'évitement.
+\item
+  la cohésion : les boids se rapprocheront les uns des autres.
+\end{enumerate}
+
+Globalement, on peut représenter les boids comme des points,
+caractérisés par leur comportement lorsqu'ils rencontrent des
+congénères. On peut retrouver ici un schéma simplifié qui dicte les
+différents comportements :
+
+On définira donc trois zones :
+
+\begin{itemize}
+\tightlist
+\item
+  une zone rosée, qui va représenter l'attraction : tout voisin qui
+  entre dans cette zone se verra attiré vers le boid lui même.
+\item
+  une zone rouge, qui va représenter l'orientation : un voisin qui entre
+  dans cette zone ``suivra'' le boid.
+\item
+  une zone rouge foncée, qui représente la zone dpe répulsion : le
+  voisin s'éloignera du boid en rentrant dans cette zone.
+\end{itemize}
+
+\hypertarget{fenuxeatre-graphique-en-temps-ruxe9el}{%
+\section{Fenêtre graphique en temps
+réel}\label{fenuxeatre-graphique-en-temps-ruxe9el}}
+
+Nous avons commencé par créer une fenêtre graphique nous permettant de
+changer les paramètres de la simulation de manière quasi-dynamique en
+utilisant pour l'affichage la bibliothèque graphique \texttt{tkinter}
+(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md\#sources-et-ressources-utilisées).
+
+Sur le panneau de gauche, nous pouvons pouvons voir les paramètres
+actuels de la simulation en cours d'exécution. C'est sur le panneau de
+droite que nous pourrons changer les paramètres en temps réel pour
+pouvoir observer de manière directe les comportements de notre
+simulation.
+
+\emph{Note} : l'image ci-dessus est un GIF visible dans le rapport sur
+le
+\href{https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md}{dépôt
+GitHub}
+
+Nous avons implémenté un comportement de rebond aux limites du système.
+Nous avons aussi implémenté une indication visuelle de la ``densité''
+des \emph{boids} au sein d'une simulation. Le gradient de coloration
+s'affiche directement sur les boids, en suivant le comportement suivant
+: plus la densité est forte plus la coloration rouge sera intense.
+
+Cette fenêtre a été développé de manière à pouvoir supporter différents
+modules de calculs tant que ceux-ci disposent de certaines
+\emph{interfaces}, ainsi on peut imaginer coder d'autres modules de
+calculs, par exemple comme écrit plus haut des modules sous le paradigme
+du calcul impératif. Le code de la fenêtre est dans le fichier
+\texttt{realtime\_display.py}.
+
+\hypertarget{premiuxe8re-impluxe9mentation-moduxe8le-vectoriel}{%
+\section{Première implémentation : Modèle
+vectoriel}\label{premiuxe8re-impluxe9mentation-moduxe8le-vectoriel}}
+
+Une première réalisation dite vectorielle a été codée (voir fichier
+python \texttt{boid.py} et \texttt{display.py} qui permet un affichage
+graphique du comportement).
+
+Les \emph{boids} sont définis ainsi :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{ Boid:}
+    \CommentTok{"""Boid class"""}
+
+    \BuiltInTok{id} \OperatorTok{=} \DecValTok{0}
+\NormalTok{    radius }\OperatorTok{=} \DecValTok{5}
+\NormalTok{    near\_distance\_alignment }\OperatorTok{=} \DecValTok{10}\OperatorTok{*}\NormalTok{radius  }\CommentTok{\# Distance to be considered near}
+\NormalTok{    near\_distance\_cohesion }\OperatorTok{=} \FloatTok{0.5}\OperatorTok{*}\NormalTok{near\_distance\_alignment}
+\NormalTok{    near\_distance\_separation }\OperatorTok{=} \DecValTok{4}\OperatorTok{*}\NormalTok{radius}
+\NormalTok{    near\_distance\_collision }\OperatorTok{=} \FloatTok{2.5}\OperatorTok{*}\NormalTok{radius}
+\NormalTok{    chaotic\_probability }\OperatorTok{=} \FloatTok{0.0}
+\NormalTok{    bouncing }\OperatorTok{=} \VariableTok{False}
+
+\NormalTok{    goal\_position }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+
+\NormalTok{    number\_of\_around\_to\_be\_dense }\OperatorTok{=} \DecValTok{2}
+
+\NormalTok{    alignment\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    cohesion\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    separation\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    goal\_multiplicator\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    wind\_speed }\OperatorTok{=} \DecValTok{0}
+\NormalTok{    wind\_direction }\OperatorTok{=} \DecValTok{0}
+
+\NormalTok{    max\_speed }\OperatorTok{=} \DecValTok{3}
+\NormalTok{    max\_alignment\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    max\_cohesion\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    max\_separation\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    max\_goal\_force }\OperatorTok{=} \DecValTok{1}
+
+    \KeywordTok{def} \FunctionTok{\_\_init\_\_}\NormalTok{(}\VariableTok{self}\NormalTok{, x\_pos, y\_pos, x\_vel, y\_vel, the\_chosen\_one}\OperatorTok{=}\VariableTok{False}\NormalTok{):}
+        \CommentTok{"""Initialize the boid}
+\CommentTok{        Arguments:}
+\CommentTok{            x\_pos \{float\} {-}{-} x position of the boid}
+\CommentTok{            y\_pos \{float\} {-}{-} y position of the boid}
+\CommentTok{            x\_vel \{float\} {-}{-} x velocity of the boid}
+\CommentTok{            y\_vel \{float\} {-}{-} y velocity of the boid}
+\CommentTok{            the\_chosen\_one \{bool\} {-}{-} True if the boid is the chosen one"""}
+
+        \CommentTok{\# Identification of the boid}
+        \VariableTok{self}\NormalTok{.}\BuiltInTok{id} \OperatorTok{=}\NormalTok{ Boid.}\BuiltInTok{id}
+\NormalTok{        Boid.}\BuiltInTok{id} \OperatorTok{+=} \DecValTok{1}
+
+        \CommentTok{\# Initialise the boid position and velocity}
+        \VariableTok{self}\NormalTok{.position }\OperatorTok{=}\NormalTok{ np.array([[x\_pos], [y\_pos]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+        \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=}\NormalTok{ np.array([[x\_vel], [y\_vel]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+        \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+        \VariableTok{self}\NormalTok{.new\_acceleration }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+
+        \CommentTok{\# Initialise the boid neighbours lists}
+        \VariableTok{self}\NormalTok{.near\_boids\_alignment }\OperatorTok{=}\NormalTok{ []}
+        \VariableTok{self}\NormalTok{.near\_boids\_cohesion }\OperatorTok{=}\NormalTok{ []}
+        \VariableTok{self}\NormalTok{.near\_boids\_separation }\OperatorTok{=}\NormalTok{ []}
+        \VariableTok{self}\NormalTok{.near\_boids\_collision }\OperatorTok{=}\NormalTok{ []}
+\end{Highlighting}
+\end{Shaded}
+
+Pour chaque boid, nous calculons les \emph{boids} les plus proches
+(calcul de distance vectoriel).
+
+Notre approche se fait ici dans la logique de la Programmation Orientée
+Objet \emph{(POO)}, nous avons trouvé ce paradigme de programmation très
+utiles pour faire des collections de structures, variables et méthodes.
+Cette approche est plus ``intuitive'' (littéraire en quelque sorte
+puisque le code peut se lire facilement) mais elle présente des défauts
+notamment au niveau des temps d'exécution et de l'optimisation. Nous
+n'avons pas fait de comparaison avec un code suivant le paradigme
+impératif mais la comparaison pourrait être intéressante.
+
+\hypertarget{calcul-des-distances}{%
+\subsection{Calcul des distances}\label{calcul-des-distances}}
+
+Dans un premier temps, on retrouve de manière calculatoire les
+\emph{boids} qui sont proches du boid concerné, pour chaque boid présent
+dans la simulation. Réaliser un premier tri en fonction des coordonées
+permet de réduire la complexité de l'algorithme. La fonction concernée
+est indiquée juste ici :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ find\_near\_boids(}\VariableTok{self}\NormalTok{, boids):}
+    \CommentTok{"""Sets a list of boids that are within a certain distance}
+\CommentTok{    Arguments:}
+\CommentTok{        boids \{list\} {-}{-} list of boids"""}
+
+    \VariableTok{self}\NormalTok{.near\_boids\_alignment }\OperatorTok{=}\NormalTok{ []}
+    \VariableTok{self}\NormalTok{.near\_boids\_cohesion }\OperatorTok{=}\NormalTok{ []}
+    \VariableTok{self}\NormalTok{.near\_boids\_separation }\OperatorTok{=}\NormalTok{ []}
+    \VariableTok{self}\NormalTok{.near\_boids\_collision }\OperatorTok{=}\NormalTok{ []}
+
+\CommentTok{\# Définition préalable d\textquotesingle{}une liste des boids proches permettant une exécution plus rapide}
+\NormalTok{    filtered\_boids }\OperatorTok{=}\NormalTok{ (boid }\ControlFlowTok{for}\NormalTok{ boid }\KeywordTok{in}\NormalTok{ boids }\ControlFlowTok{if}\NormalTok{ (}\VariableTok{self}\NormalTok{.}\BuiltInTok{id} \OperatorTok{!=}\NormalTok{ boid.}\BuiltInTok{id}\NormalTok{) }\KeywordTok{and}\NormalTok{ (}
+\NormalTok{    (}\VariableTok{self}\NormalTok{.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{{-}} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textless{}}\NormalTok{ boid.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\KeywordTok{and} \VariableTok{self}\NormalTok{.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{{-}} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textless{}}\NormalTok{ boid.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]) }\KeywordTok{and} 
+\NormalTok{    (}\VariableTok{self}\NormalTok{.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{+} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textgreater{}}\NormalTok{ boid.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\KeywordTok{and} \VariableTok{self}\NormalTok{.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{+} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textgreater{}}\NormalTok{ boid.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{])))}
+
+\CommentTok{\# Classification des boids en fonction de la distance les séparants du boid d\textquotesingle{}intérêt}
+    \ControlFlowTok{for}\NormalTok{ boid }\KeywordTok{in}\NormalTok{ filtered\_boids :}
+\NormalTok{        dist }\OperatorTok{=}\NormalTok{ np.linalg.norm(}\VariableTok{self}\NormalTok{.position }\OperatorTok{{-}}\NormalTok{ boid.position)}
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_alignment) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textgreater{}} \VariableTok{self}\NormalTok{.near\_distance\_cohesion:}
+            \VariableTok{self}\NormalTok{.near\_boids\_alignment.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_alignment.append((}\VariableTok{self}\NormalTok{, dist))}
+
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_cohesion) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_cohesion }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textgreater{}} \VariableTok{self}\NormalTok{.near\_distance\_separation:}
+            \VariableTok{self}\NormalTok{.near\_boids\_cohesion.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_cohesion.append((}\VariableTok{self}\NormalTok{, dist))}
+
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_separation) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_separation:}
+            \VariableTok{self}\NormalTok{.near\_boids\_separation.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_separation.append((}\VariableTok{self}\NormalTok{, dist))}
+
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_collision) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_collision:}
+            \VariableTok{self}\NormalTok{.near\_boids\_collision.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_collision.append((}\VariableTok{self}\NormalTok{, dist))}
+\end{Highlighting}
+\end{Shaded}
+
+Pour chaque itération de temps, on calcule pour l'ensemble des
+\emph{boids} qui sont à proximité la distance qui le sépare du
+\emph{boid intial} auquel on s'intéresse. En fonction de la distance,
+les différents \emph{boids} sont classifiés selon le type de
+comportement qu'ils vont adopter par rapport au \emph{boid initial}.
+
+\hypertarget{actions-des-forces-principe-fondamental-de-la-dynamique}{%
+\subsection{Actions des forces : Principe fondamental de la
+dynamique}\label{actions-des-forces-principe-fondamental-de-la-dynamique}}
+
+Nous introduirons les effets des différentes forces en utilisant la 2ème
+loi de Newton (autrement appelée Principe Fondamental de la Dynamique).
+
+Ainsi la somme des forces donnera l'accélération du \emph{boid}, sa
+masse étant considéré comme valant 1. Le code appliquant cela est le
+suivant :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ apply\_rules(}\VariableTok{self}\NormalTok{):}
+    \CommentTok{"""Apply the rules of the flock to the boid}
+\CommentTok{    By adding the forces of the different behaviours to the acceleration"""}
+
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.goal\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{: }\CommentTok{\#s\textquotesingle{}il y a un goal}
+\NormalTok{        goal }\OperatorTok{=} \VariableTok{self}\NormalTok{.goal()}
+        \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ goal }\OperatorTok{*}\NormalTok{ (}\DecValTok{1}\OperatorTok{/}\DecValTok{2} \OperatorTok{{-}} \VariableTok{self}\NormalTok{.density)}
+
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.wind\_speed }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{:  }\CommentTok{\#s\textquotesingle{}il y a du vent}
+\NormalTok{        wind }\OperatorTok{=} \VariableTok{self}\NormalTok{.wind()}
+        \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ wind}
+
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.alignment\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{: }\CommentTok{\#si la force d\textquotesingle{}alignement est présente}
+\NormalTok{        alignment }\OperatorTok{=} \VariableTok{self}\NormalTok{.alignment()}
+        \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ alignment}
+
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.cohesion\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{: }\CommentTok{\#si la force de cohésion est présente}
+\NormalTok{        cohesion }\OperatorTok{=} \VariableTok{self}\NormalTok{.cohesion()}
+        \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ cohesion }\OperatorTok{*}\NormalTok{ (}\DecValTok{1}\OperatorTok{/}\DecValTok{2} \OperatorTok{{-}} \VariableTok{self}\NormalTok{.density)}
+
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.separation\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{: }\CommentTok{\#si la force de séparation est présente}
+\NormalTok{        separation }\OperatorTok{=} \VariableTok{self}\NormalTok{.separation()}
+        \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ separation }\OperatorTok{*}\NormalTok{ (}\DecValTok{1} \OperatorTok{+} \VariableTok{self}\NormalTok{.density)}
+
+\CommentTok{\# [...] Ellipse de parties non essentielle à la compréhension du fonctionnement du code}
+
+\CommentTok{\# Update the boid}
+\KeywordTok{def}\NormalTok{ update(}\VariableTok{self}\NormalTok{, obstacles\_list):}
+    \CommentTok{"""Update the velocity and the position of the boid}
+\CommentTok{    Arguments:}
+\CommentTok{        obstacles\_list \{list\} {-}{-} List of obstacles to check against"""}
+
+    \CommentTok{\# Update the velocity}
+    \VariableTok{self}\NormalTok{.velocity }\OperatorTok{+=} \VariableTok{self}\NormalTok{.acceleration}
+
+    \CommentTok{\# Chaotic behaviour}
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.chaotic\_probability }\OperatorTok{\textless{}}\NormalTok{ random.random():}
+\NormalTok{        angle }\OperatorTok{=}\NormalTok{ random.uniform(}\DecValTok{0}\NormalTok{, }\DecValTok{2} \OperatorTok{*}\NormalTok{ math.pi)}
+        \VariableTok{self}\NormalTok{.velocity[}\DecValTok{0}\NormalTok{] }\OperatorTok{+=}\NormalTok{ math.cos(angle)}
+        \VariableTok{self}\NormalTok{.velocity[}\DecValTok{1}\NormalTok{] }\OperatorTok{+=}\NormalTok{ math.sin(angle)}
+
+    \CommentTok{\# Collision}
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.near\_boids\_collision:}
+        \VariableTok{self}\NormalTok{.collision()}
+
+    \CommentTok{\# Check if the boid is out of bounds and apply the correction}
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.bouncing:}
+        \CommentTok{\# If we bounce the output is the velocity}
+        \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=} \VariableTok{self}\NormalTok{.check\_edges()}
+    \ControlFlowTok{else}\NormalTok{:}
+        \CommentTok{\# If we don\textquotesingle{}t bounce the output is the position}
+        \VariableTok{self}\NormalTok{.position }\OperatorTok{=} \VariableTok{self}\NormalTok{.check\_edges()}
+
+    \CommentTok{\# Check if the boid will collide with an obstacle}
+    \VariableTok{self}\NormalTok{.get\_the\_obstacles\_collisions(obstacles\_list)}
+
+    \CommentTok{\# If velocity exceeds the max speed, set it to the max speed}
+    \ControlFlowTok{if}\NormalTok{ np.linalg.norm(}\VariableTok{self}\NormalTok{.velocity) }\OperatorTok{\textgreater{}} \VariableTok{self}\NormalTok{.max\_speed:}
+        \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=} \VariableTok{self}\NormalTok{.velocity }\OperatorTok{/} \OperatorTok{\textbackslash{}}
+\NormalTok{            np.linalg.norm(}\VariableTok{self}\NormalTok{.velocity) }\OperatorTok{*} \VariableTok{self}\NormalTok{.max\_speed}
+    \CommentTok{\# Update the position}
+    \VariableTok{self}\NormalTok{.position }\OperatorTok{+=} \VariableTok{self}\NormalTok{.velocity}
+
+    \CommentTok{\# If the boid is out of space, bring it back to space}
+    \VariableTok{self}\NormalTok{.bring\_back\_to\_space()}
+
+    \CommentTok{\# Reset the acceleration}
+    \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{comportement-boidien}{%
+\subsection{Comportement boidien}\label{comportement-boidien}}
+
+Chaque composante du comportement boidien est implémenté pour les
+\emph{boids} comme des forces qui agiront sur la position prochaine du
+\emph{boid}.
+
+Dans notre simulation, elles sont donc cumulatives, mais avec des
+coefficients définis dans la création de la classe \emph{boid} :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{ Boid:}
+    \CommentTok{"""Boid class"""}
+    \CommentTok{\# [...] Ellipse de parties non essentielle à la compréhension du fonctionnement du code pour cette partie}
+
+\NormalTok{    alignment\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    cohesion\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    separation\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    goal\_multiplicator\_force }\OperatorTok{=} \DecValTok{1}
+\NormalTok{    wind\_speed }\OperatorTok{=} \DecValTok{0}
+\NormalTok{    wind\_direction }\OperatorTok{=} \DecValTok{0}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{attraction-cohesion}{%
+\subsubsection{Attraction (cohesion)}\label{attraction-cohesion}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ cohesion(}\VariableTok{self}\NormalTok{):}
+    \CommentTok{"""Cohesion behaviour to steer towards the average position of the boids in the near\_boids list}
+\CommentTok{    Returns:}
+\CommentTok{        np.array([float, float]) {-}{-} [x acceleration, y acceleration]"""}
+
+    \CommentTok{\# Calculate the average position of the boids}
+\NormalTok{    correction\_to\_avg }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.near\_boids\_cohesion:}
+\NormalTok{        position\_avg }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+        \ControlFlowTok{for}\NormalTok{ boid, \_ }\KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_cohesion:}
+\NormalTok{            position\_avg }\OperatorTok{+=}\NormalTok{ boid.position}
+\NormalTok{        position\_avg }\OperatorTok{/=} \BuiltInTok{len}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_cohesion)}
+\NormalTok{        correction\_to\_avg }\OperatorTok{=}\NormalTok{ position\_avg }\OperatorTok{{-}} \VariableTok{self}\NormalTok{.position}
+    \ControlFlowTok{if}\NormalTok{ np.linalg.norm(correction\_to\_avg) }\OperatorTok{\textgreater{}} \VariableTok{self}\NormalTok{.max\_cohesion\_force:}
+\NormalTok{        correction\_to\_avg }\OperatorTok{=}\NormalTok{ correction\_to\_avg }\OperatorTok{/} \OperatorTok{\textbackslash{}}
+\NormalTok{            np.linalg.norm(correction\_to\_avg) }\OperatorTok{*} \VariableTok{self}\NormalTok{.max\_cohesion\_force}
+
+    \ControlFlowTok{return}\NormalTok{ correction\_to\_avg }\OperatorTok{*}\NormalTok{ Boid.cohesion\_force}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{orientation-alignement}{%
+\subsubsection{Orientation (alignement)}\label{orientation-alignement}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ alignment(}\VariableTok{self}\NormalTok{):}
+    \CommentTok{"""Alignment behaviour to steer towards the average heading of the boids in the near\_boids list}
+\CommentTok{    Returns:}
+\CommentTok{        np.array([float, float]) {-}{-} [x acceleration, y acceleration]"""}
+
+    \CommentTok{\# Calculate the average heading of the boids}
+\NormalTok{    heading\_correction }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.near\_boids\_alignment:}
+        \CommentTok{\# Taking the the fastest boid as a leader}
+\NormalTok{        heading\_correction }\OperatorTok{=} \BuiltInTok{max}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_alignment, key}\OperatorTok{=}\KeywordTok{lambda}\NormalTok{ boid\_and\_distance: np.linalg.norm(}
+\NormalTok{            boid\_and\_distance[}\DecValTok{0}\NormalTok{].velocity))[}\DecValTok{0}\NormalTok{].velocity}
+
+    \ControlFlowTok{if}\NormalTok{ np.linalg.norm(heading\_correction) }\OperatorTok{\textgreater{}} \VariableTok{self}\NormalTok{.max\_alignment\_force:}
+\NormalTok{        heading\_correction }\OperatorTok{=}\NormalTok{ heading\_correction }\OperatorTok{/} \OperatorTok{\textbackslash{}}
+\NormalTok{            np.linalg.norm(heading\_correction) }\OperatorTok{*} \VariableTok{self}\NormalTok{.max\_alignment\_force}
+
+    \ControlFlowTok{return}\NormalTok{ heading\_correction }\OperatorTok{*}\NormalTok{ Boid.alignment\_force}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{ruxe9pulsion-separation}{%
+\subsubsection{Répulsion (separation)}\label{ruxe9pulsion-separation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ separation(}\VariableTok{self}\NormalTok{):}
+    \CommentTok{"""Separation behaviour to avoid collisions with other boids}
+\CommentTok{    Returns:}
+\CommentTok{        np.array([float, float]) {-}{-} [x acceleration, y acceleration]"""}
+
+\NormalTok{    separation\_correction }\OperatorTok{=}\NormalTok{ np.array([[}\DecValTok{0}\NormalTok{], [}\DecValTok{0}\NormalTok{]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+    \ControlFlowTok{for}\NormalTok{ boid, distance }\KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_separation:}
+\NormalTok{        diff }\OperatorTok{=} \VariableTok{self}\NormalTok{.position }\OperatorTok{{-}}\NormalTok{ boid.position}
+\NormalTok{        diff }\OperatorTok{/=}\NormalTok{ distance}
+\NormalTok{        separation\_correction }\OperatorTok{+=}\NormalTok{ diff}
+    \ControlFlowTok{if} \VariableTok{self}\NormalTok{.near\_boids\_separation:}
+\NormalTok{        separation\_correction }\OperatorTok{/=} \BuiltInTok{len}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_separation)}
+    \ControlFlowTok{if}\NormalTok{ np.linalg.norm(separation\_correction):}
+\NormalTok{        separation\_correction }\OperatorTok{=}\NormalTok{ (}
+\NormalTok{            separation\_correction }\OperatorTok{/}\NormalTok{ np.linalg.norm(separation\_correction)) }\OperatorTok{*} \VariableTok{self}\NormalTok{.max\_separation\_force}
+
+    \ControlFlowTok{return}\NormalTok{ separation\_correction }\OperatorTok{*}\NormalTok{ Boid.separation\_force}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{ajouts-par-rapport-au-comportement-boidien}{%
+\subsection{Ajouts par rapport au comportement
+boidien}\label{ajouts-par-rapport-au-comportement-boidien}}
+
+Nous avons ajouté une gestion plus fine de la collision afin de réduire
+les chevauchements de \emph{boids}.
+
+\hypertarget{collisions}{%
+\subsubsection{Collisions}\label{collisions}}
+
+Nous avons distingué \emph{4 cas différents}~: le cas d'une collision
+avec \textbf{1}, \textbf{2}, \textbf{3} et de \textbf{4 à 6 voisins}.
+
+Pour le cas d'une collision avec un seul voisin, le but était de dévier
+le moins possible la trajectoire des boids pour rendre le mouvement le
+plus réaliste possible. Pour cela lorsqu'un boid est en contact avec *un
+seul autre boid, la vitesse de chacun devient la projection
+orthonogonale de leur vitesse originale sur le vecteur normal à leur
+vecteur différence (boid1-boid2). Cela se traduit par des boids qui
+«~glissent~» l'un sur l'autre lorsqu'ils se rencontrent. Cependant si
+les boids se chevauchent déjà, ils rebondissent l'un sur l'autre,
+c'est-à-dire qu'on leur donne une vitesse opposée à leur vitesse
+originale.
+
+Dans le cas d'une collision avec 2 voisins, un boid va s'écarter le plus
+possible des deux autres. Pour cela la vitesse du boid va prendre la
+direction de la perpendiculaire au vecteur différence entre ses deux
+voisins.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+    \KeywordTok{def}\NormalTok{ collision(}\VariableTok{self}\NormalTok{):}
+        \CommentTok{"""collision behavior to prevent boids from going through each other}
+\CommentTok{        Returns:}
+\CommentTok{            np.array([float,float]) {-}{-} [x velocity, y velocity]"""}
+        \ControlFlowTok{if} \BuiltInTok{len}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_collision) }\OperatorTok{==} \DecValTok{1}\NormalTok{:}
+\NormalTok{            x\_vel }\OperatorTok{=} \VariableTok{self}\NormalTok{.velocity[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{            y\_vel }\OperatorTok{=} \VariableTok{self}\NormalTok{.velocity[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{            vel }\OperatorTok{=}\NormalTok{ np.array([x\_vel, y\_vel], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+
+            \ControlFlowTok{for}\NormalTok{ boid, distance }\KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_collision:}
+\NormalTok{                diff }\OperatorTok{=} \VariableTok{self}\NormalTok{.position }\OperatorTok{{-}}\NormalTok{ boid.position}
+\NormalTok{                diff\_norm }\OperatorTok{=}\NormalTok{ np.linalg.norm(diff)}
+\NormalTok{                x\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{                y\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+                \ControlFlowTok{if}\NormalTok{ distance }\OperatorTok{\textless{}=} \FloatTok{1.9}\OperatorTok{*}\NormalTok{boid.radius:}
+                    \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=}\NormalTok{ np.array(}
+\NormalTok{                        [[}\OperatorTok{{-}}\NormalTok{x\_diff}\OperatorTok{/}\NormalTok{diff\_norm], [}\OperatorTok{{-}}\NormalTok{y\_diff}\OperatorTok{/}\NormalTok{diff\_norm]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+                \ControlFlowTok{else}\NormalTok{:}
+\NormalTok{                    normal }\OperatorTok{=}\NormalTok{ np.array([[}\OperatorTok{{-}}\NormalTok{y\_diff, x\_diff]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+\NormalTok{                    normal\_norm }\OperatorTok{=}\NormalTok{ np.linalg.norm(normal)}
+\NormalTok{                    new\_vel }\OperatorTok{=}\NormalTok{ (np.dot(normal, vel)}\OperatorTok{/}\NormalTok{(normal\_norm}\OperatorTok{**}\DecValTok{2}\NormalTok{))}\OperatorTok{*}\NormalTok{normal }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.velocity}
+\NormalTok{                    x\_new\_vel }\OperatorTok{=}\NormalTok{ new\_vel[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{                    y\_new\_vel }\OperatorTok{=}\NormalTok{ new\_vel[}\DecValTok{0}\NormalTok{][}\DecValTok{1}\NormalTok{]}
+                    \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=}\NormalTok{ np.array(}
+\NormalTok{                        [[x\_new\_vel], [y\_new\_vel]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+        \ControlFlowTok{elif} \BuiltInTok{len}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_collision) }\OperatorTok{==} \DecValTok{2}\NormalTok{:}
+            \CommentTok{"""We want the boid to go away from it\textquotesingle{}s two neighbors"""}
+\NormalTok{            boid1 }\OperatorTok{=} \VariableTok{self}\NormalTok{.near\_boids\_collision[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{            boid2 }\OperatorTok{=} \VariableTok{self}\NormalTok{.near\_boids\_collision[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{            diff }\OperatorTok{=}\NormalTok{ boid1.position}\OperatorTok{{-}}\NormalTok{boid2.position}
+\NormalTok{            x\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{            y\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{            normal }\OperatorTok{=}\NormalTok{ np.array([[}\OperatorTok{{-}}\NormalTok{y\_diff], [x\_diff]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+\NormalTok{            normal\_norm }\OperatorTok{=}\NormalTok{ np.linalg.norm(normal)}
+            \CommentTok{\# determining if using the normal vector as velocity reduces or augments the distance between boids}
+\NormalTok{            new\_pos }\OperatorTok{=} \VariableTok{self}\NormalTok{.position}\OperatorTok{+}\NormalTok{(normal}\OperatorTok{/}\NormalTok{normal\_norm) }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.position}
+\NormalTok{            new\_diff }\OperatorTok{=}\NormalTok{ new\_pos}\OperatorTok{{-}}\NormalTok{boid1.position}
+\NormalTok{            new\_dist }\OperatorTok{=}\NormalTok{ np.linalg.norm(new\_diff)}
+            \ControlFlowTok{if}\NormalTok{ new\_dist }\OperatorTok{\textless{}=} \VariableTok{self}\NormalTok{.near\_distance\_collision:}
+\NormalTok{                new\_vel }\OperatorTok{=} \OperatorTok{{-}}\DecValTok{2} \OperatorTok{*}\NormalTok{ normal }\OperatorTok{/}\NormalTok{ normal\_norm }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.velocity}
+            \ControlFlowTok{else}\NormalTok{:}
+\NormalTok{                new\_vel }\OperatorTok{=} \DecValTok{2} \OperatorTok{*}\NormalTok{ normal }\OperatorTok{/}\NormalTok{ normal\_norm }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.velocity}
+            \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=}\NormalTok{ new\_vel}
+    \CommentTok{\# (np.dot(normal,self.velocity)/(normal\_norm**2))*normal}
+\end{Highlighting}
+\end{Shaded}
+
+Cela donne un comportement assez satisfaisant, cependant les boids ne se
+comportent pas exactement comme on le souhaiterait (en particulier
+losrqu'il y a une forte densité de boids). Pour cela il faudrait prendre
+en compte les positions des boids au temps n et n+1. Pour cette raison
+et pour limiter le nombre de calculs à effectuer lorsqu'il y a une forte
+densité de boids, nous avons décidé de ne pas coder les cas où le boid
+rencontre 3 voisins ou plus. Si nous avions décidé de le prendre en
+compte nous aurions pu dire que dans le cas d'une rencontre avec 4
+voisins ou plus un boid est forcément encerclé et devrait s'arrêter, et
+le cas avec trois voisin peut se ramener à un cas avec 2 voisins ou avec
+4 voisins.
+
+\hypertarget{force-du-vent}{%
+\subsubsection{Force du vent}\label{force-du-vent}}
+
+Nous avons ajouté la possibilité de mettre un vent qui est une force
+d'intensité constante soufflant dans une direction choisie par un angle.
+
+Ci dessous la comparaison entre une simulation sans et avec vent
+(respectivement) :
+
+\hypertarget{force-goal-ou-objectif}{%
+\subsubsection{\texorpdfstring{Force \texttt{goal} ou
+objectif}{Force goal ou objectif}}\label{force-goal-ou-objectif}}
+
+Nous avons également ajouté une force d'objectif qui attire les
+\emph{boids} vers elle et permet donc en modifiant sa position de les
+diriger sur le terrain de simulation.
+
+\hypertarget{obstacles}{%
+\subsubsection{Obstacles}\label{obstacles}}
+
+Afin de pouvoir modéliser des mouvements de foules nous avons implémenté
+la possibilité de poser des obstacles, figuré sur l'affichage temps réel
+par des rectangles rouges.
+
+Les boids rebondissent alors sur ces surfaces. Nous avons fait en sorte
+qu'une fois la simulation lancée, il soit possible de cliquer pour poser
+le \textbf{coin haut-gauche} puis recliquer pour poser le \textbf{coin
+bas-droit}.
+
+Il est alors assez intéressant de regarder les \emph{boids} rebondir sur
+les différentes surfaces et en utilisant la force \texttt{goal} on peut
+observer un comportement assimilable \emph{sous certaines conditions} à
+un fluide dans un tuyau.
+
+De même on peut \emph{sous certaines conditions} observer un
+comportement similaire à l'évacuation d'une foule par une porte.
+
+De même on peut \emph{sous certaines conditions} observer un
+comportement similaire à l'évacuation d'une foule par une porte.
+
+\textbf{ICI UN EXEMPLE}
+
+Nous invitons le lecteur à essayer les différentes possibilités offertes
+par cet outil.
+
+\hypertarget{impact-de-la-distance-sur-les-effets-des-forces}{%
+\subsubsection{Impact de la distance sur les effets des
+forces}\label{impact-de-la-distance-sur-les-effets-des-forces}}
+
+Le problème des chevauchements a été une des tâches qui nous a le plus
+occupé et dérangé, afin de le réduire nous avons intégré une prise en
+compte de la distance et de la densité dans l'application des forces
+citées plus haut. Le code est le suivant :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ collision(}\VariableTok{self}\NormalTok{):}
+    \CommentTok{"""collision behavior to prevent boids from going through each other}
+\CommentTok{    Returns:}
+\CommentTok{        np.array([float,float]) {-}{-} [x velocity, y velocity]"""}
+    \ControlFlowTok{if} \BuiltInTok{len}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_collision) }\OperatorTok{==} \DecValTok{1}\NormalTok{:}
+\NormalTok{        x\_vel }\OperatorTok{=} \VariableTok{self}\NormalTok{.velocity[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{        y\_vel }\OperatorTok{=} \VariableTok{self}\NormalTok{.velocity[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{        vel }\OperatorTok{=}\NormalTok{ np.array([x\_vel, y\_vel], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+
+        \ControlFlowTok{for}\NormalTok{ boid, distance }\KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_collision:}
+\NormalTok{            diff }\OperatorTok{=} \VariableTok{self}\NormalTok{.position }\OperatorTok{{-}}\NormalTok{ boid.position}
+\NormalTok{            diff\_norm }\OperatorTok{=}\NormalTok{ np.linalg.norm(diff)}
+\NormalTok{            x\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{            y\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+            \ControlFlowTok{if}\NormalTok{ distance }\OperatorTok{\textless{}=} \FloatTok{1.9}\OperatorTok{*}\NormalTok{boid.radius:}
+                \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=}\NormalTok{ np.array(}
+\NormalTok{                    [[}\OperatorTok{{-}}\NormalTok{x\_diff}\OperatorTok{/}\NormalTok{diff\_norm], [}\OperatorTok{{-}}\NormalTok{y\_diff}\OperatorTok{/}\NormalTok{diff\_norm]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+            \ControlFlowTok{else}\NormalTok{:}
+\NormalTok{                normal }\OperatorTok{=}\NormalTok{ np.array([[}\OperatorTok{{-}}\NormalTok{y\_diff, x\_diff]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+\NormalTok{                normal\_norm }\OperatorTok{=}\NormalTok{ np.linalg.norm(normal)}
+\NormalTok{                new\_vel }\OperatorTok{=}\NormalTok{ (np.dot(normal, vel)}\OperatorTok{/}\NormalTok{(normal\_norm}\OperatorTok{**}\DecValTok{2}\NormalTok{))}\OperatorTok{*}\NormalTok{normal }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.velocity}
+\NormalTok{                x\_new\_vel }\OperatorTok{=}\NormalTok{ new\_vel[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{                y\_new\_vel }\OperatorTok{=}\NormalTok{ new\_vel[}\DecValTok{0}\NormalTok{][}\DecValTok{1}\NormalTok{]}
+                \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=}\NormalTok{ np.array(}
+\NormalTok{                    [[x\_new\_vel], [y\_new\_vel]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+    \ControlFlowTok{elif} \BuiltInTok{len}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_collision) }\OperatorTok{==} \DecValTok{2}\NormalTok{:}
+        \CommentTok{"""We want the boid to go away from it\textquotesingle{}s two neighbors"""}
+\NormalTok{        boid1 }\OperatorTok{=} \VariableTok{self}\NormalTok{.near\_boids\_collision[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{        boid2 }\OperatorTok{=} \VariableTok{self}\NormalTok{.near\_boids\_collision[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{        diff }\OperatorTok{=}\NormalTok{ boid1.position}\OperatorTok{{-}}\NormalTok{boid2.position}
+\NormalTok{        x\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{        y\_diff }\OperatorTok{=}\NormalTok{ diff[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]}
+\NormalTok{        normal }\OperatorTok{=}\NormalTok{ np.array([[}\OperatorTok{{-}}\NormalTok{y\_diff], [x\_diff]], dtype}\OperatorTok{=}\NormalTok{np.float64)}
+\NormalTok{        normal\_norm }\OperatorTok{=}\NormalTok{ np.linalg.norm(normal)}
+        \CommentTok{\# determining if using the normal vector as velocity reduces or augments the distance between boids}
+\NormalTok{        new\_pos }\OperatorTok{=} \VariableTok{self}\NormalTok{.position}\OperatorTok{+}\NormalTok{(normal}\OperatorTok{/}\NormalTok{normal\_norm) }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.position}
+\NormalTok{        new\_diff }\OperatorTok{=}\NormalTok{ new\_pos}\OperatorTok{{-}}\NormalTok{boid1.position}
+\NormalTok{        new\_dist }\OperatorTok{=}\NormalTok{ np.linalg.norm(new\_diff)}
+        \ControlFlowTok{if}\NormalTok{ new\_dist }\OperatorTok{\textless{}=} \VariableTok{self}\NormalTok{.near\_distance\_collision:}
+\NormalTok{            new\_vel }\OperatorTok{=} \OperatorTok{{-}}\DecValTok{2} \OperatorTok{*}\NormalTok{ normal }\OperatorTok{/}\NormalTok{ normal\_norm }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.velocity}
+        \ControlFlowTok{else}\NormalTok{:}
+\NormalTok{            new\_vel }\OperatorTok{=} \DecValTok{2} \OperatorTok{*}\NormalTok{ normal }\OperatorTok{/}\NormalTok{ normal\_norm }\ControlFlowTok{if}\NormalTok{ normal\_norm }\OperatorTok{!=} \DecValTok{0} \ControlFlowTok{else} \VariableTok{self}\NormalTok{.velocity}
+        \VariableTok{self}\NormalTok{.velocity }\OperatorTok{=}\NormalTok{ new\_vel}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{densituxe9-calcul}{%
+\paragraph{Densité : calcul}\label{densituxe9-calcul}}
+
+La ``densité'' est calculée grâce à un paramètre que nous avons défini
+arbitrairement selon ce qui nous semblait acceptable. Ainsi en prenant
+en compte que le rayon de cohésion est relativement faible nous avons
+considéré qu'avoir 2 \emph{boids} dans le champ de cohésion était déjà
+élevée. \emph{La définition choisie n'est donc pas vraiment celle d'une
+densité en tant que telle}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\VariableTok{self}\NormalTok{.density }\OperatorTok{=} \BuiltInTok{len}\NormalTok{(}\VariableTok{self}\NormalTok{.near\_boids\_cohesion) }\OperatorTok{/} \VariableTok{self}\NormalTok{.number\_of\_around\_to\_be\_dense}
+\end{Highlighting}
+\end{Shaded}
+
+Ce code donne des résultats que nous avons jugés acceptables mais il
+pourrait être un point d'amélioration.
+
+\hypertarget{densituxe9-application}{%
+\paragraph{Densité application}\label{densituxe9-application}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+        \ControlFlowTok{if} \VariableTok{self}\NormalTok{.goal\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{:}
+\NormalTok{            goal }\OperatorTok{=} \VariableTok{self}\NormalTok{.goal()}
+            \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ goal }\OperatorTok{*}\NormalTok{ (}\DecValTok{1}\OperatorTok{/}\DecValTok{2} \OperatorTok{{-}} \VariableTok{self}\NormalTok{.density)}
+
+        \ControlFlowTok{if} \VariableTok{self}\NormalTok{.wind\_speed }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{:}
+\NormalTok{            wind }\OperatorTok{=} \VariableTok{self}\NormalTok{.wind()}
+            \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ wind}
+
+        \ControlFlowTok{if} \VariableTok{self}\NormalTok{.alignment\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{:}
+\NormalTok{            alignment }\OperatorTok{=} \VariableTok{self}\NormalTok{.alignment()}
+            \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ alignment}
+
+        \ControlFlowTok{if} \VariableTok{self}\NormalTok{.cohesion\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{:}
+\NormalTok{            cohesion }\OperatorTok{=} \VariableTok{self}\NormalTok{.cohesion()}
+            \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ cohesion }\OperatorTok{*}\NormalTok{ (}\DecValTok{1}\OperatorTok{/}\DecValTok{2} \OperatorTok{{-}} \VariableTok{self}\NormalTok{.density)}
+
+        \ControlFlowTok{if} \VariableTok{self}\NormalTok{.separation\_force }\OperatorTok{\textgreater{}} \DecValTok{0}\NormalTok{:}
+\NormalTok{            separation }\OperatorTok{=} \VariableTok{self}\NormalTok{.separation()}
+            \VariableTok{self}\NormalTok{.acceleration }\OperatorTok{+=}\NormalTok{ separation }\OperatorTok{*}\NormalTok{ (}\DecValTok{1} \OperatorTok{+} \VariableTok{self}\NormalTok{.density)}
+\end{Highlighting}
+\end{Shaded}
+
+A noter que malgré tout à la fin, nous avons réussi à diminuer mais pas
+à effacer tous les chevauchement des \emph{boids}.
+
+\hypertarget{optimisations}{%
+\subsection{Optimisations}\label{optimisations}}
+
+Afin d'essayer d'optimiser nos différentes itérations nous avons
+utilisées plusieurs approches :
+
+\hypertarget{construction-de-listes-des-distances}{%
+\subsubsection{Construction de listes des
+distances}\label{construction-de-listes-des-distances}}
+
+\hypertarget{filtrage-des-boids}{%
+\paragraph{\texorpdfstring{Filtrage des
+\emph{boids}}{Filtrage des boids}}\label{filtrage-des-boids}}
+
+Avant de calculer les distances nous définissons un carré autour du
+\emph{boid} qui sera parcouru pour détecter les autres \emph{boids} et
+calculer la distance par rapport à eux. \textbf{Cette étape
+d'optimisation nous a fait gagner un temps de calcul considérable, nous
+permettant de doubler le nombre de \emph{boids} que l'affichage temps
+réel pouvait simuler.}
+
+Plutôt que de recalculer les distances à la volée nous faisons entre
+chaque itération un calcul de toutes les distances entre les différents
+\emph{boids}, ces distances sont ensuite stockées dans des listes qui
+sont reparcourues quand nécessaire.
+
+Enfin les distances étant symétriques entre deux \emph{boids} nous
+stockons la distance dans le \emph{boid} considéré par la boucle comme
+origine et dans l'\emph{autre boid} ainsi nous divisons par deux le
+nombre de calculs de distances nécessaires.
+
+Le code se déploie donc ainsi :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ find\_near\_boids(}\VariableTok{self}\NormalTok{, boids):}
+    \CommentTok{"""Sets a list of boids that are within a certain distance}
+\CommentTok{    Arguments:}
+\CommentTok{        boids \{list\} {-}{-} list of boids"""}
+
+    \VariableTok{self}\NormalTok{.near\_boids\_alignment }\OperatorTok{=}\NormalTok{ []}
+    \VariableTok{self}\NormalTok{.near\_boids\_cohesion }\OperatorTok{=}\NormalTok{ []}
+    \VariableTok{self}\NormalTok{.near\_boids\_separation }\OperatorTok{=}\NormalTok{ []}
+    \VariableTok{self}\NormalTok{.near\_boids\_collision }\OperatorTok{=}\NormalTok{ []}
+
+\NormalTok{    filtered\_boids }\OperatorTok{=}\NormalTok{ (boid }\ControlFlowTok{for}\NormalTok{ boid }\KeywordTok{in}\NormalTok{ boids }\ControlFlowTok{if}\NormalTok{ (}\VariableTok{self}\NormalTok{.}\BuiltInTok{id} \OperatorTok{!=}\NormalTok{ boid.}\BuiltInTok{id}\NormalTok{) }\KeywordTok{and}\NormalTok{ ((}\VariableTok{self}\NormalTok{.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{{-}} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textless{}}\NormalTok{ boid.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\KeywordTok{and} \VariableTok{self}\NormalTok{.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{{-}} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textless{}}\NormalTok{ boid.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{]) }\KeywordTok{and}\NormalTok{ (}
+        \VariableTok{self}\NormalTok{.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{+} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textgreater{}}\NormalTok{ boid.position[}\DecValTok{0}\NormalTok{][}\DecValTok{0}\NormalTok{] }\KeywordTok{and} \VariableTok{self}\NormalTok{.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{] }\OperatorTok{+} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\OperatorTok{\textgreater{}}\NormalTok{ boid.position[}\DecValTok{1}\NormalTok{][}\DecValTok{0}\NormalTok{])))}
+\NormalTok{    logging.debug(}\StringTok{\textquotesingle{}Filtered boids: }\SpecialCharTok{\%s}\StringTok{\textquotesingle{}}\NormalTok{, filtered\_boids)}
+
+    \ControlFlowTok{for}\NormalTok{ boid }\KeywordTok{in}\NormalTok{ filtered\_boids:}
+\NormalTok{        dist }\OperatorTok{=}\NormalTok{ np.linalg.norm(}\VariableTok{self}\NormalTok{.position }\OperatorTok{{-}}\NormalTok{ boid.position)}
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_alignment) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_alignment }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textgreater{}} \VariableTok{self}\NormalTok{.near\_distance\_cohesion:}
+            \VariableTok{self}\NormalTok{.near\_boids\_alignment.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_alignment.append((}\VariableTok{self}\NormalTok{, dist))}
+
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_cohesion) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_cohesion }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textgreater{}} \VariableTok{self}\NormalTok{.near\_distance\_separation:}
+            \VariableTok{self}\NormalTok{.near\_boids\_cohesion.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_cohesion.append((}\VariableTok{self}\NormalTok{, dist))}
+
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_separation) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_separation:}
+            \VariableTok{self}\NormalTok{.near\_boids\_separation.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_separation.append((}\VariableTok{self}\NormalTok{, dist))}
+
+        \ControlFlowTok{if}\NormalTok{ (boid }\KeywordTok{not} \KeywordTok{in} \VariableTok{self}\NormalTok{.near\_boids\_collision) }\KeywordTok{and}\NormalTok{ dist }\OperatorTok{\textless{}} \VariableTok{self}\NormalTok{.near\_distance\_collision:}
+            \VariableTok{self}\NormalTok{.near\_boids\_collision.append((boid, dist))}
+\NormalTok{            boid.near\_boids\_collision.append((}\VariableTok{self}\NormalTok{, dist))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{complexituxe9}{%
+\subsection{Complexité}\label{complexituxe9}}
+
+Nous avons pu approcher la complexité par le programme
+\texttt{complexity.py}. En terme de complexité algorithmique, on observe
+un comportement proche du N², qui s'explique par une double succession
+de boucle for.
+
+Nous avons tracé ci-dessous le temps de simulation en fonction du nombre
+d'objets simulés.
+
+Malgré les optimisations que nous avons implémenté, l'ordre de grandeur
+reste en O(N²) mais nous estimons être proche de N²/2.
+
+\hypertarget{la-simulation-pruxe9calculuxe9e-pour-pallier-uxe0-la-complexituxe9}{%
+\subsection{La simulation précalculée pour pallier à la
+complexité}\label{la-simulation-pruxe9calculuxe9e-pour-pallier-uxe0-la-complexituxe9}}
+
+N'ayant pas de nécessité d'un calcul temps réel nous avons développé des
+modules de pré-calcul qui génèrent des fichiers contenant les
+trajectoires des différents \emph{boids} à tous les instants.
+
+Les modules de pré-calcul se décompose en deux parties distinctes.
+
+\hypertarget{simulateur}{%
+\subsubsection{Simulateur}\label{simulateur}}
+
+\href{https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/precomputing_simulator.py}{precomputing\_simulator.py}
+
+Le simulateur se compose d'un menu de sélection des différents
+paramètres de la simulation (nous perdons donc l'aspect dynamique de la
+simulation temps réelle).
+
+Le simulateur fait avancer la simulation en utilisant les mêmes
+\emph{interfaces} que dans la simulation temps réelle mais en se
+débarrassant de l'affichage, cela permet donc de réduire un petit peu le
+temps de calcul.
+
+Il utilise ensuite les différents paramètres pour nommer le fichier et
+l'enregistrer sous le format \texttt{json} grâce au package python
+dédié.
+
+Afin de donner plus d'informations durant le temps de calcul nous avons
+implémenté une méthode de calcul de l'ETA (Estimated Time of Arrival, ou
+temps estimée d'arrivée) et un affichage dynamique d'une bar de
+progression.
+
+\emph{Note} : les couleurs dans le terminal sont obtenues grâce au
+package
+\texttt{colored}(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md\#sources-et-ressources-utilisées).
+
+\hypertarget{affichage-des-simulations-pruxe9calculuxe9es}{%
+\subsubsection{Affichage des simulations
+précalculées}\label{affichage-des-simulations-pruxe9calculuxe9es}}
+
+\href{https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/precomputing_display.py}{precomputing\_display.py}
+
+L'affichage du simulateur utilise le module
+\texttt{tkinter}(https://github.com/Polarolouis/BoidSimulation/blob/main/Rapport.md\#sources-et-ressources-utilisées)
+afin de générer l'affichage. Il se compose d'un menu par terminal pour
+la sélection des fichiers détectés dans le dossier \texttt{/json/} et
+après la sélection par l'utilisateur du fichier il affiche alors la
+fenêtre graphique permettant de lancer, faire pause et moduler la
+vitesse de la simulation.
+
+\hypertarget{usage-du-programme}{%
+\subsection{Usage du programme}\label{usage-du-programme}}
+
+Afin d'utiliser le programme il faut cloner le dépôt GitHub (à l'aide du
+bouton Clone).
+
+Une fois les fichiers récupérés il faut :
+
+1 - Installer les modules non inclus dans le package de base, cela se
+fait en se plaçant dans le répertoire de travail et en tapant dans un
+terminal (Bash, CMD, PowerShell \ldots) la commande suivante :
+\textless\textless\textless\textless\textless\textless\textless{} HEAD
+
+=======
+\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater{}
+512ecac011568ce604520cb282e677e6acf7f648
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python} \AttributeTok{{-}m}\NormalTok{ pip install }\AttributeTok{{-}r}\NormalTok{ requirements.txt}
+\end{Highlighting}
+\end{Shaded}
+
+2 - Choisir le module que l'on souhaite utiliser :
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{realtime\_display.py} se lance à partir d'un terminal avec :
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ realtime\_display.py}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{precomputing\_simulator.py} :
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ precomputing\_simulator.py}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{precomputing\_display.py} :
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{python}\NormalTok{ precomputing\_display.py}
+\end{Highlighting}
+\end{Shaded}
+
+3 - Utiliser les interfaces qui s'ouvrent pour simuler les \emph{boids}.
+
+\hypertarget{deuxiuxe8me-impluxe9mentation-moduxe8le-particulaire}{%
+\section{Deuxième implémentation : Modèle
+particulaire}\label{deuxiuxe8me-impluxe9mentation-moduxe8le-particulaire}}
+
+Comme deuxième approche, nous sommes partis du constat que les foules,
+lorqu'elles présentent une densité suffisante, peuvent être approchées
+par de la mécanique des fluides
+(cf.~https://www.shf-lhb.org/articles/lhb/pdf/1963/08/lhb1963067.pdf).
+
+Nous sommes repartis de ce constat pour réaliser une simulation de foule
+avec une approche similaire à celle de Navier-Stokes.
+
+\hypertarget{guxe9nuxe9ration-des-chemins-optimaux-pour-une-particule}{%
+\subsection{Génération des chemins optimaux pour une
+particule}\label{guxe9nuxe9ration-des-chemins-optimaux-pour-une-particule}}
+
+Vous pouvez trouver le code correspondant à cette partie sur ce lien
+suivant :
+\href{https://github.com/Polarolouis/BoidSimulation/blob/boid_flow/dijkstra.py}{code
+du modèle particulaire}
+
+\hypertarget{cruxe9ation-dun-graph-de-ruxe9seau}{%
+\subsubsection{Création d'un graph de
+réseau}\label{cruxe9ation-dun-graph-de-ruxe9seau}}
+
+Un des prérequis de l'étude que nous avons dû implémenter est
+l'automatisation de la recherche et de la représentation des chemins
+optimaux.
+
+Nous avons pour cela utilisé un graphe de réseau. La structure était la
+suivante : - un noeud représentant l'objectif du réseau (le noeud vers
+lequel tous les objets présents sur le graph veulent converger). - un ou
+des obstacles (modélisés sur le graph comme quatres noeuds reliés entre
+eux deux à deux pour former des rectangles). - un noeud représentant
+l'endroit d'oû part la particule en elle même (sa position initiale).
+
+Nous avons donc implémenté une classe Node à notre système, qui est
+définie ainsi :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{ Node () :}
+\NormalTok{  all\_nodes }\OperatorTok{=}\NormalTok{ [] }\CommentTok{\#the list of nodes present in the system}
+  \KeywordTok{def} \FunctionTok{\_\_init\_\_}\NormalTok{(}\VariableTok{self}\NormalTok{, }\BuiltInTok{id} \OperatorTok{=} \BuiltInTok{str}\NormalTok{, x\_pos }\OperatorTok{=} \BuiltInTok{int}\NormalTok{, y\_pos }\OperatorTok{=} \BuiltInTok{int}\NormalTok{, neigh }\OperatorTok{=} \BuiltInTok{str}\NormalTok{, node\_type }\OperatorTok{=} \BuiltInTok{str}\NormalTok{) : }
+    \CommentTok{"""}
+\CommentTok{    Node class initialisation}
+\CommentTok{    Args:}
+\CommentTok{        id (str): identification of the node}
+\CommentTok{        x\_pos (int): x\_position}
+\CommentTok{        y\_pos (int): y\_position}
+\CommentTok{        neigh (str): the neighbour nodes}
+\CommentTok{        node\_type (str): the node type}
+\CommentTok{    """}
+    \VariableTok{self}\NormalTok{.}\BuiltInTok{id} \OperatorTok{=} \BuiltInTok{id}
+    \VariableTok{self}\NormalTok{.x\_pos }\OperatorTok{=} \BuiltInTok{float}\NormalTok{(x\_pos)}
+    \VariableTok{self}\NormalTok{.y\_pos }\OperatorTok{=} \BuiltInTok{float}\NormalTok{(y\_pos)}
+    \VariableTok{self}\NormalTok{.neigh }\OperatorTok{=}\NormalTok{ neigh}
+    \VariableTok{self}\NormalTok{.node\_type }\OperatorTok{=}\NormalTok{ node\_type}
+    
+    \CommentTok{\#add the created node to the list of existing nodes}
+    \VariableTok{self}\NormalTok{.all\_nodes.append(}\VariableTok{self}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{moduxe9lisation-des-obstacles}{%
+\subsubsection{Modélisation des
+obstacles}\label{moduxe9lisation-des-obstacles}}
+
+Dans une conformation avec un seul obstacle, nous obtenons donc dans un
+premier temps un graph de réseau similaire à celui-ci par exemple :
+
+Où les nodes 1,2,3,4 sont les ``angles'' de l'obstacle, et les nodes 5
+et 6 sont respectivement la position initiale et le goal du réseau.
+
+Cependant, il est nécessaire de considérer que les mouvements de
+particules sont impossibles au sein même de l'obstacle. Il faut pour
+cela ``mettre à jour'' le graph de réseau, de manière à éliminer les
+arrêtes qui traversent l'obstacle.
+
+Nous avons pour cela implémenté la méthode suivante utilisant le module
+\texttt{shapely}
+(\href{https://shapely.readthedocs.io/en/stable/manual.html}{documentation
+de la bibliothèque shapely}) :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{def}\NormalTok{ block\_intersection (}\VariableTok{self}\NormalTok{, start\_node, goal\_node) :}
+  \CommentTok{"""}
+\CommentTok{  Verify that a block is obstruing the path}
+\CommentTok{    Args : }
+\CommentTok{        start\_node (Node): the beginning path node}
+\CommentTok{        goal\_node (Node): the end path node}
+\CommentTok{    Returns : }
+\CommentTok{        intersections (list): the list containing all the [x,y] values of the intersection(s) with the block}
+\CommentTok{  """}
+\NormalTok{  intersections }\OperatorTok{=}\NormalTok{ []}
+\NormalTok{  block\_nodes }\OperatorTok{=} \VariableTok{self}\NormalTok{.get\_all\_block () }\CommentTok{\#returns all the nodes which are "block" type}
+  
+\NormalTok{  A }\OperatorTok{=}\NormalTok{ (start\_node.x\_pos, start\_node.y\_pos)}
+\NormalTok{  B }\OperatorTok{=}\NormalTok{ (goal\_node.x\_pos, goal\_node.y\_pos)}
+\NormalTok{  line1 }\OperatorTok{=}\NormalTok{ LineString([A, B]) }\CommentTok{\#create the first line}
+  
+  \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{ (}\BuiltInTok{len}\NormalTok{ (block\_nodes)}\OperatorTok{{-}}\DecValTok{1}\NormalTok{) :}
+\NormalTok{    C }\OperatorTok{=}\NormalTok{ (block\_nodes[i].x\_pos, block\_nodes[i].y\_pos)}
+\NormalTok{    D }\OperatorTok{=}\NormalTok{ (block\_nodes[i}\OperatorTok{+}\DecValTok{1}\NormalTok{].x\_pos, block\_nodes[i}\OperatorTok{+}\DecValTok{1}\NormalTok{].y\_pos)}
+\NormalTok{    line2 }\OperatorTok{=}\NormalTok{ LineString([C, D]) }\CommentTok{\#create the second line}
+
+    \ControlFlowTok{try}\NormalTok{ :}
+\NormalTok{      intersec\_pt }\OperatorTok{=}\NormalTok{ line1.intersection(line2) }\CommentTok{\#if there is an intersection add it to intersections}
+\NormalTok{      intersec\_pt\_pos }\OperatorTok{=}\NormalTok{ [intersec\_pt.x, intersec\_pt.y]}
+\NormalTok{      intersections.append (intersec\_pt\_pos) }
+                            
+    \ControlFlowTok{except} \PreprocessorTok{AttributeError}\NormalTok{ : }\CommentTok{\#else  try next line}
+      \ControlFlowTok{pass}
+  \ControlFlowTok{return}\NormalTok{(intersections)}
+\end{Highlighting}
+\end{Shaded}
+
+Cette boucle permet de faire la liste de toutes les intersections entre
+une ligne donnée et les arrêtes de l'obstacle. En couplant cette méthode
+avec la méthode \texttt{notation\_intersections} (qui donne une note à
+un point d'intersection en fonction du type de l'intersection : si c'est
+une réelle intersection ou une intersection entre deux arrêtes de
+l'obstacle) et la méthode \texttt{knock\_out\_path} (qui permet de
+mettre à jour les voisins de chaque node pour que l'obstacle soit pris
+en compte).
+
+On obtient alors un graphe similaire à celui ci :
+
+\hypertarget{documentation}{%
+\section{Documentation}\label{documentation}}
+
+Nous avons généré de manière automatique une documentation, celle-ci est
+basée sur les docstrings et autres commentaires dans le code du projet.
+De par l'aspect automatique cette documentation peut-être considérée
+comme incomplète mais sa lecture pourra permettre une compréhension
+globale du projet, complété par ce rapport et l'utilisation des
+différent fichiers. -
+\href{https://htmlpreview.github.io/?https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/html/boid.html}{boid.py}
+-
+\href{https://htmlpreview.github.io/?https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/html/precomputing_simulator.html}{precomputing\_simulator.py}
+-
+\href{https://htmlpreview.github.io/?https://github.com/Polarolouis/BoidSimulation/blob/9927037af0fde6ff9ab84311d5ce114de85f5d35/html/precomputing_display.html}{precomputing\_display.py}
+
+\hypertarget{sources-et-ressources-utilisuxe9es}{%
+\section{Sources et ressources
+utilisées}\label{sources-et-ressources-utilisuxe9es}}
+
+\begin{itemize}
+\tightlist
+\item
+  \url{https://betterprogramming.pub/boids-simulating-birds-flock-behavior-in-python-9fff99375118}
+\item
+  \url{https://www.codespeedy.com/how-to-implement-dijkstras-shortest-path-algorithm-in-python/}
+\item
+  ESAIM: PROCEEDINGS, July 2007, Vol.18, 143-152, Jean-Frédéric Gerbeau
+  \& Stéphane Labbé, Editors
+\end{itemize}
+
+\hypertarget{modules-notables-de-linstallation-de-base}{%
+\subsection{Modules notables de l'installation de
+base}\label{modules-notables-de-linstallation-de-base}}
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{tkinter} :
+  \href{https://docs.python.org/fr/3/library/tk.html}{page de
+  documentation}
+\end{itemize}
+
+\hypertarget{modules-suppluxe9mentaires-utilisuxe9s}{%
+\subsection{Modules supplémentaires
+utilisés}\label{modules-suppluxe9mentaires-utilisuxe9s}}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{numpy} : \href{https://numpy.org/}{site}
+\item
+  \texttt{colored} : \href{https://pypi.org/project/colored/}{page sur
+  le site PyPI}
+\item
+  \texttt{pathlib} : \href{https://pypi.org/project/pathlib/}{page sur
+  le site PyPI}
+\item
+  \texttt{shapely} : \href{https://pypi.org/project/Shapely/}{page sur
+  le site PyPI}
+\end{itemize}
+
+\hypertarget{services-en-ligne-utilisuxe9s}{%
+\subsection{Services en ligne
+utilisés}\label{services-en-ligne-utilisuxe9s}}
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://htmlpreview.github.io/}{HTML Preview} pour l'affichage
+  des documents HTML de la documentation auto-générée
+\end{itemize}
+
+\hypertarget{licence}{%
+\section{Licence}\label{licence}}
+
+Ce projet est fourni sous la license du MIT, pour plus d'informations
+voir
+\href{https://github.com/Polarolouis/BoidSimulation/raw/main/LICENSE.txt}{\texttt{LICENSE.txt}}.
+
+\hypertarget{contact}{%
+\section{Contact}\label{contact}}
+
+Joseph Allyndrée - joseph.allyndree@agroparistech.fr
+
+Louis Lacoste - louis.lacoste@agroparistech.fr
+
+Gabin Derache - gabin.derache@agroparistech.fr
+
+Project Link : \url{https://github.com/Polarolouis/BoidSimulation}
+
+\end{document}
