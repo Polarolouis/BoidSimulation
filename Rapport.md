@@ -440,12 +440,12 @@ Nous avons ajouté la possibilité de mettre un vent qui est une force d'intensi
 
 Ci dessous la comparaison entre une simulation sans et avec vent (respectivement) :
 <p align="center">
-<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%20no%20wind%20%202022-06-08%2015-30-38_Trim.gif?raw=true"
+<img src="https://raw.githubusercontent.com/Polarolouis/BoidSimulation/main/images/Boids%20no%20wind%20%20demo.gif"
   alt="Gif simulation sans vent" width=""/>
 </p>
 
 <p align="center">
-<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%202022-06-08%2015-40-54_Trim(1).gif?raw=true"
+<img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/Boids%20wind%20demo.gif"
   alt="Gif simulation avec vent" width=""/>
 </p>
 
@@ -454,7 +454,7 @@ Ci dessous la comparaison entre une simulation sans et avec vent (respectivement
 Nous avons également ajouté une force d'objectif qui attire les *boids* vers elle et permet donc en modifiant sa position de les diriger sur le terrain de simulation.
 
 <p align="center">
-<img src="https://github.com/Polarolouis/BoidSimulation/blob/main/images/Boids%20goal%20demo.gif?raw=true"
+<img src="https://github.com/Polarolouis/BoidSimulation/raw/main/images/Boids%20goal%20demo.gif"
   alt="Gif simulation goal" width=""/>
 </p>
 
